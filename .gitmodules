@@ -1,0 +1,6 @@
+[submodule "oh-my-zsh"]
+	path = oh-my-zsh
+	url = https://github.com/robbyrussell/oh-my-zsh.git
+[submodule "monokai.terminal"]
+	path = monokai.terminal
+	url = https://github.com/stephenway/monokai.terminal.git
