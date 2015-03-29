@@ -14,7 +14,7 @@ antigen bundle tmux
 antigen bundle vundle
 antigen bundle themizzi/dotfiles better-svn
 
-antigen-theme jreese
+antigen-theme themizzi/dotfiles mizzi
 antigen-apply
 
 # Environment
