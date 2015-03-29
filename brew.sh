@@ -5,6 +5,7 @@ brew tap telemachus/desc
 
 # Packages
 brew install bash
+brew install bash-completion
 brew install zsh
 brew install zsh-completions
 brew install zsh-syntax-highlighting

@@ -12,3 +12,4 @@ function symysym {
 
 symysym .zshrc
 symysym .tmux.conf
+symysym oh-my-zsh

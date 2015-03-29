@@ -1,14 +1,14 @@
 # Path to your oh-my-zsh installation.
-export ZSH=$HOME/.oh-my-zsh
+export ZSH=$HOME/.dotfiles/oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-# ZSH_THEME="mizzi"
+# ZSH_THEME="robbyrussell"
 
 # Prompt adjustment for tmux
-PS1="$PS1"'$([ -n "$TMUX" ] && tmux setenv TMUXPWD_$(tmux display -p "#D" | tr -d %) "$PWD")'
+# PS1="$PS1"'$([ -n "$TMUX" ] && tmux setenv TMUXPWD_$(tmux display -p "#D" | tr -d %) "$PWD")'
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -87,7 +87,7 @@ export ANDROID_HOME=/Users/themizzi/Library/Android/sdk
 alias cd:plat="cd ~/Dropbox/Gorilla/Projects/platinum"
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 alias brew:up="brew update && brew upgrade"
-
+alias ls="ls --color=auto"
 man() {
     env \
     LESS_TERMCAP_mb=$(printf "\e[1;31m") \
@@ -100,8 +100,6 @@ man() {
     man "$@"
 }
 
-unalias run-help
-autoload run-help
 HELPDIR=/usr/local/share/zsh/help
 fpath=(/usr/local/share/zsh-completions $fpath)
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -113,4 +111,3 @@ export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 # Editor
 export EDITOR=/usr/local/bin/vim
 export VISUAL=/usr/local/bin/vim
-
