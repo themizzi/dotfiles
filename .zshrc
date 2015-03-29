@@ -4,7 +4,6 @@ source "$HOME/.dotfiles/antigen/antigen.zsh"
 antigen use oh-my-zsh
 
 antigen bundle git
-antigen bundle svn-fast-info
 antigen bundle pip
 antigen bundle rsync
 antigen bundle python
@@ -13,6 +12,7 @@ antigen bundle zsh-users/zsh-syntax-highlighting
 antigen bundle history
 antigen bundle tmux
 antigen bundle vundle
+antigen bundle themizzi/dotfiles better-svn
 
 antigen-theme jreese
 antigen-apply
