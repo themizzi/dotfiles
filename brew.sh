@@ -7,8 +7,6 @@ brew tap telemachus/desc
 brew install bash
 brew install bash-completion
 brew install zsh
-brew install zsh-completions
-brew install zsh-syntax-highlighting
 brew install coreutils
 brew install findutils
 brew install tmux
