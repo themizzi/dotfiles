@@ -38,7 +38,7 @@ function svn_repo_need_upgrade() {
 }
 
 function svn_current_branch_name() {
-  grep '^URL:' <<< "${1:-$(svn info 2> /dev/null)}" | egrep -o '(tags|branches)/.+|trunk'	
+  grep '^Relative URL:' <<< "${1:-$(svn info 2> /dev/null)}" | sed -E 's/Relative URL: \^\/(.*)/\1/'
 }
 
 function svn_repo_root_name() {
