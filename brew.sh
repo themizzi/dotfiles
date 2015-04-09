@@ -57,6 +57,7 @@ brew cask install hipchat
 brew cask install owncloud
 brew cask install spotify
 brew cask install vienna
+brew cask install vagrant-manager
 
 # These may require a password so let's do them at the end
 brew cask install virtualbox
