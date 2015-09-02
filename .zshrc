@@ -18,20 +18,20 @@ antigen-theme themizzi/dotfiles mizzi
 antigen-apply
 
 # Environment
-export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/MacGPG2/bin"
-export ANDROID_HOME=/Users/themizzi/Library/Android/sdk
-export PATH=$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH
-export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-export EDITOR=/usr/local/bin/vim
-export VISUAL=/usr/local/bin/vim
+#export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/MacGPG2/bin"
+#export ANDROID_HOME=/Users/themizzi/Library/Android/sdk
+#export PATH=$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH
+#export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+#export EDITOR=/usr/local/bin/vim
+#export VISUAL=/usr/local/bin/vim
 
-HELPDIR=/usr/local/share/zsh/help
+#HELPDIR=/usr/local/share/zsh/help
 fpath=(/usr/local/share/zsh-completions $fpath)
 
 # Aliases
-alias cd:plat="cd ~/Dropbox/Gorilla/Projects/platinum"
-alias brew:up="brew update && brew upgrade"
-alias ls="ls --color=auto"
+#alias cd:plat="cd ~/Dropbox/Gorilla/Projects/platinum"
+#alias brew:up="brew update && brew upgrade"
+#alias ls="ls --color=auto"
 
 # Functions
 man() {
