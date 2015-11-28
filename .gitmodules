@@ -1,6 +1,0 @@
-[submodule "monokai.terminal"]
-	path = monokai.terminal
-	url = https://github.com/stephenway/monokai.terminal.git
-[submodule "antigen"]
-	path = antigen
-	url = https://github.com/zsh-users/antigen

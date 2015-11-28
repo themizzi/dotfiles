@@ -1,0 +1,5 @@
+alias gcm="git commit -v -m"
+alias gcpm="git commit -v -m && git push"
+alias gp="git pull -v"
+alias gpu="git push -v"
+alias gcb="git checkout -b"
