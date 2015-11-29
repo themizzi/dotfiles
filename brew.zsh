@@ -11,6 +11,9 @@ brew tap homebrew/dupes
 brew tap homebrew/php
 brew tap telemachus/desc
 
+# Update
+brew update
+
 # Packages
 brew install bash
 brew install bash-completion
