@@ -10,6 +10,7 @@ fi
 brew tap homebrew/dupes
 brew tap homebrew/php
 brew tap telemachus/desc
+brew tap caskroom/versions
 
 # Update
 brew update
