@@ -1,0 +1,36 @@
+#!/bin/zsh
+# Get the path of this file
+DIR="$( cd "$( dirname "$0:A" )" && pwd )"
+
+# Get the system type
+SYS=$(uname | awk '{print tolower($0)}')
+
+# antigen
+source $DIR/lib/antigen/antigen.zsh
+
+# Source all .zsh files
+for D in  `find $DIR -maxdepth 1 -type d ! -name ".*" | sort`
+do
+  for F in `find $D -maxdepth 1 -type f \( -iname "*.zsh" ! -iname "install.zsh" \) | sort`
+  do
+    source $F
+  done
+done
+
+# Source system specific files
+for D in  `find $DIR -maxdepth 1 -type d ! -name ".*" | sort`
+do
+  for DD in `find $D -maxdepth 1 -type d -name $SYS | sort`
+  do
+    for F in `find $DD -maxdepth 1 -type f \( -iname "*.zsh" ! -iname "install.zsh" \) | sort`
+    do
+      source $F
+    done
+  done
+done
+
+# Source system specific files
+for F in `find $DIR/sys/$SYS -maxdepth 1 -type f \( -iname "*.zsh" ! -iname "install.zsh" \) | sort`
+do
+  source $F
+done

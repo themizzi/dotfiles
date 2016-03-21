@@ -1,5 +1,4 @@
-sudo -v
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
 if test ! $(which brew); then
   echo "  Installing Homebrew for you."
@@ -22,10 +21,10 @@ brew install zsh
 brew install coreutils
 brew install findutils
 brew install htop-osx
-brew install php56
-brew install php56-intl
-brew install php56-mcrypt
-brew install php56-xdebug
+brew install php70
+brew install php70-intl
+brew install php70-mcrypt
+brew install php70-xdebug
 brew install composer
 brew install sqlite
 brew install wget
@@ -33,29 +32,27 @@ brew install clamav
 brew install mysql
 brew install git
 brew install nano
+brew install z
 
 # Casks
 brew tap caskroom/cask
-brew install brew-cask
 brew cask install caffeine
 brew cask install cyberduck
 brew cask install id3-editor
 brew cask install phpstorm
 brew cask install sublime-text3
 brew cask install atom
-brew cask install airmail-beta
 brew cask install chromium
 brew cask install gimp
 brew cask install transmission
 brew cask install vlc
-brew cask install android-file-transfer
-brew cask install appcleaner
 brew cask install firefox
 brew cask install hipchat
 brew cask install spotify
 brew cask install vagrant-manager
 brew cask install virtualbox
 brew cask install vagrant
+brew cask install sourcetree
 
 # Cleanup
 brew cleanup -s
