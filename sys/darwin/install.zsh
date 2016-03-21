@@ -206,4 +206,4 @@ defaults write org.m0k.transmission WarningLegal -bool false
 # 	"SystemUIServer" "Terminal" "Transmission"; do
 # 	killall "${app}" > /dev/null 2>&1
 # done
-echo "Done. Note that some of these changes require a logout/restart to take effect."
+echo "Done setting OSX environment settings. Note that some of these changes require a logout/restart to take effect."
