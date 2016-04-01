@@ -7,6 +7,7 @@ SYS=$(uname | awk '{print tolower($0)}')
 
 # antigen
 source $DIR/lib/antigen/antigen.zsh
+antigen bundle robbyrussell/oh-my-zsh lib
 
 # Source all .zsh files
 for D in  `find $DIR -maxdepth 1 -type d ! -name ".*" | sort`
@@ -34,3 +35,5 @@ for F in `find $DIR/sys/$SYS -maxdepth 1 -type f \( -iname "*.zsh" ! -iname "ins
 do
   source $F
 done
+
+antigen apply
