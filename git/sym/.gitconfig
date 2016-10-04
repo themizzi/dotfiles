@@ -1,20 +1,20 @@
 # This is Git's per-user configuration file.
 [user]
 # Please adapt and uncomment the following lines:
-name = Joe Mizzi
-email = themizzi@me.com
+	name = Joe Mizzi
+	email = jmizzi@gorillagroup.com
 [push]
         default = simple
 [core]
-        excludesfile = /Users/jmizzi/.gitignore_global
-        autocrlf = input
+	excludesfile = /Users/jmizzi/.gitignore_global
+	autocrlf = input
         safecrlf = true
         eol = lf
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
 [mergetool "sourcetree"]
-	cmd = /opt/homebrew-cask/Caskroom/sourcetree/2.0.5.8/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
 [filter "lfs"]
         required = true
