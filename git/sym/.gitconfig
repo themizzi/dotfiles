@@ -20,8 +20,6 @@ email = themizzi@me.com
         required = true
         clean = git-lfs clean %f
         smudge = git-lfs smudge %f
-[credential]
-        helper = osxkeychain
 [alias]
         # one-line log
         l = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=short
