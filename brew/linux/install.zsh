@@ -5,6 +5,8 @@ fi
 
 sudo apt-get install -y build-essential
 
+export PATH="$HOME/.linuxbrew/bin:$PATH"
+
 brew install grc
 brew install z
 brew cleanup -e
