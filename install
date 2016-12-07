@@ -55,7 +55,7 @@ do
       if [ -f ~/$(basename "$F") ]; then
         echo -n "~/$(basename $F) already exists. Overwrite [y/N]:"
         read OVERWRITE
-        if [ $OVERWRITE -eq "y" ]; then
+        if [ $OVERWRITE == "y" ]; then
           echo "Overwriting ~/$(basename $F)"
           rm ~/$(basename "$F")
           ln -s $F ~/$(basename "$F")
