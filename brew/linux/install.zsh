@@ -1,5 +1,4 @@
-BREW=$(which brew)
-if [ -z "$BREW" ]; then
+if ! [ command -v bash >/dev/null 2>&1 ]; then
   echo "  Installing Homebrew for you."
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"
 fi
