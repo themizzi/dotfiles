@@ -33,6 +33,7 @@ brew install mysql
 brew install git
 brew install nano
 brew install z
+berw install reattach-to-user-namespace
 
 # Casks
 brew tap caskroom/cask
