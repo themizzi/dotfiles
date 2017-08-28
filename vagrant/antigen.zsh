@@ -1,1 +1,1 @@
-antigen bundle robbyrussell/oh-my-zsh plugins/vagrant
+# antigen bundle robbyrussell/oh-my-zsh plugins/vagrant
