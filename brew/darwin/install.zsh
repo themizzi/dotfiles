@@ -1,9 +1,7 @@
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
-if test ! $(which brew); then
-  echo "  Installing Homebrew for you."
-  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-fi
+echo "  Installing Homebrew for you."
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 # Taps
 brew tap homebrew/dupes
@@ -21,39 +19,32 @@ brew install zsh
 brew install coreutils
 brew install findutils
 brew install htop-osx
-brew install php70
-brew install php70-intl
-brew install php70-mcrypt
-brew install php70-xdebug
+brew install php71
+brew install php71-intl
+brew install php71-mcrypt
+brew install php71-xdebug
 brew install composer
 brew install sqlite
 brew install wget
-brew install clamav
 brew install mysql
 brew install git
 brew install nano
 brew install z
-berw install reattach-to-user-namespace
+brew install grc
+brew install mas
 
 # Casks
 brew tap caskroom/cask
 brew cask install caffeine
-brew cask install cyberduck
-brew cask install id3-editor
 brew cask install phpstorm
-brew cask install sublime-text3
 brew cask install atom
-brew cask install chromium
 brew cask install gimp
 brew cask install transmission
-brew cask install vlc
 brew cask install firefox
-brew cask install hipchat
+brew cask install google-chrome
 brew cask install spotify
-brew cask install vagrant-manager
-brew cask install virtualbox
-brew cask install vagrant
-brew cask install sourcetree
+brew cask install postman
+brew cask install slack
 
 # Cleanup
 brew cleanup -s
