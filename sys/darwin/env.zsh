@@ -1,1 +1,1 @@
-antigen bundle robbyrussell/oh-my-zsh plugins/osx
+#antigen bundle robbyrussell/oh-my-zsh plugins/osx
