@@ -10,7 +10,7 @@ test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew
 ## Setup Linux
 if command -v apt 1> /dev/null && ! apt list --installed 2> /dev/null | grep -q build-essential; then
   sudo apt update
-  sudo apt install build-essential
+  sudo apt install build-essential -y
 fi
 
 ## Bundle
