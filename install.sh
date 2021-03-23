@@ -21,3 +21,6 @@ brew bundle
 ln -sf $(pwd)/.tmux.conf ${HOME}/.tmux.conf
 ln -sf $(pwd)/.nanorc ${HOME}/.nanorc
 ln -sf $(pwd)/.zshrc ${HOME}/.zshrc
+
+# Nano
+ln -sf $(brew --prefix nanorc)/share/nanorc ${HOME}/.nanorc.d
