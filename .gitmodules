@@ -1,6 +1,0 @@
-[submodule "lib/antigen"]
-	path = lib/antigen
-	url = https://github.com/zsh-users/antigen.git
-[submodule "lib/osx-terminal.app-colors-solarized"]
-	path = lib/osx-terminal.app-colors-solarized
-	url = https://github.com/tomislav/osx-terminal.app-colors-solarized.git
