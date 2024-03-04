@@ -30,5 +30,4 @@ export TMUX_CONF="$XDG_CONFIG_HOME/tmux/tmux.conf"
 alias tmux='tmux -f "$TMUX_CONF"'
 
 # NANO
-export NANORC="$XDG_CONFIG_HOME/nano/nanorc
-
+export NANORC="$XDG_CONFIG_HOME/nano/nanorc"
