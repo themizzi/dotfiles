@@ -1,0 +1,3 @@
+set linenumbers
+
+include ~/.config/nano/nanorc.d/*.nanorc
