@@ -1,0 +1,38 @@
+set imap_user = `op item get xp3rpa6nzm6hzbombfvhc4eyvy --fields label=username`
+set imap_pass = `op item get xp3rpa6nzm6hzbombfvhc4eyvy --fields label=password`
+set smtp_url = `echo smtp://$(op item get xp3rpa6nzm6hzbombfvhc4eyvy --fields label=username)@smtp.mail.me.com:587/`
+set smtp_pass = `op item get xp3rpa6nzm6hzbombfvhc4eyvy --fields label=password`
+
+set folder = 'imaps://imap.mail.me.com:993'
+set spoolfile = '+INBOX'
+set postponed = '+DRAFTS'
+set trash = '+Deleted Messages'
+
+set from = `op item get xp3rpa6nzm6hzbombfvhc4eyvy --fields label=username`
+set realname = `echo \"$(op item get xp3rpa6nzm6hzbombfvhc4eyvy --fields label=realname)\"`
+
+# Check mail stats
+set mail_check_stats = yes
+
+set imap_list_subscribed = no
+set imap_check_subscribed = yes
+
+# Threads
+set sort = threads
+set sort_aux = last-date-received
+
+# Use lynx for html messages
+macro index,pager,attach,compose \cl "\
+<enter-command> set my_pipe_decode=\$pipe_decode pipe_decode<Enter>\
+<pipe-message> lynx -stdin<Enter>\
+<enter-command> set pipe_decode=\$my_pipe_decode; unset my_pipe_decode<Enter>" \
+"call lynx to view message"
+
+# Don't pause after external commands
+set wait_key = no
+
+# Archive macro
+macro index,pager A "<save-message>=Archive<Enter>" "Archive current message"
+
+# Do not confirm appending
+set confirmappend = no
