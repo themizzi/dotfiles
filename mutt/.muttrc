@@ -7,7 +7,7 @@ set folder = 'imaps://imap.mail.me.com:993'
 set spoolfile = '+INBOX'
 set postponed = '+DRAFTS'
 set trash = '+Deleted Messages'
-
+set record = '+Sent Messages'
 set from = `op item get xp3rpa6nzm6hzbombfvhc4eyvy --fields label=username`
 set realname = `echo \"$(op item get xp3rpa6nzm6hzbombfvhc4eyvy --fields label=realname)\"`
 
@@ -36,3 +36,10 @@ macro index,pager A "<save-message>=Archive<Enter>" "Archive current message"
 
 # Do not confirm appending
 set confirmappend = no
+
+# Cache
+set header_cache = ~/.mutt/cache/headers
+set message_cachedir = ~/.mutt/cache/bodies
+
+# Date Format
+set date_format="%Y-%m-%d %H:%M" # This will display dates as '2024-03-10 01:29'
