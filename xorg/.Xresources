@@ -1,0 +1,21 @@
+URxvt.font: xft:"FreeMono":size=10
+URxvt.letterSpace: -4
+Xft.dpi: 96
+Xft.antialias: true
+Xft.hinting: true
+Xft.rgba: rgb
+Xft.autohint: false
+Xft.lcdfilter: lcddefault
+Xft.hintstyle: hintslight
+XTerm*locale: true
+XTerm*utf8: 2
+XTerm*faceName: Source Code Pro
+XTerm*faceSize: 10
+XTerm*VT100.Translations: #override \
+     Ctrl Shift <KeyPress> C: copy-selection(CLIPBOARD) \n\
+     Ctrl Shift <KeyPress> V: insert-selection(CLIPBOARD)
+XTerm*termName: xterm-256color
+XTerm*foreground: white
+XTerm*background: black
+XTerm*cursorColor: red
+
