@@ -7,4 +7,4 @@ brew "starship"
 brew "gcc"
 brew "unzip"
 brew "wget"
-
+brew "htop"
