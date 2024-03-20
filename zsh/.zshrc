@@ -32,5 +32,5 @@ alias tmux='tmux -f "$TMUX_CONF"'
 # NANO
 export NANORC="$XDG_CONFIG_HOME/nano/nanorc"
 
-# NVIM
-alias vim=nvim
+# GO
+export PATH=~/go/bin:$PATH
