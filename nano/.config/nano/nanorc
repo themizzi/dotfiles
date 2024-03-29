@@ -1,3 +1,5 @@
 set linenumbers
 
 include ~/.config/nano/nanorc.d/*.nanorc
+
+set titlecolor brightwhite,red
