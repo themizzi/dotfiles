@@ -28,6 +28,13 @@ macro index,pager,attach,compose \cl "\
 <enter-command> set pipe_decode=\$my_pipe_decode; unset my_pipe_decode<Enter>" \
 "call lynx to view message"
 
+# Use firefox for html messages
+macro index,pager,attach,compose \cf "\
+<enter-command> set my_pipe_decode=\$pipe_decode pipe_decode<Enter>\
+<pipe-message> ~/scripts/pipefox<Enter>\
+<enter-command> set pipe_decode=\$my_pipe_decode; unset my_pipe_decode<Enter>" \
+"call firefox to view message"
+
 # Don't pause after external commands
 set wait_key = no
 
