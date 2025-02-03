@@ -38,3 +38,6 @@ export NANORC="$XDG_CONFIG_HOME/nano/nanorc"
 
 # GO
 export PATH=~/go/bin:$PATH
+
+# HUGO
+type hugo &> /dev/null && source <(hugo completion zsh)
