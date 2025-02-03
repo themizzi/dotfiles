@@ -2,6 +2,9 @@
 test -d /usr/local/bin/brew && eval $(/usr/local/bin/brew shellenv)
 test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
+# ZSH History
+HISTFILE=~/.zsh/history
+
 # Antigen
 test -f /home/linuxbrew/.linuxbrew/share/antigen/antigen.zsh && source /home/linuxbrew/.linuxbrew/share/antigen/antigen.zsh
 test -f /user/local/share/antigen/antigen.zsh && source /usr/local/share/antigen/antigen.zsh
