@@ -1,6 +1,7 @@
 # Homebrew
 test -d /usr/local/bin/brew && eval $(/usr/local/bin/brew shellenv)
 test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+test -d /opt/homebrew/bin && eval $(/opt/homebrew/bin/brew shellenv)
 
 # ZSH History
 HISTFILE=~/.zsh/history
@@ -9,6 +10,7 @@ HISTFILE=~/.zsh/history
 test -f /home/linuxbrew/.linuxbrew/share/antigen/antigen.zsh && source /home/linuxbrew/.linuxbrew/share/antigen/antigen.zsh
 test -f /user/local/share/antigen/antigen.zsh && source /usr/local/share/antigen/antigen.zsh
 test -f /usr/share/zsh-antigen/antigen.zsh && source /usr/share/zsh-antigen/antigen.zsh
+test -f /opt/homebrew/share/antigen/antigen.zsh && source /opt/homebrew/share/antigen/antigen.zsh
 
 antigen use oh-my-zsh
 antigen bundle git
