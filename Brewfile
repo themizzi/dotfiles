@@ -11,6 +11,7 @@ brew "stow"
 if RUBY_PLATFORM.include? "darwin"
   brew "mas"
   cask "visual-studio-code"
+  cask "font-hack-nerd-font"
 end
 
 
