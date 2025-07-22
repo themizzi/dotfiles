@@ -7,6 +7,7 @@ brew "wget"
 brew "htop"
 brew "httpie"
 brew "stow"
+brew "gh"
 
 if RUBY_PLATFORM.include? "darwin"
   brew "mas"
