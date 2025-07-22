@@ -1,3 +1,6 @@
+# Make zsh directory
+mkdir -p ~/.zsh
+
 # Homebrew
 test -d /usr/local/bin/brew && eval $(/usr/local/bin/brew shellenv)
 test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
