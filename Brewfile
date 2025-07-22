@@ -16,6 +16,7 @@ if RUBY_PLATFORM.include? "darwin"
   cask "font-hack-nerd-font"
   cask "visual-studio-code"
   cask "github-copilot-for-xcode"
+  cask "github"
   mas "1Password for Safari", id: 1569813296
   mas "Developer", id: 640199958
   mas "Grammarly for Safari", id: 1462114288
@@ -26,4 +27,6 @@ if RUBY_PLATFORM.include? "darwin"
   mas "Xcode", id: 497799835
   vscode "github.copilot"
   vscode "github.copilot-chat"
+  vscode "ms-vscode-remote.remote-containers"
+  vscode "firefox-devtools.vscode-firefox-debug"
 end
