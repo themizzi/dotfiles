@@ -17,6 +17,11 @@ if RUBY_PLATFORM.include? "darwin"
   cask "visual-studio-code"
   cask "github-copilot-for-xcode"
   cask "github"
+  cask "expressvpn"
+  cask "dropbox"
+  cask "gimp"
+  cask "firefox"
+  cask "grammarly-desktop"
   mas "1Password for Safari", id: 1569813296
   mas "Developer", id: 640199958
   mas "Grammarly for Safari", id: 1462114288
