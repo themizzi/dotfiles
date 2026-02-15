@@ -18,10 +18,10 @@ test -f /opt/homebrew/share/antigen/antigen.zsh && source /opt/homebrew/share/an
 antigen use oh-my-zsh
 antigen bundle git
 antigen bundle command-not-found
-antigen bundle zsh-users/zsh-syntax-highlighting
 antigen bundle zsh-users/zsh-history-substring-search
 antigen bundle zsh-users/zsh-completions
 antigen bundle zsh-users/zsh-autosuggestions
+antigen bundle zsh-users/zsh-syntax-highlighting
 antigen apply
 
 # Starship Prompt
