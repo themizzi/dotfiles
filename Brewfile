@@ -1,4 +1,4 @@
-brew "antigen"
+brew "antidote"
 brew "gcc"
 brew "gh"
 brew "htop"

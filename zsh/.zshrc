@@ -9,20 +9,24 @@ test -d /opt/homebrew/bin && eval $(/opt/homebrew/bin/brew shellenv)
 # ZSH History
 HISTFILE=~/.zsh/history
 
-# Antigen
-test -f /home/linuxbrew/.linuxbrew/share/antigen/antigen.zsh && source /home/linuxbrew/.linuxbrew/share/antigen/antigen.zsh
-test -f /user/local/share/antigen/antigen.zsh && source /usr/local/share/antigen/antigen.zsh
-test -f /usr/share/zsh-antigen/antigen.zsh && source /usr/share/zsh-antigen/antigen.zsh
-test -f /opt/homebrew/share/antigen/antigen.zsh && source /opt/homebrew/share/antigen/antigen.zsh
+# Initialize completions
+autoload -Uz compinit && compinit
 
-antigen use oh-my-zsh
-antigen bundle git
-antigen bundle command-not-found
-antigen bundle zsh-users/zsh-history-substring-search
-antigen bundle zsh-users/zsh-completions
-antigen bundle zsh-users/zsh-autosuggestions
-antigen bundle zsh-users/zsh-syntax-highlighting
-antigen apply
+# Completion menu configuration with highlighting
+zstyle ':completion:*:*:*:*:*' menu select
+zstyle ':completion:*:*:*:*:*' list-colors '=(#b) #([0-9]#)*=0=01;32'
+
+# Antidote
+if [[ -f /opt/homebrew/opt/antidote/share/antidote/antidote.zsh ]]; then
+  source /opt/homebrew/opt/antidote/share/antidote/antidote.zsh
+elif [[ -f /usr/local/opt/antidote/share/antidote/antidote.zsh ]]; then
+  source /usr/local/opt/antidote/share/antidote/antidote.zsh
+elif [[ -f /home/linuxbrew/.linuxbrew/opt/antidote/share/antidote/antidote.zsh ]]; then
+  source /home/linuxbrew/.linuxbrew/opt/antidote/share/antidote/antidote.zsh
+fi
+
+# Initialize antidote and load plugins
+antidote load
 
 # zsh-history-substring-search configuration
 bindkey '^[[A' history-substring-search-up # or '\eOA'
