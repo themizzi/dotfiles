@@ -9,6 +9,7 @@ brew "stow"
 brew "unzip"
 brew "wget"
 brew "zsh"
+brew "git-lfs"
 
 if RUBY_PLATFORM.include? "darwin"
   cask "android-studio"
