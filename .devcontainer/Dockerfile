@@ -4,6 +4,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
+        fd-find \
+        fzf \
         git \
         neovim \
         python3 \
@@ -13,6 +15,7 @@ RUN apt-get update \
         stow \
         unzip \
         wget \
+        zellij \
         zsh \
     && rm -rf /var/lib/apt/lists/*
 
@@ -32,6 +35,8 @@ RUN rm -f \
     /home/vscode/.config/starship.toml \
     /home/vscode/.config/task/taskrc \
     /home/vscode/.config/tmux/tmux.conf \
+    /home/vscode/.config/zellij/config.kdl \
+    /home/vscode/.config/zellij/layouts/default.kdl \
     /home/vscode/.zsh_plugins.txt \
     /home/vscode/.zshenv \
     /home/vscode/.zshrc

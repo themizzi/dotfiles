@@ -13,6 +13,8 @@ rm -f \
   "$HOME/.config/starship.toml" \
   "$HOME/.config/task/taskrc" \
   "$HOME/.config/tmux/tmux.conf" \
+  "$HOME/.config/zellij/config.kdl" \
+  "$HOME/.config/zellij/layouts/default.kdl" \
   "$HOME/.zsh_plugins.txt" \
   "$HOME/.zshenv" \
   "$HOME/.zshrc"
