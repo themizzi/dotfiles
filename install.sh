@@ -1,2 +1,4 @@
 #!/usr/bin/env sh
-stow --no-folding gh gh-copilot mutt nano nvim starship task tmux zsh
+set -eu
+
+stow --restow --target="$HOME" --no-folding gh gh-copilot mutt nano nvim starship task tmux vim zsh
