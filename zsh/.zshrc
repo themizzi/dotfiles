@@ -11,10 +11,14 @@ HISTFILE=~/.zsh/history
 
 export PATH="$HOME/.local/bin:$PATH"
 
+# Completion system
+autoload -Uz compinit
+if ! (( $+functions[compdef] )); then
+  compinit
+fi
+
 # Antidote
 if [ -f "$HOME/.antidote/antidote.zsh" ]; then
-  autoload -Uz compinit
-  compinit
   source "$HOME/.antidote/antidote.zsh"
   if command -v antidote >/dev/null 2>&1; then
     antidote load "$HOME/.zsh_plugins.txt"
@@ -43,6 +47,7 @@ export NVM_DIR="$HOME/.nvm"
 # TMUX
 export TMUX_CONF="$XDG_CONFIG_HOME/tmux/tmux.conf"
 alias tmux='tmux -f "$TMUX_CONF"'
+alias zj='zellij'
 
 # NANO
 export NANORC="$XDG_CONFIG_HOME/nano/nanorc"

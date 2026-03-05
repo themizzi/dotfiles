@@ -1,0 +1,4 @@
+layout {
+    pane
+    pane split_direction="vertical"
+}
