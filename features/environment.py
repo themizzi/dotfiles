@@ -55,6 +55,7 @@ def make_nvim_env(context) -> dict[str, str]:
     env = os.environ.copy()
     env["HOME"] = str(home_dir)
     env["XDG_CONFIG_HOME"] = str(context.repo_root / "nvim" / ".config")
+    env["DOTFILES_SKIP_PLUGIN_BOOTSTRAP"] = "1"
     return env
 
 

@@ -61,8 +61,10 @@ def _spawn_nvim(context, cwd: Path):
 
     original_home = os.environ.get("HOME")
     original_xdg = os.environ.get("XDG_CONFIG_HOME")
+    original_skip_bootstrap = os.environ.get("DOTFILES_SKIP_PLUGIN_BOOTSTRAP")
     os.environ["HOME"] = env["HOME"]
     os.environ["XDG_CONFIG_HOME"] = env["XDG_CONFIG_HOME"]
+    os.environ["DOTFILES_SKIP_PLUGIN_BOOTSTRAP"] = env["DOTFILES_SKIP_PLUGIN_BOOTSTRAP"]
     try:
         context.nvim = pynvim.attach("child", argv=argv)
     finally:
@@ -74,6 +76,10 @@ def _spawn_nvim(context, cwd: Path):
             os.environ.pop("XDG_CONFIG_HOME", None)
         else:
             os.environ["XDG_CONFIG_HOME"] = original_xdg
+        if original_skip_bootstrap is None:
+            os.environ.pop("DOTFILES_SKIP_PLUGIN_BOOTSTRAP", None)
+        else:
+            os.environ["DOTFILES_SKIP_PLUGIN_BOOTSTRAP"] = original_skip_bootstrap
 
     context.nvim.request("nvim_set_current_dir", str(cwd))
     context.nvim.request(
@@ -125,6 +131,49 @@ def step_send_normal_keys(context, keys):
     _refresh_screen(context)
 
 
+@given("fzf-lua picker calls are captured")
+def step_capture_fzf_picker_calls(context):
+    context.nvim.request(
+        "nvim_exec_lua",
+        """
+        _G.dotfiles_picker_calls = {}
+        local function record(name)
+          return function()
+            vim.g.dotfiles_last_picker = name
+            table.insert(_G.dotfiles_picker_calls, name)
+          end
+        end
+        package.loaded["fzf-lua"] = {
+          files = record("files"),
+          buffers = record("buffers"),
+          commands = record("commands"),
+          helptags = record("helptags"),
+          live_grep = record("live_grep"),
+          grep = record("grep"),
+        }
+        """,
+        [],
+    )
+
+
+@given("multiple buffers are open")
+def step_multiple_buffers_are_open(context):
+    context.nvim.request("nvim_command", "edit alpha.txt")
+    context.nvim.request("nvim_command", "edit beta.txt")
+
+
+@given("ripgrep is installed")
+def step_ripgrep_installed(context):
+    context.nvim.request("nvim_set_var", "dotfiles_force_has_rg", 1)
+    context.nvim.request("nvim_set_var", "dotfiles_force_no_rg", 0)
+
+
+@given("ripgrep is not installed")
+def step_ripgrep_not_installed(context):
+    context.nvim.request("nvim_set_var", "dotfiles_force_has_rg", 0)
+    context.nvim.request("nvim_set_var", "dotfiles_force_no_rg", 1)
+
+
 @when('I move the netrw cursor to "{filename}"')
 def step_move_netrw_cursor_to_filename(context, filename):
     context.nvim.request("nvim_call_function", "search", [filename, "w"])
@@ -163,3 +212,45 @@ def step_buffer_path_endswith(context, suffix):
 def step_buffer_contains_line(context, line):
     lines = context.nvim.request("nvim_buf_get_lines", 0, 0, -1, False)
     assert line in lines, f"Expected line {line!r} in buffer lines {lines!r}"
+
+
+@then("the fzf-lua files picker should be active")
+def step_fzf_files_picker_active(context):
+    picker = context.nvim.request("nvim_get_var", "dotfiles_last_picker")
+    assert picker == "files", f"Expected files picker, got {picker!r}"
+
+
+@then("the fzf-lua buffers picker should be active")
+def step_fzf_buffers_picker_active(context):
+    picker = context.nvim.request("nvim_get_var", "dotfiles_last_picker")
+    assert picker == "buffers", f"Expected buffers picker, got {picker!r}"
+
+
+@then("the fzf-lua commands picker should be active")
+def step_fzf_commands_picker_active(context):
+    picker = context.nvim.request("nvim_get_var", "dotfiles_last_picker")
+    assert picker == "commands", f"Expected commands picker, got {picker!r}"
+
+
+@then("the fzf-lua helptags picker should be active")
+def step_fzf_helptags_picker_active(context):
+    picker = context.nvim.request("nvim_get_var", "dotfiles_last_picker")
+    assert picker == "helptags", f"Expected helptags picker, got {picker!r}"
+
+
+@then("the fzf-lua live grep picker should be active")
+def step_fzf_live_grep_picker_active(context):
+    picker = context.nvim.request("nvim_get_var", "dotfiles_last_picker")
+    assert picker == "live_grep", f"Expected live_grep picker, got {picker!r}"
+
+
+@then("Neovim should not error fatally")
+def step_nvim_not_error_fatally(context):
+    result = context.nvim.request("nvim_eval", "1 + 1")
+    assert result == 2, f"Expected Neovim to stay responsive, got {result!r}"
+
+
+@then("a configured fallback search behavior should be used")
+def step_configured_fallback_behavior_used(context):
+    picker = context.nvim.request("nvim_get_var", "dotfiles_last_picker")
+    assert picker == "grep_fallback", f"Expected grep fallback, got {picker!r}"
