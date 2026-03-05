@@ -9,32 +9,29 @@ test -d /opt/homebrew/bin && eval $(/opt/homebrew/bin/brew shellenv)
 # ZSH History
 HISTFILE=~/.zsh/history
 
-# Initialize completions
-autoload -Uz compinit && compinit
-
-# Completion menu configuration with highlighting
-zstyle ':completion:*:*:*:*:*' menu select
-zstyle ':completion:*:*:*:*:*' list-colors '=(#b) #([0-9]#)*=0=01;32'
+export PATH="$HOME/.local/bin:$PATH"
 
 # Antidote
-if [[ -f /opt/homebrew/opt/antidote/share/antidote/antidote.zsh ]]; then
-  source /opt/homebrew/opt/antidote/share/antidote/antidote.zsh
-elif [[ -f /usr/local/opt/antidote/share/antidote/antidote.zsh ]]; then
-  source /usr/local/opt/antidote/share/antidote/antidote.zsh
-elif [[ -f /home/linuxbrew/.linuxbrew/opt/antidote/share/antidote/antidote.zsh ]]; then
-  source /home/linuxbrew/.linuxbrew/opt/antidote/share/antidote/antidote.zsh
+if [ -f "$HOME/.antidote/antidote.zsh" ]; then
+  autoload -Uz compinit
+  compinit
+  source "$HOME/.antidote/antidote.zsh"
+  if command -v antidote >/dev/null 2>&1; then
+    antidote load "$HOME/.zsh_plugins.txt"
+  fi
 fi
 
-# Initialize antidote and load plugins
-antidote load
-
 # zsh-history-substring-search configuration
-bindkey '^[[A' history-substring-search-up # or '\eOA'
-bindkey '^[[B' history-substring-search-down # or '\eOB'
+if (( $+widgets[history-substring-search-up] )); then
+  bindkey '^[[A' history-substring-search-up # or '\eOA'
+  bindkey '^[[B' history-substring-search-down # or '\eOB'
+fi
 HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
 
 # Starship Prompt
-eval "$(starship init zsh)"
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init zsh)"
+fi
 
 # NVM
 export NVM_DIR="$HOME/.nvm"
@@ -55,3 +52,10 @@ export PATH=~/go/bin:$PATH
 
 # HUGO
 type hugo &> /dev/null && source <(hugo completion zsh)
+export PATH="/opt/homebrew/opt/rustup/bin:$PATH"
+
+# ANDROID
+export PATH="/opt/homebrew/share/android-commandlinetools/platform-tools:$PATH"
+
+# Rust / Cargo
+export PATH="$HOME/.cargo/bin:$PATH"
