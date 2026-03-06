@@ -27,6 +27,7 @@ def before_scenario(context, scenario):
     context.nvim = None
     context.nvim_home_tmp = None
     context.install_home_tmp = None
+    context.zsh_home_tmp = None
     context.ui_state = None
 
 
@@ -40,6 +41,10 @@ def after_scenario(context, scenario):
     if context.install_home_tmp is not None:
         context.install_home_tmp.cleanup()
         context.install_home_tmp = None
+
+    if context.zsh_home_tmp is not None:
+        context.zsh_home_tmp.cleanup()
+        context.zsh_home_tmp = None
 
 
 def make_nvim_env(context) -> dict[str, str]:
