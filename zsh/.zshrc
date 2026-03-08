@@ -18,13 +18,10 @@ if ! (( $+functions[compdef] )); then
 fi
 
 # Antidote
-ANTIDOTE_HOMEBREW_PATH="${DOTFILES_ANTIDOTE_HOMEBREW_PATH:-/opt/homebrew/opt/antidote/share/antidote/antidote.zsh}"
-ANTIDOTE_FALLBACK_PATH="$HOME/.antidote/antidote.zsh"
-if [ -f "$ANTIDOTE_HOMEBREW_PATH" ]; then
-  source "$ANTIDOTE_HOMEBREW_PATH"
-elif [ -f "$ANTIDOTE_FALLBACK_PATH" ]; then
-  source "$ANTIDOTE_FALLBACK_PATH"
-fi
+SCRIPT_PATH="$(readlink -f "$0" 2>/dev/null || realpath "$0")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+
+source $SCRIPT_DIR/.antidote/antidote.zsh
 if command -v antidote >/dev/null 2>&1; then
   antidote load "$HOME/.zsh_plugins.txt"
 fi

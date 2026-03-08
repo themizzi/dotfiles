@@ -1,3 +1,6 @@
 [submodule "nano/.config/nano/nanorc.d"]
 	path = nano/.config/nano/nanorc.d
 	url = git@github.com:scopatz/nanorc.git
+[submodule "zsh/.antidote"]
+	path = zsh/.antidote
+	url = https://github.com/mattmc3/antidote.git
