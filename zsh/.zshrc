@@ -17,11 +17,7 @@ if ! (( $+functions[compdef] )); then
   compinit
 fi
 
-# Antidote
-SCRIPT_PATH="$(readlink -f "$0" 2>/dev/null || realpath "$0")"
-SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
-
-source $SCRIPT_DIR/.antidote/antidote.zsh
+source $HOME/.antidote/antidote.zsh
 if command -v antidote >/dev/null 2>&1; then
   antidote load "$HOME/.zsh_plugins.txt"
 fi
