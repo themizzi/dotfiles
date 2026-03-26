@@ -146,8 +146,8 @@ keybinds clear-defaults=true {
         }
     }
     shared_except "locked" {
-        bind "Alt down" { MoveFocus "down"; }
-        bind "Alt up" { MoveFocus "up"; }
+        bind "Alt j" "Alt Down" { MoveFocus "Down"; }
+        bind "Alt k" "Alt Up" { MoveFocus "Up"; }
         bind "Alt +" { Resize "Increase"; }
         bind "Alt -" { Resize "Decrease"; }
         bind "Alt =" { Resize "Increase"; }
@@ -156,9 +156,8 @@ keybinds clear-defaults=true {
         bind "Alt f" { ToggleFloatingPanes; }
         bind "Ctrl g" { SwitchToMode "locked"; }
         bind "Alt i" { MoveTab "left"; }
-        bind "Alt j" { MoveFocus "down"; }
-        bind "Alt k" { MoveFocus "up"; }
-        bind "Alt l" { MoveFocusOrTab "right"; }
+        bind "Alt h" "Alt Left" { MoveFocusOrTab "Left"; }
+        bind "Alt l" "Alt Right" { MoveFocusOrTab "Right"; }
         bind "Alt n" { NewPane; }
         bind "Alt o" { MoveTab "right"; }
         bind "Alt p" { TogglePaneInGroup; }
@@ -187,9 +186,8 @@ keybinds clear-defaults=true {
         bind "Ctrl n" { SwitchToMode "resize"; }
     }
     shared_except "normal" "locked" {
-        bind "Alt left" { MoveFocusOrTab "left"; }
-        bind "Alt right" { MoveFocusOrTab "right"; }
-        bind "Alt h" { MoveFocusOrTab "left"; }
+        bind "Alt h" "Alt Left" { MoveFocusOrTab "Left"; }
+        bind "Alt Right" { MoveFocusOrTab "Right"; }
     }
     shared_except "normal" "locked" "entersearch" {
         bind "enter" { SwitchToMode "normal"; }
@@ -334,7 +332,7 @@ default_layout "default"
 //   - true (default)
 //   - false
 // 
-mouse_mode false
+mouse_mode true
  
 // Toggle having pane frames around the panes
 // Options:
@@ -379,7 +377,7 @@ pane_frames true
 // copy_command "wl-copy"                    // wayland
 // copy_command "pbcopy"                     // osx
 // 
-// copy_command "pbcopy"
+copy_command "pbcopy"
  
 // Choose the destination for copied text
 // Allows using the primary selection buffer (on x11/wayland) instead of the system clipboard.
