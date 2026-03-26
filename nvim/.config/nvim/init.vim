@@ -3,5 +3,5 @@ if filereadable(expand('~/.vimrc'))
 endif
 
 lua << EOF
-require("dotfiles.fzf").setup()
+require("dotfiles.plugins").setup()
 EOF
