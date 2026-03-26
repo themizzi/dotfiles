@@ -1,5 +1,9 @@
 let mapleader = " "
 
+syntax on
+filetype plugin indent on
+set termguicolors
+
 set number
 set hidden
 

@@ -39,6 +39,31 @@ local function configure_plugins()
 
   lazy.setup({
     {
+      "folke/tokyonight.nvim",
+      priority = 1000,
+      config = function()
+        vim.opt.termguicolors = true
+        vim.cmd.colorscheme("tokyonight")
+      end,
+    },
+    {
+      "nvim-treesitter/nvim-treesitter",
+      build = ":TSUpdate",
+      event = { "BufReadPost", "BufNewFile" },
+      config = function()
+        local ok, treesitter = pcall(require, "nvim-treesitter.configs")
+        if not ok then
+          return
+        end
+
+        treesitter.setup({
+          ensure_installed = { "bash", "css", "html", "javascript", "json", "lua", "python", "regex", "rust", "toml", "tsx", "typescript", "vim", "yaml" },
+          highlight = { enable = true },
+          indent = { enable = true },
+        })
+      end,
+    },
+    {
       "williamboman/mason.nvim",
       cmd = "Mason",
       config = function()
@@ -83,6 +108,19 @@ local function configure_plugins()
         for _, server in ipairs(servers) do
           vim.lsp.enable(server)
         end
+
+        vim.api.nvim_create_autocmd("LspAttach", {
+          callback = function(args)
+            local client = vim.lsp.get_client_by_id(args.data.client_id)
+            if not client or client.name ~= "pyright" then
+              return
+            end
+
+            if client.supports_method("textDocument/semanticTokens/full") then
+              pcall(vim.lsp.semantic_tokens.enable, args.buf, client.id)
+            end
+          end,
+        })
       end,
     },
     {
