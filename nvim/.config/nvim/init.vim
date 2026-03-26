@@ -3,5 +3,9 @@ if filereadable(expand('~/.vimrc'))
 endif
 
 lua << EOF
-require("dotfiles.plugins").setup()
+local config_dir = vim.fn.stdpath("config")
+local ok, plugins = pcall(dofile, config_dir .. "/lua/dotfiles/plugins.lua")
+if ok and plugins then
+  plugins.setup()
+end
 EOF
