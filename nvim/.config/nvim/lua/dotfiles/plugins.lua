@@ -39,6 +39,13 @@ local function configure_plugins()
 
   lazy.setup({
     {
+      "folke/which-key.nvim",
+      event = "VeryLazy",
+      config = function()
+        require("which-key").setup({})
+      end,
+    },
+    {
       "folke/tokyonight.nvim",
       priority = 1000,
       config = function()
@@ -197,20 +204,20 @@ local function configure_plugins()
           on_attach = function(bufnr)
             local gs = package.loaded.gitsigns
 
-            local function map(mode, lhs, rhs)
-              vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true })
+            local function map(mode, lhs, rhs, desc)
+              vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, desc = desc })
             end
 
-            map("n", "]h", gs.next_hunk)
-            map("n", "[h", gs.prev_hunk)
-            map("n", "<leader>hp", gs.preview_hunk)
-            map("n", "<leader>hs", gs.stage_hunk)
-            map("n", "<leader>hr", gs.reset_hunk)
-            map("n", "<leader>hS", gs.stage_buffer)
-            map("n", "<leader>hR", gs.reset_buffer)
-            map("n", "<leader>hb", function()
+            map("n", "]h", gs.next_hunk, "Next hunk")
+            map("n", "[h", gs.prev_hunk, "Previous hunk")
+            map("n", "<leader>gh", gs.preview_hunk, "Preview hunk")
+            map("n", "<leader>gs", gs.stage_hunk, "Stage hunk")
+            map("n", "<leader>gr", gs.reset_hunk, "Reset hunk")
+            map("n", "<leader>gS", gs.stage_buffer, "Stage buffer")
+            map("n", "<leader>gR", gs.reset_buffer, "Reset buffer")
+            map("n", "<leader>gb", function()
               gs.blame_line({ full = true })
-            end)
+            end, "Blame line")
           end,
         })
       end,
@@ -286,13 +293,21 @@ end
 function M.setup()
   configure_plugins()
 
-  vim.keymap.set("n", "<leader>p", invoke_picker("files"), { silent = true })
-  vim.keymap.set("n", "<leader>b", invoke_picker("buffers"), { silent = true })
-  vim.keymap.set("n", "<leader>c", invoke_picker("commands"), { silent = true })
-  vim.keymap.set("n", "<leader>g", live_grep_or_fallback, { silent = true })
-  vim.keymap.set("n", "<leader>h", invoke_picker("helptags"), { silent = true })
-  vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { silent = true })
-  vim.keymap.set("n", "<leader>fe", "<cmd>NvimTreeFindFile<CR>", { silent = true })
+  local ok, which_key = pcall(require, "which-key")
+  if ok then
+    which_key.add({
+      { "<leader>f", group = "FZF" },
+      { "<leader>g", group = "Git" },
+    })
+  end
+
+  vim.keymap.set("n", "<leader>ff", invoke_picker("files"), { silent = true, desc = "Files" })
+  vim.keymap.set("n", "<leader>fb", invoke_picker("buffers"), { silent = true, desc = "Buffers" })
+  vim.keymap.set("n", "<leader>fc", invoke_picker("commands"), { silent = true, desc = "Commands" })
+  vim.keymap.set("n", "<leader>fg", live_grep_or_fallback, { silent = true, desc = "Live grep" })
+  vim.keymap.set("n", "<leader>fh", invoke_picker("helptags"), { silent = true, desc = "Help tags" })
+  vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { silent = true, desc = "Explorer" })
+  vim.keymap.set("n", "<leader>fe", "<cmd>NvimTreeFindFile<CR>", { silent = true, desc = "Find file in tree" })
 end
 
 return M
