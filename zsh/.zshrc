@@ -41,6 +41,9 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "/home/linuxbrew/.linuxbrew/opt/nvm/nvm.sh" ] && . "/home/linuxbrew/.linuxbrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/home/linuxbrew/.linuxbrew/opt/nvm/etc/bash_completion.d/nvm" ] && . "/home/linuxbrew/.linuxbrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
+# XDG
+export XDG_CONFIG_HOME=$HOME/.config
+
 # TMUX
 export TMUX_CONF="$XDG_CONFIG_HOME/tmux/tmux.conf"
 alias tmux='tmux -f "$TMUX_CONF"'
@@ -66,3 +69,8 @@ fpath=(/Users/themizzi/.docker/completions $fpath)
 autoload -Uz compinit
 compinit
 # End of Docker CLI completions
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:$HOME/.lmstudio/bin"
+# End of LM Studio CLI section
+
