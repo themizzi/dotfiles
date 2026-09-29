@@ -52,14 +52,13 @@ def make_nvim_env(context) -> dict[str, str]:
     context.nvim_home_tmp = home_tmp
     home_dir = Path(home_tmp.name)
 
-    vimrc_link = home_dir / ".vimrc"
-    if vimrc_link.exists() or vimrc_link.is_symlink():
-        vimrc_link.unlink()
-    vimrc_link.symlink_to(context.repo_root / "vim" / ".vimrc")
+    (home_dir / ".vimrc").write_bytes(
+        (context.repo_root / "dot_vimrc").read_bytes()
+    )
 
     env = os.environ.copy()
     env["HOME"] = str(home_dir)
-    env["XDG_CONFIG_HOME"] = str(context.repo_root / "nvim" / ".config")
+    env["XDG_CONFIG_HOME"] = str(context.repo_root / "dot_config")
     env["DOTFILES_SKIP_PLUGIN_BOOTSTRAP"] = "1"
     return env
 
@@ -70,6 +69,7 @@ def make_install_env(context) -> tuple[dict[str, str], Path]:
     home_dir = Path(install_tmp.name)
     env = os.environ.copy()
     env["HOME"] = str(home_dir)
+    env["DOTFILES_SKIP_PACKAGE_INSTALL"] = "1"
     return env, home_dir
 
 

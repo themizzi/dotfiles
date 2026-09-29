@@ -1,5 +1,4 @@
 git
-stow
 zsh
 neovim
 fzf
@@ -12,5 +11,15 @@ unzip
 wget
 nano
 gh
-starship
-
+curl
+ca-certificates
+zellij
+tmux
+mutt
+urlview
+taskwarrior
+lynx
+git-lfs
+gcc
+htop
+httpie

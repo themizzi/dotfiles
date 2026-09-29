@@ -1,0 +1,68 @@
+#!/bin/sh
+set -eu
+
+# Re-run when any package manifest changes.
+# Apt: {{ include "dot_config/dotfiles/Aptfile" | sha256sum }}
+# Pacman: {{ include "dot_config/dotfiles/Pacmanfile" | sha256sum }}
+# Homebrew: {{ include "dot_config/dotfiles/Brewfile" | sha256sum }}
+
+if [ "${DOTFILES_SKIP_PACKAGE_INSTALL:-0}" = "1" ]; then
+    exit 0
+fi
+
+MANIFEST_DIR="$HOME/.config/dotfiles"
+
+as_root() {
+    if [ "$(id -u)" -eq 0 ]; then
+        "$@"
+    elif command -v sudo >/dev/null 2>&1; then
+        sudo "$@"
+    else
+        printf '%s\n' "Package installation requires root or sudo." >&2
+        exit 1
+    fi
+}
+
+packages_from() {
+    sed -e 's/#.*//' -e '/^[[:space:]]*$/d' "$1"
+}
+
+install_starship() {
+    if ! command -v starship >/dev/null 2>&1; then
+        mkdir -p "$HOME/.local/bin"
+        curl -fsSL https://starship.rs/install.sh | sh -s -- -y -b "$HOME/.local/bin"
+    fi
+}
+
+case "$(uname -s)" in
+    Darwin)
+        command -v brew >/dev/null 2>&1 || {
+            printf '%s\n' "Homebrew is required on macOS." >&2
+            exit 1
+        }
+        brew bundle --file="$MANIFEST_DIR/Brewfile"
+        ;;
+    Linux)
+        . /etc/os-release
+        case "${ID:-}" in
+            debian|ubuntu|linuxmint)
+                set -- $(packages_from "$MANIFEST_DIR/Aptfile")
+                as_root apt-get update
+                as_root apt-get install -y "$@"
+                install_starship
+                ;;
+            arch|manjaro|endeavouros)
+                set -- $(packages_from "$MANIFEST_DIR/Pacmanfile")
+                as_root pacman -S --needed "$@"
+                ;;
+            *)
+                printf 'Unsupported Linux distribution: %s\n' "${ID:-unknown}" >&2
+                exit 1
+                ;;
+        esac
+        ;;
+    *)
+        printf 'Unsupported operating system: %s\n' "$(uname -s)" >&2
+        exit 1
+        ;;
+esac

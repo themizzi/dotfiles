@@ -17,8 +17,8 @@ def _ensure_zsh_test_home(context) -> Path:
     home = Path(tmp.name)
     context.zsh_test_home = home
 
-    zshrc_src = context.repo_root / "zsh" / ".zshrc"
-    plugins_src = context.repo_root / "zsh" / ".zsh_plugins.txt"
+    zshrc_src = context.repo_root / "dot_zshrc"
+    plugins_src = context.repo_root / "dot_zsh_plugins.txt"
     (home / ".zshrc").write_text(zshrc_src.read_text(encoding="utf-8"), encoding="utf-8")
     (home / ".zsh_plugins.txt").write_text(
         plugins_src.read_text(encoding="utf-8"),
@@ -109,7 +109,7 @@ def step_zsh_highlight_defined(context):
 
 @given("the zsh plugin list file exists")
 def step_plugins_file_exists(context):
-    plugins = context.repo_root / "zsh" / ".zsh_plugins.txt"
+    plugins = context.repo_root / "dot_zsh_plugins.txt"
     assert plugins.exists(), f"Missing plugins file: {plugins}"
     context.zsh_plugins_file = plugins
 

@@ -10,7 +10,7 @@ from features.environment import make_install_env, require_executable
 
 @given("a temporary HOME for install testing")
 def step_temp_home_for_install(context):
-    require_executable("stow")
+    require_executable("chezmoi")
     env, home_dir = make_install_env(context)
     context.install_env = env
     context.install_home = home_dir
@@ -34,12 +34,12 @@ def step_run_install_script(context):
     )
 
 
-@then('"{home_path}" should symlink to "{repo_rel}"')
-def step_home_path_symlink_target(context, home_path, repo_rel):
+@then('"{home_path}" should contain the contents of "{repo_rel}"')
+def step_home_path_matches_source(context, home_path, repo_rel):
     expanded = home_path.replace("~", str(context.install_home), 1)
-    link_path = Path(expanded)
-    assert link_path.is_symlink(), f"Expected symlink at {link_path}"
-
-    target = link_path.resolve(strict=True)
-    expected = (context.repo_root / repo_rel).resolve(strict=True)
-    assert target == expected, f"Expected {link_path} -> {expected}, got {target}"
+    installed = Path(expanded)
+    expected = context.repo_root / repo_rel
+    assert installed.is_file(), f"Expected managed file at {installed}"
+    assert installed.read_bytes() == expected.read_bytes(), (
+        f"Expected {installed} to match {expected}"
+    )

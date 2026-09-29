@@ -4,18 +4,36 @@ Minimal Vim-first dotfiles with a Neovim shim, built-in `netrw`, and an `fzf-lua
 
 ## Install
 
-From repo root:
+Install chezmoi, then initialize this repository as the chezmoi source:
 
 ```bash
-sh install.sh
+chezmoi init https://github.com/themizzi/dotfiles.git
+chezmoi git -- submodule update --init --recursive
+chezmoi apply
 ```
 
-`install.sh` uses GNU Stow with `--target="$HOME"` and creates symlinks such as:
+`chezmoi apply` installs managed files into `$HOME` and runs the platform package
+installer. Package installation runs on the first apply and whenever a package
+manifest changes.
 
-- `~/.vimrc` -> `vim/.vimrc`
-- `~/.config/nvim/init.vim` -> `nvim/.config/nvim/init.vim`
+Supported package platforms are:
 
-The script is idempotent (`stow --restow`).
+- Debian, Ubuntu, and Linux Mint via `apt`
+- Arch Linux, Manjaro, and EndeavourOS via `pacman`
+- macOS via Homebrew
+
+To preview or reapply changes:
+
+```bash
+chezmoi diff
+chezmoi apply
+```
+
+The repository-local wrapper can also be used after cloning:
+
+```bash
+./install.sh
+```
 
 ## Devcontainer (Debian)
 
@@ -27,7 +45,8 @@ On first create, `.devcontainer/scripts/post-create.sh` runs and:
 - creates `.venv` if it does not already exist
 - installs `behave` and `pynvim` into `.venv`
 
-Required Debian packages for Neovim + command palette workflow:
+The devcontainer installs chezmoi and applies the same Debian package manifest.
+Required runtime packages include:
 
 - `neovim`
 - `fzf`
@@ -39,7 +58,6 @@ Required Debian packages for Neovim + command palette workflow:
 - `curl`
 - `ca-certificates`
 - `git`
-- `stow`
 - `unzip`
 - `wget`
 - `zellij`
@@ -51,7 +69,7 @@ Required Debian packages for Neovim + command palette workflow:
 .venv/bin/python -m pip install behave pynvim
 ```
 
-On macOS, ensure these Homebrew entries exist in `Brewfile`:
+On macOS, package installation uses `dot_config/dotfiles/Brewfile`:
 
 - `brew "neovim"`
 - `brew "fzf"`
@@ -63,10 +81,10 @@ On macOS, ensure these Homebrew entries exist in `Brewfile`:
 
 Zellij is the preferred terminal multiplexer in this repo.
 
-Install and link dotfiles:
+Apply dotfiles and start Zellij:
 
 ```bash
-sh install.sh
+chezmoi apply
 zj
 ```
 
@@ -127,7 +145,7 @@ For deterministic loop tests, provide newline-delimited choices in
 Verify inside the container:
 
 ```bash
-sh install.sh
+chezmoi apply
 .venv/bin/behave
 ```
 

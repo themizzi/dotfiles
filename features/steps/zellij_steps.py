@@ -12,7 +12,7 @@ from behave import given, then, when
 
 
 PALETTE_SCRIPT_RELATIVE_PATH = (
-    "zellij/.config/zellij/scripts/palette.sh"
+    "dot_config/zellij/scripts/executable_palette.sh"
 )
 
 
@@ -107,7 +107,7 @@ def step_zellij_targets_exist_in_tmp_home(context):
 
 @given("the repository zellij config")
 def step_repo_zellij_config(context):
-    config_path = context.repo_root / "zellij" / ".config" / "zellij" / "config.kdl"
+    config_path = context.repo_root / "dot_config" / "zellij" / "config.kdl"
     assert config_path.exists(), f"Missing zellij config: {config_path}"
     context.zellij_config_path = config_path
     context.zellij_config_text = config_path.read_text(encoding="utf-8")
@@ -145,7 +145,9 @@ def step_config_has_session_binding(context):
 
 @given("the repository zellij default layout")
 def step_repo_zellij_layout(context):
-    layout_path = context.repo_root / "zellij" / ".config" / "zellij" / "layouts" / "default.kdl"
+    layout_path = (
+        context.repo_root / "dot_config" / "zellij" / "layouts" / "default.kdl"
+    )
     assert layout_path.exists(), f"Missing zellij layout: {layout_path}"
     context.zellij_layout_path = layout_path
     context.zellij_layout_text = layout_path.read_text(encoding="utf-8")
