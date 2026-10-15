@@ -9,7 +9,7 @@ for executable in sh bash zsh python3 git; do
     fi
 done
 
-cd "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+cd "$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)"
 python3 -B - <<'PY'
 import ast
 import json

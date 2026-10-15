@@ -2,6 +2,7 @@ name: Validation
 
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
     inputs:
@@ -34,10 +35,10 @@ jobs:
         shell: bash
         run: |
           if [[ "$RUNNER_OS" == macOS ]]; then
-            brew install stow zsh ripgrep fzf
+            brew install stow zsh ripgrep fzf shellcheck
           else
             sudo apt-get update
-            sudo apt-get install -y stow zsh ripgrep fzf
+            sudo apt-get install -y stow zsh ripgrep fzf shellcheck
           fi
       - name: Install checksum-verified Neovim and just
         run: python3 -B .github/workflows/install-tools.py
@@ -52,6 +53,7 @@ jobs:
           nvim --version
           just --version
           just check
+          just lint
           just test
 
   distributions:
@@ -79,11 +81,11 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             apt-get update
-            apt-get install -y ca-certificates git python3 python3-venv stow zsh ripgrep fzf
+            apt-get install -y ca-certificates git python3 python3-venv stow zsh ripgrep fzf shellcheck
           elif command -v dnf >/dev/null; then
-            dnf install -y ca-certificates git python3 python3-pip stow zsh ripgrep fzf tar gzip
+            dnf install -y ca-certificates git python3 python3-pip stow zsh ripgrep fzf tar gzip ShellCheck
           else
-            pacman -Syu --noconfirm --needed ca-certificates git python python-pip stow zsh ripgrep fzf tar gzip
+            pacman -Syu --noconfirm --needed ca-certificates git python python-pip stow zsh ripgrep fzf tar gzip shellcheck
           fi
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -102,6 +104,7 @@ jobs:
           nvim --version
           just --version
           just check
+          just lint
           just test
 
   plugin-startup:

@@ -2,7 +2,7 @@
 
 ## Local, plugin-free validation
 
-Requirements: Python 3.10+, Neovim **0.11+**, Git, GNU Stow, zsh, and
+Requirements: Python 3.10+, Neovim **0.11.3+**, Git, GNU Stow, zsh, and
 [just](https://github.com/casey/just). Install ripgrep and fzf for realistic manual
 editor checks. CI pins Neovim 0.11.5 and just 1.43.1 and verifies their release
 archives against committed SHA-256 digests.
@@ -12,6 +12,7 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-test.txt
 .venv/bin/python -m pip check
 just check
+just lint
 just test
 ```
 
@@ -20,13 +21,11 @@ The Python runtime dependencies (including transitives) are pinned in
 CI uses Python 3.12.10; distro jobs also exercise their packaged Python versions.
 OS packages and the Arch rolling image are intentionally not frozen.
 
-**Stacking requirement:** this PR adds validation for PR2's `just check` and
-`just test` recipes; it is not standalone on the pre-just base. The full Behave
-suite also needs the coordinated installer, shell, and editor fixes. Do not
+`just check` and `just test` are the public validation entry points. Do not
 silence baseline failures with skips. The bounded runner `sh scripts/test.sh`
 checks versions and kills the suite process group on timeout (60 seconds for
-unit tests, 300 seconds for Behave); PR2's recipe should delegate to this runner
-when stacking. It accepts Behave arguments, for example:
+unit tests, 300 seconds for Behave). The Just recipe delegates to this runner.
+It accepts Behave arguments, for example:
 
 ```sh
 sh scripts/test.sh features/01_boot_and_shared_config.feature
@@ -68,17 +67,17 @@ validation is fatal. Job deadlines provide an outer bound as well.
 ## Opt-in plugin startup integration
 
 Use **Actions → Validation → Run workflow → plugin_startup** to enable the
-separate network integration job. Or, with Neovim 0.11+ and Git installed:
+separate network integration job. Or, with Neovim 0.11.3+ and Git installed:
 
 ```sh
 python3 -B .github/workflows/plugin-smoke.py
 ```
 
-This uses a disposable HOME/config copy, enables the real lazy.nvim bootstrap,
-runs `Lazy! sync`, and checks a second startup for errors, installed plugin
+This uses a disposable HOME/config copy, runs the explicit locked `setup.lua`
+entry point, and checks a second startup for errors, installed plugin
 directories, lazy.nvim, and fzf-lua. Plugin downloads are intentionally real and
-may track the repository's plugin pins/branches; this is not a hermetic dependency
-lock or a test of every plugin mapping. Network/bootstrap failure fails the job.
+use the reviewed plugin lock; this is not a test of every plugin mapping or of
+external language-server/formatter versions. Network/bootstrap failure fails the job.
 Each editor invocation has a deadline. The normal PR matrix never runs this job.
 
 ## WSL manual smoke (not container-emulated)

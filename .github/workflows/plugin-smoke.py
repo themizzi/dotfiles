@@ -1,5 +1,6 @@
 """Explicit network integration test; never imported by the regular test suite."""
 import os
+import json
 from pathlib import Path
 import signal
 import subprocess
@@ -28,7 +29,8 @@ def main():
     try:
         env = make_nvim_env(context)
         env.pop("DOTFILES_SKIP_PLUGIN_BOOTSTRAP", None)
-        run_editor(["+Lazy! sync", "+qa!"], env, 300)
+        config = Path(env['XDG_CONFIG_HOME']) / 'nvim'
+        run_editor(['-l', str(config / 'setup.lua')], env, 300)
         # Startup errors may leave nvim's exit status at zero; assert explicitly.
         probe = Path(env["HOME"]) / "probe.lua"
         probe.write_text('''
@@ -47,7 +49,7 @@ else
   vim.cmd("qa!")
 end
 ''', encoding="utf-8")
-        run_editor([f"+luafile {probe}"], env, 60)
+        run_editor(['-c', f'lua dofile({json.dumps(str(probe), ensure_ascii=False)})'], env, 60)
     finally:
         temporary = getattr(context, "nvim_home_tmp", None)
         if temporary is not None:

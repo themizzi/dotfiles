@@ -14,5 +14,10 @@ test-installer *args:
     sh scripts/test-installer.sh "$@"
 
 # Run all pinned Bats suites without Python or fetching dependencies.
+# Lint executable shell scripts without sourcing or running them.
+lint:
+    @command -v shellcheck >/dev/null 2>&1 || { echo 'lint: ShellCheck is required; install the dev dependencies' >&2; exit 1; }
+    shellcheck install.sh scripts/*.sh .devcontainer/scripts/*.sh
+
 test *args:
     sh scripts/test.sh "$@"

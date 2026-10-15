@@ -69,6 +69,15 @@ class EnvironmentTests(unittest.TestCase):
             environment.after_scenario(self.context, None)
             self.assertEqual(os.environ["XDG_CUSTOM_HOME"], "/host/custom")
 
+    def test_ai_settings_are_not_inherited(self):
+        with patch.dict(os.environ, {'DOTFILES_NVIM_AI': '1',
+                                     'DOTFILES_NVIM_AI_ENDPOINT': 'https://host.invalid',
+                                     'DOTFILES_NVIM_AI_API_KEY': 'private'}):
+            self.start()
+            self.assertFalse(any(name.startswith('DOTFILES_NVIM_') for name in os.environ))
+            environment.after_scenario(self.context, None)
+            self.assertEqual(os.environ['DOTFILES_NVIM_AI_API_KEY'], 'private')
+
     def test_nvim_config_is_private_copy(self):
         self.start()
         env = environment.make_nvim_env(self.context)

@@ -70,6 +70,7 @@ Verify inside the container:
 ```bash
 just install
 just check
+just lint
 just test
 ```
 

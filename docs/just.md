@@ -43,6 +43,8 @@ Initialize `vendor/` explicitly with `git submodule update --init --recursive --
 the recipe never installs or fetches dependencies. It forwards Bats options,
 for example `just test-installer --filter 'real Stow'`. Bash, Git, and Stow are
 required; system Bats and helper packages are not used.
+`just lint` runs ShellCheck against executable shell scripts. It requires
+ShellCheck from the development package profile and never executes those scripts.
 
 Run all Bats suites with:
 
