@@ -31,8 +31,12 @@ local ok, err = pcall(function()
   assert(vim.v.errmsg == "", vim.v.errmsg)
   assert(require("lazy"), "lazy.nvim failed to load")
   assert(require("fzf-lua"), "fzf-lua failed to load")
+  local lock = vim.json.decode(table.concat(vim.fn.readfile(vim.fn.stdpath('config') .. '/lazy-lock.json'), '\\n'))
   for _, plugin in pairs(require("lazy.core.config").plugins) do
     assert(vim.fn.isdirectory(plugin.dir) == 1, "missing plugin: " .. plugin.name)
+    local head = vim.system({'git', '-C', plugin.dir, 'rev-parse', 'HEAD'}, {text = true}):wait()
+    assert(lock[plugin.name] and head.code == 0 and vim.trim(head.stdout) == lock[plugin.name].commit,
+      'Plugin revision differs from reviewed lock: ' .. plugin.name)
   end
 end)
 if not ok then

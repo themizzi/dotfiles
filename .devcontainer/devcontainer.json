@@ -11,7 +11,7 @@
     "vscode": {
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh",
-        "python.defaultInterpreterPath": "/usr/bin/python3"
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"
       },
       "extensions": [
         "ms-python.python",
