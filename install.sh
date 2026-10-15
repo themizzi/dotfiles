@@ -69,6 +69,11 @@ EOF_PACKAGES
 [ "$#" -gt 0 ] || fail 'The selected profile has no packages.'
 for package do
     [ -d "$REPO_ROOT/$package" ] || fail "Missing package directory: $package"
+    if [ "$action" = --stow ] && [ -d "$REPO_ROOT/$package/.config" ] &&
+        [ "${XDG_CONFIG_HOME:-$HOME/.config}" != "$HOME/.config" ] &&
+        [ "${XDG_CONFIG_HOME:-$HOME/.config}" != "$HOME/.config/" ]; then
+        fail 'This Stow layout installs config under HOME/.config, but XDG_CONFIG_HOME selects another location. No changes were made; see docs/profiles.md.'
+    fi
 done
 
 if [ "$action" = --stow ]; then
@@ -95,7 +100,10 @@ if [ "$action" = --delete ]; then
             fail "Cannot inspect package directories: $package"
         while IFS= read -r source_dir; do
             target_dir="$HOME${source_dir#"$REPO_ROOT/$package"}"
-            [ -d "$target_dir" ] && [ ! -L "$target_dir" ] || continue
+            [ -d "$target_dir" ] || continue
+            if [ -L "$target_dir" ] && [ "$target_dir" != "$HOME" ]; then
+                continue
+            fi
             for node in "$target_dir"/.[!.]* "$target_dir"/..?* "$target_dir"/*; do
                 if [ -L "$node" ] && [ ! -e "$node" ]; then
                     fail "Unlink refused: dangling link in a target directory: $node. Inspect and repair or explicitly move this link first; Stow may otherwise sweep unselected links. No changes were made."

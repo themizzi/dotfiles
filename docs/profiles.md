@@ -27,6 +27,14 @@ removed. The old installer selected seven packages including `gh-copilot`;
 `dev` intentionally selects six because Copilot is now opt-in. `personal`
 reproduces that former seven-package selection.
 
+The existing Stow tree installs application configuration under `~/.config`.
+For profiles containing such packages, linking refuses a non-default
+`XDG_CONFIG_HOME` instead of silently installing files the applications will not
+read. Relocating the Stow config tree is not implemented here. The shell itself
+preserves custom XDG values, and `minimal` can be used with those values because
+its Vim/Zsh packages do not contain `.config` files. Unlink still addresses the
+standard paths where the installer previously created links.
+
 ## Definitions and safety
 
 `profiles/NAME.profile` is data, never executable shell. Blank lines and
