@@ -1,45 +1,23 @@
 local M = {}
-
-local function ensure_lazy()
-	local lazy_path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-	if not vim.loop.fs_stat(lazy_path) then
-		if vim.fn.executable("git") ~= 1 then
-			return false
-		end
-
-		vim.fn.system({
-			"git",
-			"clone",
-			"--filter=blob:none",
-			"https://github.com/folke/lazy.nvim.git",
-			"--branch=stable",
-			lazy_path,
-		})
-
-		if vim.v.shell_error ~= 0 then
-			return false
-		end
-	end
-
-	vim.opt.rtp:prepend(lazy_path)
-	return true
-end
+M.commit = "6c3bda4aca61a13a9c63f1c1d1b16b9d3be90d7a" -- lazy.nvim v11.17.1
+M.path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
 function M.setup()
 	if vim.env.DOTFILES_SKIP_PLUGIN_BOOTSTRAP == "1" then
 		return
 	end
-
-	if not ensure_lazy() then
-		return
+	if not vim.uv.fs_stat(M.path .. "/lua/lazy/init.lua") then
+		return -- Offline baseline; installation is always an explicit action.
 	end
-
-	local ok, lazy = pcall(require, "lazy")
-	if not ok then
-		return
-	end
-
-	lazy.setup(require("themizzi.plugins").specs(), {
+	vim.opt.rtp:prepend(M.path)
+	-- lazy rewrites its working lock during installs; keep the reviewed source
+	-- read-only and seed a disposable working copy for each session.
+	local lockfile = vim.fn.stdpath("data") .. "/dotfiles-lazy-lock.json"
+	vim.fn.writefile(vim.fn.readfile(vim.fn.stdpath("config") .. "/lazy-lock.json"), lockfile)
+	require("lazy").setup(require("themizzi.plugins").specs(), {
+		lockfile = lockfile,
+		install = { missing = false },
+		checker = { enabled = false },
 		change_detection = { enabled = false },
 	})
 end
