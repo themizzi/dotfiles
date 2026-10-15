@@ -1,27 +1,45 @@
 return {
 	{
+		"saghen/blink.cmp",
+		dependencies = { "rafamadriz/friendly-snippets" },
+		opts = {
+			keymap = { preset = "default" },
+			appearance = { nerd_font_variant = "mono" },
+			completion = { documentation = { auto_show = false } },
+			sources = { default = { "lsp", "path", "snippets", "buffer" } },
+			-- Never download a Rust binary from normal startup.
+			fuzzy = { implementation = "lua" },
+		},
+	},
+	{
+		"nvim-treesitter/nvim-treesitter",
+		branch = "master", -- Frozen legacy configs API, also pinned in lazy-lock.json.
+		lazy = false,
+		config = function()
+			require("nvim-treesitter.configs").setup(require("themizzi.treesitter").opts)
+		end,
+	},
+	{
 		"mason-org/mason-lspconfig.nvim",
 		cmd = { "LspInstall", "LspUninstall" },
-		dependencies = { { "mason-org/mason.nvim", opts = {} }, "neovim/nvim-lspconfig" },
+		dependencies = { { "mason-org/mason.nvim", opts = { ui = { border = "rounded" } } }, "neovim/nvim-lspconfig" },
 		opts = { ensure_installed = {}, automatic_enable = false },
 	},
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
-			{ "mason-org/mason.nvim", opts = {} },
+			{ "mason-org/mason.nvim", opts = { ui = { border = "rounded" } } },
+			"saghen/blink.cmp",
 		},
 		config = function()
 			-- Mason must add its bin directory before checking executables.
 			assert(require("mason").has_setup, "Mason must initialize before LSP executable detection")
-			local servers = {
-				lua_ls = "lua-language-server", pyright = "pyright-langserver",
-				ts_ls = "typescript-language-server", gopls = "gopls",
-				rust_analyzer = "rust-analyzer", bashls = "bash-language-server",
-			}
+			local servers = require("themizzi.servers")
+			local capabilities = require("blink.cmp").get_lsp_capabilities()
 			local missing = {}
 			for server, executable in pairs(servers) do
 				if vim.fn.executable(executable) == 1 then
-					vim.lsp.config(server, { capabilities = vim.lsp.protocol.make_client_capabilities() })
+					vim.lsp.config(server, { capabilities = capabilities })
 					vim.lsp.enable(server)
 				else
 					table.insert(missing, executable)
@@ -33,14 +51,6 @@ return {
 					vim.notify("Optional LSP executables missing: " .. table.concat(missing, ", ") .. ". See docs/neovim.md or :Mason", vim.log.levels.WARN)
 				end)
 			end
-			vim.api.nvim_create_autocmd("LspAttach", {
-				callback = function(event)
-					local client = vim.lsp.get_client_by_id(event.data.client_id)
-					if client and client:supports_method("textDocument/completion") then
-						vim.lsp.completion.enable(true, client.id, event.buf, { autotrigger = true })
-					end
-				end,
-			})
 		end,
 	},
 }

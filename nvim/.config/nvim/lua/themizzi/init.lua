@@ -8,9 +8,6 @@ function M.setup()
 	require("themizzi.options").setup()
 	require("themizzi.lazy").setup()
 	require("themizzi.keymaps").setup()
-	if vim.env.DOTFILES_NVIM_AI == "1" then
-		require("themizzi.ai").setup()
-	end
 end
 
 return M

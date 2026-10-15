@@ -59,7 +59,8 @@ assert(vim.g.mapleader == ' ' and vim.o.number and vim.o.hidden)
 assert(vim.o.cmdheight == 1)
 assert(vim.g.clipboard == nil, 'Must preserve native clipboard auto-detection')
 assert(vim.o.clipboard == '', 'Do not suppress automatic OSC52 fallback')
-assert(vim.fn.exists(':DotfilesAI') == 0)
+assert(vim.fn.exists(':CodeCompanion') == 0)
+assert(not package.loaded['codecompanion'])
 for _, lhs in ipairs({' ff', ' fb', ' fc', ' fg', ' fh', ' e'}) do
   assert(vim.fn.maparg(lhs, 'n') ~= '', 'Missing mapping: ' .. lhs)
 end
@@ -135,41 +136,128 @@ end
 assert(table.concat(calls, ',') == 'files,buffers,commands,live_grep,helptags')
 """)
 
-    def test_ai_is_explicit_opt_in(self):
-        self.run_lua("assert(vim.fn.exists(':DotfilesAI') == 2)", ai=True)
-
-    @unittest.skipUnless(shutil.which("curl"), "curl is required for the opt-in AI command")
-    def test_ai_sends_only_explicit_prompt_and_handles_response(self):
+    def test_full_mode_capabilities_are_locked_and_ai_is_disabled_by_default(self):
         self.run_lua("""
-vim.env.DOTFILES_NVIM_AI_ENDPOINT = 'http://127.0.0.1:1234/v1/chat/completions'
-vim.env.DOTFILES_NVIM_AI_MODEL = 'test-model'
-vim.env.DOTFILES_NVIM_AI_API_KEY = 'secret-test-token'
-vim.api.nvim_buf_set_lines(0, 0, -1, false, {'PRIVATE BUFFER CONTENT'})
-local called = false
-vim.system = function(argv, opts, callback)
-  called = true
-  assert(argv[#argv] == vim.env.DOTFILES_NVIM_AI_ENDPOINT)
-  assert(not table.concat(argv, ' '):match('secret%-test%-token'))
-  assert(opts.stdin:match('Authorization: Bearer secret%-test%-token'))
-  local file = argv[#argv - 1]:sub(2)
-  local body = vim.json.decode(table.concat(vim.fn.readfile(file), '\\n'))
-  assert(body.messages[1].content == 'explain closures')
-  assert(#body.messages == 1)
-  callback({code = 0, stdout = vim.json.encode({choices = {{message = {content = 'A closure captures scope.'}}}})})
+local all = {}
+local function collect(specs)
+  for _, spec in ipairs(specs) do
+    assert(#spec.commit == 40)
+    if not all[spec[1]] or spec.opts then all[spec[1]] = spec end
+    if spec.dependencies then collect(spec.dependencies) end
+  end
 end
-vim.cmd('DotfilesAI explain closures')
-assert(called)
-vim.wait(1000, function() return vim.bo.buftype == 'nofile' end)
-assert(vim.bo.buftype == 'nofile')
-assert(vim.api.nvim_get_current_line() == 'A closure captures scope.')
+collect(require('themizzi.plugins').specs())
+for _, repo in ipairs({
+  'folke/todo-comments.nvim', 'andythigpen/nvim-coverage', 'windwp/nvim-autopairs',
+  'folke/flash.nvim', 'lukas-reineke/indent-blankline.nvim', 'saghen/blink.cmp',
+  'rafamadriz/friendly-snippets', 'nvim-treesitter/nvim-treesitter', 'sindrets/diffview.nvim',
+}) do assert(all[repo], 'Missing capability: ' .. repo) end
+assert(not all['olimorris/codecompanion.nvim'])
+assert(not all['ravitemer/mcphub.nvim'])
+assert(not all['MeanderingProgrammer/render-markdown.nvim'])
+assert(not all['HakonHarnes/img-clip.nvim'])
+assert(not package.loaded['themizzi.plugins.ai'])
+assert(all['saghen/blink.cmp'].opts.fuzzy.implementation == 'lua')
+local ts = all['nvim-treesitter/nvim-treesitter']
+assert(ts.branch == 'master' and ts.build == nil and ts.lazy == false)
+local opts = require('themizzi.treesitter').opts
+assert(#opts.ensure_installed == 0 and opts.auto_install == false)
+assert(opts.highlight.enable and opts.indent.enable)
+for _, key in ipairs({'tn', 'tp', 'tl', 'tq', 'tf', 'ts', 'fe'}) do
+  assert(vim.fn.maparg(' ' .. key, 'n') ~= '', 'Missing mapping: ' .. key)
+end
+""")
+
+    def test_ai_opt_in_keeps_codecompanion_chat_inline_and_optional_support(self):
+        self.run_lua("""
+vim.env.DOTFILES_NVIM_AI_ENDPOINT = 'https://example.invalid/custom/chat/completions'
+vim.env.DOTFILES_NVIM_AI_MODEL = 'test-model'
+local all = {}
+for _, spec in ipairs(require('themizzi.plugins').specs()) do all[spec[1]] = spec end
+for _, repo in ipairs({'olimorris/codecompanion.nvim', 'ravitemer/mcphub.nvim',
+  'MeanderingProgrammer/render-markdown.nvim', 'HakonHarnes/img-clip.nvim'}) do
+  assert(all[repo] and #all[repo].commit == 40)
+end
+local opts = all['olimorris/codecompanion.nvim'].opts()
+assert(opts.strategies.chat.adapter == 'lmstudio')
+assert(opts.strategies.inline.adapter == 'lmstudio')
+assert(opts.strategies.cmd.adapter == 'lmstudio')
+package.loaded['codecompanion.adapters'] = {extend = function(base, adapter)
+  assert(base == 'openai_compatible')
+  return adapter
+end}
+local adapter = opts.adapters.http.lmstudio()
+assert(adapter.url == vim.env.DOTFILES_NVIM_AI_ENDPOINT)
+assert(adapter.schema.model.default == 'test-model')
+assert(adapter.schema.model.choices[1] == 'test-model')
+assert(all['ravitemer/mcphub.nvim'].build == nil)
+assert(all['ravitemer/mcphub.nvim'].opts.use_bundled_binary == false)
+-- Opt-in with no installed plugins still stays on the offline baseline.
+assert(vim.fn.exists(':CodeCompanionChat') == 0)
 """, ai=True)
+
+    def test_original_todo_mappings_dispatch_and_keep_search_fallback(self):
+        self.run_lua("""
+local calls = {}
+local function record(name) return function() table.insert(calls, name) end end
+package.loaded['todo-comments'] = {jump_next = record('next'), jump_prev = record('prev')}
+for _, name in ipairs({'TodoLocList', 'TodoQuickFix', 'TodoFzfLua'}) do
+  vim.api.nvim_create_user_command(name, record(name), {})
+end
+for _, key in ipairs({'tn', 'tp', 'tl', 'tq', 'tf'}) do
+  vim.fn.maparg(' ' .. key, 'n', false, true).callback()
+end
+assert(table.concat(calls, ',') == 'next,prev,TodoLocList,TodoQuickFix,TodoFzfLua')
+vim.ui.input = function(opts, callback)
+  assert(opts.default == [[\\vTODO|FIXME|HACK|NOTE]])
+  callback(nil)
+end
+vim.fn.maparg(' ts', 'n', false, true).callback()
+""")
+
+    def test_all_original_language_servers_use_blink_capabilities_after_mason(self):
+        self.run_lua("""
+local expected = {'ts_ls', 'tailwindcss', 'lua_ls', 'rust_analyzer', 'pyright', 'gopls',
+  'yamlls', 'jsonls', 'html', 'cssls', 'astro', 'emmet_ls', 'graphql', 'bashls', 'dockerls', 'clangd'}
+local configured, enabled = {}, {}
+package.loaded['mason'] = {has_setup = true}
+package.loaded['blink.cmp'] = {get_lsp_capabilities = function() return {blink = true} end}
+vim.fn.executable = function() return 1 end
+vim.lsp.config = function(name, opts) configured[name] = opts end
+vim.lsp.enable = function(name) enabled[name] = true end
+for _, spec in ipairs(require('themizzi.plugins.lsp')) do
+  if spec[1] == 'neovim/nvim-lspconfig' then spec.config() end
+end
+assert(vim.tbl_count(configured) == 16)
+for _, server in ipairs(expected) do
+  assert(enabled[server] and configured[server].capabilities.blink, server)
+end
+""")
+
+    def test_offline_lsp_uses_native_completion(self):
+        self.run_lua("""
+local called = false
+vim.lsp.get_client_by_id = function() return {id = 42, supports_method = function() return true end} end
+vim.lsp.completion.enable = function(enabled, client, buffer, opts)
+  called = enabled and client == 42 and opts.autotrigger
+end
+vim.api.nvim_exec_autocmds('LspAttach', {buffer = 0, data = {client_id = 42}})
+assert(called)
+called = false
+package.loaded['blink.cmp'] = {}
+vim.api.nvim_exec_autocmds('LspAttach', {buffer = 0, data = {client_id = 42}})
+assert(not called, 'Native completion must not compete with Blink')
+""")
 
     def test_plugin_specs_are_locked_and_formatters_are_alternatives(self):
         self.run_lua("""
 local specs = require('themizzi.plugins').specs()
 for _, spec in ipairs(specs) do assert(#spec.commit == 40) end
 local editor = require('themizzi.plugins.editor')
-local formats = editor[3].opts.formatters_by_ft
+local formats
+for _, spec in ipairs(editor) do
+  if spec[1] == 'stevearc/conform.nvim' then formats = spec.opts.formatters_by_ft end
+end
 assert(formats.python.stop_after_first)
 assert(formats.javascript.stop_after_first)
 """)

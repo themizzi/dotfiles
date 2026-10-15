@@ -31,4 +31,12 @@ for _, plugin in pairs(require("lazy.core.config").plugins) do
 		assert(not task:has_errors(), "Plugin setup failed: " .. plugin.name)
 	end
 end
+if vim.env.DOTFILES_NVIM_INSTALL_PARSERS == "1" then
+	-- TSInstallSync uses this plugin revision's own parser lock, not moving HEADs.
+	require("lazy").load({ plugins = { "nvim-treesitter" } })
+	vim.cmd("TSInstallSync " .. table.concat(require("themizzi.treesitter").parsers, " "))
+	for _, parser in ipairs(require("themizzi.treesitter").parsers) do
+		assert(pcall(vim.treesitter.language.add, parser), "Parser installation failed: " .. parser)
+	end
+end
 vim.cmd("qa!")

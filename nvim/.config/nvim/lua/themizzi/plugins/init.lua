@@ -20,6 +20,9 @@ function M.specs()
 	extend_specs(specs, "themizzi.plugins.navigation")
 	extend_specs(specs, "themizzi.plugins.editor")
 	extend_specs(specs, "themizzi.plugins.git")
+	if vim.env.DOTFILES_NVIM_AI == "1" then
+		extend_specs(specs, "themizzi.plugins.ai")
+	end
 	-- Treat the reviewed lock as the version policy, including :Lazy update.
 	local lock = vim.json.decode(table.concat(vim.fn.readfile(vim.fn.stdpath("config") .. "/lazy-lock.json"), "\n"))
 	local function pin(items)
@@ -28,6 +31,7 @@ function M.specs()
 			local name = item[1]:match("/([^/]+)$")
 			assert(lock[name], "Missing reviewed plugin revision: " .. name)
 			item.commit = lock[name].commit
+			item.branch = lock[name].branch
 			if item.dependencies then pin(item.dependencies) end
 		end
 	end
