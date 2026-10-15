@@ -1,0 +1,20 @@
+# profile command apt dnf pacman brew
+minimal git git git git git
+minimal stow stow stow stow stow
+minimal zsh zsh zsh zsh zsh
+minimal vim vim vim-enhanced vim vim
+minimal python3 python3 python3 python python
+dev nvim neovim neovim neovim neovim
+dev fzf fzf fzf fzf fzf
+dev fd fd-find fd-find fd fd
+dev rg ripgrep ripgrep ripgrep ripgrep
+dev gh gh gh github-cli gh
+dev nano nano nano nano nano
+dev just just just just just
+dev pip3 python3-pip python3-pip python-pip -
+dev venv python3-venv - - -
+dev unzip unzip unzip unzip unzip
+dev wget wget wget wget wget
+dev curl curl curl curl curl
+dev certificates ca-certificates ca-certificates ca-certificates ca-certificates
+dev starship - starship starship starship

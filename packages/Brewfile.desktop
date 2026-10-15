@@ -1,0 +1,8 @@
+# Explicit macOS workstation applications, not part of CLI provisioning.
+if RUBY_PLATFORM.include?("darwin")
+  cask "font-hack-nerd-font"
+  cask "visual-studio-code"
+  cask "firefox"
+  cask "gimp"
+  cask "docker-desktop"
+end
