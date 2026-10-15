@@ -142,12 +142,15 @@ class PackagesTest(unittest.TestCase):
         for name in ("git", "stow", "zsh", "vim", "python3", "fzf", "fdfind",
                      "rg", "gh", "nano", "just", "pip3", "unzip", "gcc", "htop", "http", "git-lfs"):
             self.stub(name, "exit 0")
-        for version in ("0.9.5", "0.10.4", "garbage"):
+        for version in ("0.9.5", "0.10.4", "0.11.0", "0.11.2", "garbage"):
             self.stub("nvim", f"echo 'NVIM v{version}'")
-            self.assertIn("Neovim >=0.11 required", self.run_script("--doctor", ok=False))
-        for version in ("0.11.0", "0.12.0-dev", "1.0.0"):
+            self.assertIn("Neovim >=0.11.3 required", self.run_script("--doctor", ok=False))
+        for version in ("0.11.3", "0.11.6", "0.12.0-dev", "1.0.0"):
             self.stub("nvim", f"echo 'NVIM v{version}'")
-            self.assertNotIn("Neovim >=0.11 required", self.run_script("--doctor"))
+            self.assertNotIn("Neovim >=0.11.3 required", self.run_script("--doctor"))
+
+    def test_fedora_does_not_require_optional_third_party_repositories(self):
+        self.assertNotIn('starship', self.run_script('--manager', 'dnf', '--list').splitlines())
 
     def test_container_uses_canonical_mapping(self):
         dockerfile = (ROOT / ".devcontainer/Dockerfile").read_text()

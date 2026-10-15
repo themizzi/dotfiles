@@ -25,7 +25,8 @@ manager, adds repositories, or pipes a downloaded installer into a shell.
 profile, command, apt, dnf, pacman, brew; `-` means not provided by that manager.
 Minimal contains Git, Stow, Zsh, Vim and Python. Dev adds Neovim, fzf, fd, ripgrep,
 gh, nano, just, Python packaging support and download/archive tools. Starship is
-optional: installed from distro/Homebrew packages where mapped, not from apt.
+optional: installed from Arch/Homebrew packages where mapped, not from apt or dnf.
+Fedora's third-party COPR repository is not enabled automatically.
 On Debian/Ubuntu the fd executable is `fdfind`; the doctor accepts either name.
 
 `Brewfile` reads the CLI mapping directly (dev profile). `Aptfile` is a compatibility
@@ -89,10 +90,10 @@ the archive, then install the binary under `~/.local/bin`. Alternatively use a
 user-level version manager with a pinned version and verified artifacts. No
 unverified `curl | sh` fallback is run automatically.
 
-**Neovim must be >=0.11 for the configured plugin workflow.** Successfully
+**Neovim must be >=0.11.3 for the configured plugin workflow.** Successfully
 installing a distro package does not prove that requirement: Debian 13 and
 Ubuntu 24.04 may supply older versions. `--doctor` exits nonzero for old/unknown
-versions or missing required commands. Install an explicit official Neovim >=0.11
+versions or missing required commands. Install an explicit official Neovim >=0.11.3
 release matching your architecture into a versioned directory under `~/.local/opt`,
 verify its published SHA256 before extracting, and link its `bin/nvim` into
 `~/.local/bin` (already on the Zsh PATH). Alternatively use an explicitly configured

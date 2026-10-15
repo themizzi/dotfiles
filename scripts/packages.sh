@@ -72,9 +72,9 @@ if [[ $mode == doctor ]]; then
         if ! command -v "$command" >/dev/null 2>&1; then printf 'Missing: %s\n' "$command"; failed=1; fi
     done
     if [[ $profile != minimal ]] && command -v nvim >/dev/null 2>&1; then
-        version=$(nvim --version | sed -n '1s/^NVIM v\([0-9]*\.[0-9]*\).*/\1/p')
-        if [[ ! $version =~ ^([0-9]+)\.([0-9]+)$ ]] || ! ((10#${BASH_REMATCH[1]} > 0 || 10#${BASH_REMATCH[2]} >= 11)); then
-            printf '%s\n' 'Neovim >=0.11 required; install a verified user-level release (docs/dependencies.md), then re-run --doctor.'
+        version=$(nvim --version | sed -n '1s/^NVIM v\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p')
+        if [[ ! $version =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]] || ! ((10#${BASH_REMATCH[1]} > 0 || 10#${BASH_REMATCH[2]} > 11 || (10#${BASH_REMATCH[2]} == 11 && 10#${BASH_REMATCH[3]} >= 3))); then
+            printf '%s\n' 'Neovim >=0.11.3 required; install a verified user-level release (docs/dependencies.md), then re-run --doctor.'
             failed=1
         fi
     fi
@@ -107,5 +107,5 @@ if [[ $profile == desktop || $profile == personal ]]; then
     fi
 fi
 if [[ $profile != minimal ]]; then
-    printf '%s\n' 'Starship is optional (not installed by apt); verify Neovim >=0.11 with --doctor. See docs/dependencies.md.'
+    printf '%s\n' 'Starship is optional (not installed by apt/dnf); verify Neovim >=0.11.3 with --doctor. See docs/dependencies.md.'
 fi
