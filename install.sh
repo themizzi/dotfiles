@@ -3,9 +3,10 @@ set -eu
 
 usage() {
     cat <<'EOF'
-Usage: install.sh [--dry-run] [--unlink] [--help]
+Usage: install.sh [--profile minimal|dev|desktop|personal] [--dry-run] [--unlink] [--help]
 
-Link gh gh-copilot nano nvim starship vim zsh into HOME using GNU Stow.
+Link the selected profile into HOME using GNU Stow (default: dev).
+  --profile  Select minimal, dev, desktop, or personal configuration.
   --dry-run  Check prerequisites and simulate without changing files.
   --unlink   Remove only links owned by these packages (no submodule setup needed).
   --help     Show this help.
@@ -21,13 +22,20 @@ fail() {
 
 dry_run=false
 action=--stow
-for argument do
-    case "$argument" in
+profile=dev
+while [ "$#" -gt 0 ]; do
+    case "$1" in
         --help|-h) usage; exit 0 ;;
         --dry-run) dry_run=true ;;
         --unlink) action=--delete ;;
-        *) fail "Unknown argument: $argument (see --help)" ;;
+        --profile)
+            [ "$#" -ge 2 ] || fail '--profile requires a name (see --help).'
+            profile=$2
+            shift
+            ;;
+        *) fail "Unknown argument: $1 (see --help)" ;;
     esac
+    shift
 done
 
 REPO_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
@@ -48,9 +56,17 @@ for config in "$HOME/.stowrc" "$REPO_ROOT/.stowrc"; do
     fi
 done
 
-# Keep package selection in one place so future profiles can reuse the same
-# validation, preflight and execution path.
-set -- gh gh-copilot nano nvim starship vim zsh
+# The resolver emits only allowlisted package names, never shell fragments.
+packages=$(sh "$REPO_ROOT/scripts/profile-packages.sh" --profile "$profile") ||
+    fail 'Cannot resolve profile; no changes were made.'
+set --
+while IFS= read -r package; do
+    [ -n "$package" ] || continue
+    set -- "$@" "$package"
+done <<EOF_PACKAGES
+$packages
+EOF_PACKAGES
+[ "$#" -gt 0 ] || fail 'The selected profile has no packages.'
 for package do
     [ -d "$REPO_ROOT/$package" ] || fail "Missing package directory: $package"
 done

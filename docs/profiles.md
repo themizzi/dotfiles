@@ -45,25 +45,29 @@ the definitions. Output order is the allowlist order, not inheritance order.
 
 ## Installer and provisioning integration
 
-The intended user-facing commands are:
+Select the installer profile with:
 
 ```sh
 sh install.sh --profile NAME
-sh scripts/packages.sh --profile NAME --dry-run
 ```
 
-These are integration targets, not commands implemented by this profile change.
-The resolver API for the installer is exactly:
+The installer checks only submodules belonging to selected packages. Omitting
+`--profile` selects `dev`; use `--profile personal` for the old seven-package
+selection. Unlinking also uses the selected profile and does not automatically
+remove links from previously installed profiles. To switch profiles, explicitly
+unlink the previous selection before linking the new one.
+
+The resolver API for the installer is:
 
 ```sh
 sh "$repository/scripts/profile-packages.sh" --profile "$profile"
 ```
 
 Check its exit status before invoking Stow. Each output line is one validated
-Stow package argument; never `eval` the output. The default is `dev`. This change
-deliberately leaves `install.sh` untouched for the installer integration.
+Stow package argument; never `eval` the output. The default is `dev`.
 
-Provisioning should accept the same four profile names, but maintain its own
+The dependency-management PR adds `sh scripts/packages.sh --profile NAME --dry-run`.
+Provisioning accepts the same four profile names, but maintains its own
 external-package mapping: Stow directories are not system package names. For
 example, `minimal` can provision the shell/editor and Stow, `dev` development
 tools and language runtimes, and `desktop` additional platform-appropriate GUI

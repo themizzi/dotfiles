@@ -12,8 +12,9 @@ sh /path/to/dotfiles/install.sh --unlink --dry-run
 sh /path/to/dotfiles/install.sh --unlink
 ```
 
-The default selection is `gh gh-copilot nano nvim starship vim zsh`. There are
-currently no package-selection or profile arguments. Options may be combined in
+The default `dev` selection is `gh nano nvim starship vim zsh`; `personal` also
+includes `gh-copilot`. Select `--profile minimal|dev|desktop|personal`; see
+[profiles](profiles.md). Options may be combined in
 either order. Both linking and unlinking simulate the entire selection before
 applying it. Repeated runs are safe; linking uses `--stow`, not `--restow`.
 Unlinking removes only links Stow recognizes as belonging to these packages;
