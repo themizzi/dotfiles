@@ -27,6 +27,8 @@ Minimal contains Git, Stow, Zsh, Vim and Python. Dev adds Neovim, fzf, fd, ripgr
 gh, nano, just, Python packaging support and download/archive tools. Starship is
 optional: installed from Arch/Homebrew packages where mapped, not from apt or dnf.
 Fedora's third-party COPR repository is not enabled automatically.
+DNF provisioning keeps an existing `curl` executable/provider (including
+`curl-minimal`) rather than forcing a conflicting replacement package.
 On Debian/Ubuntu the fd executable is `fdfind`; the doctor accepts either name.
 
 `Brewfile` reads the CLI mapping directly (dev profile). `Aptfile` is a compatibility

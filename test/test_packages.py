@@ -152,6 +152,12 @@ class PackagesTest(unittest.TestCase):
     def test_fedora_does_not_require_optional_third_party_repositories(self):
         self.assertNotIn('starship', self.run_script('--manager', 'dnf', '--list').splitlines())
 
+    def test_fedora_keeps_an_existing_curl_provider(self):
+        output = self.run_script('--manager', 'dnf', '--dry-run')
+        command = next(line for line in output.splitlines() if 'dnf install' in line)
+        self.assertNotIn('curl', command.split())
+        self.assertIn('curl', self.run_script('--manager', 'dnf', '--list').splitlines())
+
     def test_container_uses_canonical_mapping(self):
         dockerfile = (ROOT / ".devcontainer/Dockerfile").read_text()
         self.assertIn("COPY packages/", dockerfile)

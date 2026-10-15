@@ -57,7 +57,13 @@ while read -r tier command apt dnf pacman brew; do
     [[ $profile != minimal || $tier == minimal ]] || continue
     values=("$tier" "$command" "$apt" "$dnf" "$pacman" "$brew")
     package=${values[$((column - 1))]}
-    if [[ $package != - ]]; then packages+=("$package"); fi
+    # Fedora images often provide curl-minimal, which conflicts with curl.
+    # Keep an already available provider instead of removing/replacing it.
+    if [[ $package != - ]]; then
+        if [[ $manager != dnf || $command != curl || $mode == list ]] || ! command -v curl >/dev/null 2>&1; then
+            packages+=("$package")
+        fi
+    fi
     commands+=("$command")
 done < "$ROOT/packages/cli.tsv"
 if [[ $mode == list ]]; then printf '%s\n' "${packages[@]}"; exit 0; fi
