@@ -28,8 +28,9 @@ just check
 sh scripts/check.sh
 ```
 
-Requires `sh`, `zsh`, `python3`, and `git` in `PATH`, with an explicit error if
-one is missing. Checks tracked and new unignored files using `sh -n`, `zsh -f -n`,
+Requires `sh`, `bash`, `zsh`, `python3`, and `git` in `PATH`, with an explicit error if
+one is missing. Checks tracked and new unignored files using `sh -n`, `bash -n`
+(for Bash shebangs), `zsh -f -n`,
 JSON parsing, and Python AST parsing. It skips ignored files and submodule
 contents. It does not source shell configuration, import repository Python
 modules, compile bytecode, install dotfiles, or access the network. This is a

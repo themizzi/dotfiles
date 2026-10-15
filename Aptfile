@@ -16,3 +16,7 @@ unzip
 wget
 curl
 ca-certificates
+gcc
+htop
+httpie
+git-lfs

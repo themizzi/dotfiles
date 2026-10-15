@@ -2,7 +2,7 @@
 # Syntax checks only: never source configuration or import repository modules.
 set -eu
 
-for executable in sh zsh python3 git; do
+for executable in sh bash zsh python3 git; do
     if ! command -v "$executable" >/dev/null 2>&1; then
         echo "check: required executable not found in PATH: $executable" >&2
         exit 1
@@ -33,7 +33,10 @@ for name in sorted(set(result.stdout.split(b"\0")) - {b""}):
         continue
     try:
         if path.suffix == ".sh":
-            subprocess.run(["sh", "-n", str(path)], check=True)
+            with path.open(encoding="utf-8") as source:
+                first_line = source.readline()
+            shell = "bash" if "bash" in first_line else "sh"
+            subprocess.run([shell, "-n", str(path)], check=True)
         elif path.suffix == ".zsh" or path.name in (".zshrc", ".zshenv", ".zprofile", ".zlogin", ".zlogout"):
             subprocess.run(["zsh", "-f", "-n", str(path)], check=True)
         elif path.suffix == ".json":

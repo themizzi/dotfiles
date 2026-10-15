@@ -1,7 +1,7 @@
 # Dependency provisioning
 
 Configuration installation and dependency provisioning are separate. Nothing here
-changes `install.sh`, its seven default Stow packages, or config profile selection.
+changes `install.sh` or config profile selection; see [profiles](profiles.md).
 Provisioning `personal` is optional; Copilot apps/extensions are never part of dev.
 
 ```sh

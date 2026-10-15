@@ -17,4 +17,8 @@ dev unzip unzip unzip unzip unzip
 dev wget wget wget wget wget
 dev curl curl curl curl curl
 dev certificates ca-certificates ca-certificates ca-certificates ca-certificates
+dev gcc gcc gcc gcc gcc
+dev htop htop htop htop htop
+dev http httpie httpie httpie httpie
+dev git-lfs git-lfs git-lfs git-lfs git-lfs
 dev starship - starship starship starship
