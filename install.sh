@@ -87,6 +87,25 @@ fi
 
 # Simulate the entire selection before making any changes, not one package at
 # a time. --stow is idempotent and avoids restow's unnecessary unlink phase.
+if [ "$action" = --delete ]; then
+    # Stow may sweep dangling links owned by other packages in directories it
+    # visits. Refuse this ambiguous case before Stow can schedule any removals.
+    for package do
+        directories=$(find "$REPO_ROOT/$package" -type d -print) ||
+            fail "Cannot inspect package directories: $package"
+        while IFS= read -r source_dir; do
+            target_dir="$HOME${source_dir#"$REPO_ROOT/$package"}"
+            [ -d "$target_dir" ] && [ ! -L "$target_dir" ] || continue
+            for node in "$target_dir"/.[!.]* "$target_dir"/..?* "$target_dir"/*; do
+                if [ -L "$node" ] && [ ! -e "$node" ]; then
+                    fail "Unlink refused: dangling link in a target directory: $node. Inspect and repair or explicitly move this link first; Stow may otherwise sweep unselected links. No changes were made."
+                fi
+            done
+        done <<EOF_DIRECTORIES
+$directories
+EOF_DIRECTORIES
+    done
+fi
 if ! stow --dir="$REPO_ROOT" --target="$HOME" --no-folding --simulate "$action" "$@"; then
     fail 'Stow preflight failed; no changes were made. Back up and move only the reported conflicting paths, then retry (see docs/installer.md).'
 fi

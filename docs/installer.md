@@ -20,6 +20,10 @@ applying it. Repeated runs are safe; linking uses `--stow`, not `--restow`.
 Unlinking removes only links Stow recognizes as belonging to these packages;
 it does not delete regular configuration files and does not require initialized
 submodules. Stow may remove empty directories it managed.
+Stow may sweep dangling links owned by unselected packages. Before unlinking,
+the installer checks the target directories it would visit and refuses the
+operation if any direct child is a dangling symlink. Inspect and repair or move
+that individual link explicitly, then retry; no links are swept automatically.
 
 ## Prerequisites and offline operation
 
