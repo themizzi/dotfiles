@@ -78,6 +78,21 @@ class EnvironmentTests(unittest.TestCase):
             environment.after_scenario(self.context, None)
             self.assertEqual(os.environ['DOTFILES_NVIM_AI_API_KEY'], 'private')
 
+    def test_git_trust_is_scoped_to_checkout_and_drops_host_injections(self):
+        with patch.dict(os.environ, {'GIT_CONFIG_COUNT': '1',
+                                     'GIT_CONFIG_KEY_0': 'safe.directory',
+                                     'GIT_CONFIG_VALUE_0': '*'}):
+            home = self.start()
+            self.assertNotIn('GIT_CONFIG_COUNT', os.environ)
+            self.assertNotIn('GIT_CONFIG_VALUE_0', os.environ)
+            config = (home / '.gitconfig').read_text()
+            self.assertIn(str(self.context.repo_root.resolve()), config)
+            self.assertNotIn('*', config)
+            _, install_home = environment.make_install_env(self.context)
+            self.assertEqual((install_home / '.gitconfig').read_text(), config)
+            environment.after_scenario(self.context, None)
+            self.assertEqual(os.environ['GIT_CONFIG_VALUE_0'], '*')
+
     def test_nvim_config_is_private_copy(self):
         self.start()
         env = environment.make_nvim_env(self.context)

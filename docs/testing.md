@@ -47,7 +47,11 @@ Every Behave scenario gets a temporary HOME, private XDG config/data/state/cache
 runtime and search directories, and a private TMPDIR. Host shell/editor startup
 overrides (including ZDOTDIR, VIMINIT, and NVIM_APPNAME) are removed. Child-specific
 homes inherit this isolation. Editor configuration is copied, not symlinked into
-a writable checkout. Git global/system configuration is excluded. Cleanup closes
+a writable checkout. Git global/system configuration is excluded. A private Git
+config trusts only the exact checkout
+(needed for host-owned container mounts), never `safe.directory=*`. Inherited Git
+repository redirects and config-injection environment variables are removed.
+Cleanup closes
 the embedded editor transport, removes temporary directories even on failures,
 and restores the parent environment. Hooks also register a Behave cleanup fallback.
 On pinned pynvim, cleanup also reaps its child with a two-second deadline (closing

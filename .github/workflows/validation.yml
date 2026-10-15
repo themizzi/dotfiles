@@ -101,6 +101,7 @@ jobs:
           .venv/bin/python -m pip check
       - name: Check and run complete offline suite (no distribution skips)
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           python3 --version
           nvim --version
           just --version
