@@ -7,7 +7,7 @@ Minimal Vim-first dotfiles with a Neovim shim, built-in `netrw`, and an `fzf-lua
 From repo root:
 
 ```bash
-sh install.sh
+just install
 ```
 
 `install.sh` uses GNU Stow with `--target="$HOME"` and creates symlinks such as:
@@ -15,7 +15,15 @@ sh install.sh
 - `~/.vimrc` -> `vim/.vimrc`
 - `~/.config/nvim/init.vim` -> `nvim/.config/nvim/init.vim`
 
-The script is idempotent (`stow --restow`).
+The script is idempotent and preflights the entire selection before linking.
+Use `just install --dry-run` to preview changes or `just install --unlink` to
+remove managed links. Existing configuration is never adopted or overwritten.
+See [installer safety](docs/installer.md) and [Just tasks](docs/just.md).
+
+Install the Just command runner with `brew install just` on macOS or
+`sudo apt-get install just` on Debian releases that package it. Direct
+`sh install.sh` remains supported without Just. See [Just tasks](docs/just.md)
+for argument forwarding, prerequisites, and offline checks.
 
 ## Devcontainer (Debian)
 
@@ -38,6 +46,7 @@ Required Debian packages for Neovim + command palette workflow:
 - `curl`
 - `ca-certificates`
 - `git`
+- `just`
 - `stow`
 - `unzip`
 - `wget`
@@ -51,12 +60,14 @@ On macOS, ensure these Homebrew entries exist in `Brewfile`:
 - `brew "fzf"`
 - `brew "fd"`
 - `brew "ripgrep"`
+- `brew "just"`
 
 Verify inside the container:
 
 ```bash
-sh install.sh
-sh scripts/test-installer.sh
+just install
+just check
+just test
 ```
 
 ## Usage
@@ -80,3 +91,15 @@ sh scripts/test-installer.sh
 
 This suite needs Bash, Git, and Stow, but no Python or system Bats installation.
 See [installer tests](docs/installer.md).
+
+Run the full suite:
+
+```bash
+just test
+```
+
+Run syntax checks without installing dependencies or executing configuration:
+
+```bash
+just check
+```
