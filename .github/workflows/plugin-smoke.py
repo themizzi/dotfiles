@@ -1,27 +1,20 @@
 """Explicit network integration test; never imported by the regular test suite."""
-import os
 import json
 from pathlib import Path
-import signal
 import subprocess
 import sys
 from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from features.environment import make_nvim_env  # noqa: E402
+from scripts.processes import run_bounded  # noqa: E402
 
 
 def run_editor(arguments, env, timeout):
-    process = subprocess.Popen(["nvim", "--headless", *arguments], env=env,
-                               start_new_session=True)
-    try:
-        status = process.wait(timeout=timeout)
-    except (subprocess.TimeoutExpired, KeyboardInterrupt):
-        os.killpg(process.pid, signal.SIGKILL)
-        process.wait()
-        raise
+    command = ["nvim", "--headless", *arguments]
+    status = run_bounded(command, env=env, timeout=timeout)
     if status:
-        raise subprocess.CalledProcessError(status, process.args)
+        raise subprocess.CalledProcessError(status, command)
 
 
 def main():

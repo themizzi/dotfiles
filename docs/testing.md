@@ -29,6 +29,8 @@ OS packages and the Arch rolling image are intentionally not frozen.
 silence baseline failures with skips. The bounded runner `sh scripts/test.sh`
 checks versions and kills the suite process group on timeout (60 seconds for
 unit tests, 300 seconds for Behave). The Just recipe delegates to this runner.
+Both suite and plugin-smoke runners terminate/reap their process groups on
+timeouts, Ctrl+C, or SIGTERM, allowing temporary-home cleanup on cancellation.
 It accepts Behave arguments, for example:
 
 ```sh
