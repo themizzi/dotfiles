@@ -1,6 +1,9 @@
 # dotfiles
 
-Minimal Vim-first dotfiles with a Neovim shim, built-in `netrw`, and an `fzf-lua` command palette on Neovim.
+Portable Zsh, Vim, and Neovim configuration with explicit, offline-safe startup.
+The full Neovim layer requires version 0.11.3 or newer; plugin-free startup
+retains useful built-in navigation and search. See [Neovim setup](docs/neovim.md)
+for the reviewed plugin versions and supported Treesitter runtime.
 
 ## Install
 
@@ -73,12 +76,24 @@ just test
 ## Usage
 
 - `<leader>` is space.
-- `<leader>e` toggles built-in netrw via `:Lexplore`.
-- `<leader>p` opens `fzf-lua` files picker.
-- `<leader>b` opens `fzf-lua` buffers picker.
-- `<leader>c` opens `fzf-lua` commands picker.
-- `<leader>g` opens `fzf-lua` live grep when `rg` is available; otherwise falls back to a safe built-in search.
-- `<leader>h` opens `fzf-lua` help tags picker.
+- `<leader>e` toggles nvim-tree, or netrw without plugins; `<leader>fe` reveals the current file.
+- `<leader>ff`, `fb`, `fc`, `fg`, `fh`: files, buffers, commands, workspace search, and help.
+- `<leader>tn`, `tp`, `tl`, `tq`, `tf`, `ts`: TODO navigation, lists, and search.
+- `s` / `S`: Flash navigation with plugins; coverage and Diffview commands remain available.
+- Native clipboard detection works without overriding system providers.
+
+Normal startup never installs plugins. Enable the reviewed plugin layer explicitly
+after linking configuration:
+
+```sh
+env -u DOTFILES_SKIP_PLUGIN_BOOTSTRAP nvim --headless -l "$HOME/.config/nvim/setup.lua"
+```
+
+Without plugins, file/search/explorer mappings use built-in fallbacks.
+CodeCompanion is opt-in through `DOTFILES_NVIM_AI=1`, with a configurable endpoint
+and model. Parser installation, language servers, formatters, image tools, and MCP
+services are explicit choices. See [Neovim documentation](docs/neovim.md) and
+[portable shell setup](docs/zsh.md) for setup commands and prerequisites.
 
 ## Tests
 

@@ -27,12 +27,17 @@ function M.specs()
 	local lock = vim.json.decode(table.concat(vim.fn.readfile(vim.fn.stdpath("config") .. "/lazy-lock.json"), "\n"))
 	local function pin(items)
 		for i, item in ipairs(items) do
-			if type(item) == "string" then item = { item }; items[i] = item end
+			if type(item) == "string" then
+				item = { item }
+				items[i] = item
+			end
 			local name = item[1]:match("/([^/]+)$")
 			assert(lock[name], "Missing reviewed plugin revision: " .. name)
 			item.commit = lock[name].commit
 			item.branch = lock[name].branch
-			if item.dependencies then pin(item.dependencies) end
+			if item.dependencies then
+				pin(item.dependencies)
+			end
 		end
 	end
 	pin(specs)

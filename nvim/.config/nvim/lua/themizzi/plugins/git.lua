@@ -1,5 +1,9 @@
 return {
-	{ "sindrets/diffview.nvim", cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewFileHistory" }, dependencies = { "nvim-lua/plenary.nvim" } },
+	{
+		"sindrets/diffview.nvim",
+		cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewFileHistory" },
+		dependencies = { "nvim-lua/plenary.nvim" },
+	},
 	{
 		"lewis6991/gitsigns.nvim",
 		event = { "BufReadPre", "BufNewFile" },
@@ -12,8 +16,12 @@ return {
 						vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, desc = desc })
 					end
 
-					map("n", "]h", function() gs.nav_hunk("next") end, "Next hunk")
-					map("n", "[h", function() gs.nav_hunk("prev") end, "Previous hunk")
+					map("n", "]h", function()
+						gs.nav_hunk("next")
+					end, "Next hunk")
+					map("n", "[h", function()
+						gs.nav_hunk("prev")
+					end, "Previous hunk")
 					map("n", "<leader>gh", gs.preview_hunk, "Preview hunk")
 					map("n", "<leader>gs", gs.stage_hunk, "Stage hunk")
 					map("n", "<leader>gr", gs.reset_hunk, "Reset hunk")

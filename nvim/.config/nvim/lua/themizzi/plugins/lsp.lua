@@ -48,7 +48,12 @@ return {
 			if #missing > 0 then
 				table.sort(missing)
 				vim.schedule(function()
-					vim.notify("Optional LSP executables missing: " .. table.concat(missing, ", ") .. ". See docs/neovim.md or :Mason", vim.log.levels.WARN)
+					vim.notify(
+						"Optional LSP executables missing: "
+							.. table.concat(missing, ", ")
+							.. ". See docs/neovim.md or :Mason",
+						vim.log.levels.WARN
+					)
 				end)
 			end
 		end,

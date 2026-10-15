@@ -2,7 +2,9 @@
 -- This entire module is excluded unless DOTFILES_NVIM_AI=1.
 local with_mcp = vim.env.DOTFILES_NVIM_MCP == "1"
 local dependencies = { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" }
-if with_mcp then table.insert(dependencies, "ravitemer/mcphub.nvim") end
+if with_mcp then
+	table.insert(dependencies, "ravitemer/mcphub.nvim")
+end
 
 return {
 	{
@@ -21,7 +23,8 @@ return {
 								url = vim.env.DOTFILES_NVIM_AI_ENDPOINT or "http://127.0.0.1:1234/v1/chat/completions",
 								env = { api_key = "DOTFILES_NVIM_AI_API_KEY" },
 								headers = vim.env.DOTFILES_NVIM_AI_API_KEY and {
-									["Content-Type"] = "application/json", Authorization = "Bearer ${api_key}",
+									["Content-Type"] = "application/json",
+									Authorization = "Bearer ${api_key}",
 								} or { ["Content-Type"] = "application/json", Authorization = "" },
 								-- Never query /models implicitly: both default and choices are local.
 								schema = { model = { default = model, choices = { model } } },
@@ -57,7 +60,11 @@ return {
 		cmd = "PasteImage",
 		opts = {
 			filetypes = {
-				codecompanion = { prompt_for_file_name = false, template = "[Image]($FILE_PATH)", use_absolute_path = true },
+				codecompanion = {
+					prompt_for_file_name = false,
+					template = "[Image]($FILE_PATH)",
+					use_absolute_path = true,
+				},
 			},
 		},
 	},
