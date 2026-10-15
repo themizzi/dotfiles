@@ -19,5 +19,10 @@ lint:
     @command -v shellcheck >/dev/null 2>&1 || { echo 'lint: ShellCheck is required; install the dev dependencies' >&2; exit 1; }
     shellcheck install.sh scripts/*.sh .devcontainer/scripts/*.sh
 
+# Verify Lua formatting without rewriting files (CI uses StyLua 2.6.0).
+fmt-check:
+    @command -v stylua >/dev/null 2>&1 || { echo 'fmt-check: StyLua 2.6.0 is required; see docs/testing.md' >&2; exit 1; }
+    stylua --check nvim/.config/nvim
+
 test *args:
     sh scripts/test.sh "$@"

@@ -54,6 +54,7 @@ jobs:
           just --version
           just check
           just lint
+          just fmt-check
           just test
 
   distributions:
@@ -105,6 +106,7 @@ jobs:
           just --version
           just check
           just lint
+          just fmt-check
           just test
 
   plugin-startup:

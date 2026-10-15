@@ -6,6 +6,9 @@ Requirements: Python 3.10+, Neovim **0.11.3+**, Git, GNU Stow, zsh, and
 [just](https://github.com/casey/just). Install ripgrep and fzf for realistic manual
 editor checks. CI pins Neovim 0.11.5 and just 1.43.1 and verifies their release
 archives against committed SHA-256 digests.
+Lua formatting uses StyLua **2.6.0**, also checksum-verified by CI. Install
+that version explicitly for `just fmt-check`; it is not required for the
+plugin-free runtime tests. Shell lint uses ShellCheck from native dev packages.
 
 ```sh
 python3 -m venv .venv
@@ -13,6 +16,7 @@ python3 -m venv .venv
 .venv/bin/python -m pip check
 just check
 just lint
+just fmt-check
 just test
 ```
 

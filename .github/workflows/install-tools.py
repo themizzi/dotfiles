@@ -6,6 +6,7 @@ from pathlib import Path
 import platform
 import tarfile
 import urllib.request
+import zipfile
 
 
 # neovim/neovim v0.11.5 and casey/just 1.43.1, not moving stable/latest URLs.
@@ -22,6 +23,12 @@ RELEASES = {
         "macos-x86_64", "6612760a7037ca2518e456908baf5e43101fa79819d18979fc4d4e8441d9dfa5",
         "x86_64-apple-darwin", "e41d03872e28636b9c4461229e4e83771d7b4a0ef2bb6596dfc1e5e393c7ebe0",
     ),
+}
+
+STYLUA = {
+    ('Linux', 'x86_64'): ('linux-x86_64', 'a485f72bbfa22e4642e77a84b5edc2611a5cab7477b34e2e709dd8f78e919895'),
+    ('Darwin', 'arm64'): ('macos-aarch64', 'dab9b66d340ca5ffc8225211f1dcf89b84783e09b8cbec8c518497eba81f3c42'),
+    ('Darwin', 'x86_64'): ('macos-x86_64', '90779aa873837b2dff8eb3361bd27950303914c24265a59cae0a0d0629d71585'),
 }
 
 
@@ -42,7 +49,17 @@ def main():
     extract(f"https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-{nvim}.tar.gz",
             nvim_hash, destination)
     extract(f"https://github.com/casey/just/releases/download/1.43.1/just-1.43.1-{just}.tar.gz",
-            just_hash, destination)
+             just_hash, destination)
+    target, digest = STYLUA[(platform.system(), platform.machine())]
+    url = f'https://github.com/JohnnyMorganz/StyLua/releases/download/v2.6.0/stylua-{target}.zip'
+    with urllib.request.urlopen(url, timeout=60) as response:
+        archive = response.read()
+    if hashlib.sha256(archive).hexdigest() != digest:
+        raise SystemExit(f'SHA256 mismatch: {url}')
+    with zipfile.ZipFile(io.BytesIO(archive)) as source:
+        binary = destination / 'stylua'
+        binary.write_bytes(source.read('stylua'))
+        binary.chmod(0o755)
     with open(os.environ["GITHUB_PATH"], "a", encoding="utf-8") as paths:
         paths.write(f"{destination / ('nvim-' + nvim) / 'bin'}\n{destination}\n")
 
