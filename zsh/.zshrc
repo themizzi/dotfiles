@@ -44,11 +44,6 @@ export NVM_DIR="$HOME/.nvm"
 # XDG
 export XDG_CONFIG_HOME=$HOME/.config
 
-# TMUX
-export TMUX_CONF="$XDG_CONFIG_HOME/tmux/tmux.conf"
-alias tmux='tmux -f "$TMUX_CONF"'
-alias zj='zellij'
-
 # NANO
 export NANORC="$XDG_CONFIG_HOME/nano/nanorc"
 
@@ -73,4 +68,3 @@ compinit
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
-
