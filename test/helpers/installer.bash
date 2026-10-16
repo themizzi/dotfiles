@@ -9,8 +9,12 @@ installer_fixture() {
     CALLS="$FIXTURE/calls"
     mkdir -p "$REPO" "$TARGET_HOME" "$TOOLS" "$CALLS"
     cp "$SOURCE_ROOT/install.sh" "$REPO/install.sh"
-    PACKAGES=(gh gh-copilot nano nvim starship vim zsh)
-    for package in "${PACKAGES[@]}"; do
+    ALL_PACKAGES=(gh gh-copilot nano nvim starship vim zsh)
+    PACKAGES=(gh nano nvim starship vim zsh)
+    mkdir -p "$REPO/scripts"
+    cp -R "$SOURCE_ROOT/profiles" "$REPO/profiles"
+    cp "$SOURCE_ROOT/scripts/profile-packages.sh" "$REPO/scripts/"
+    for package in "${ALL_PACKAGES[@]}"; do
         mkdir -p "$REPO/$package"
         printf '%s\n' "$package" > "$REPO/$package/.$package"
     done

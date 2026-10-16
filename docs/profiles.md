@@ -85,6 +85,16 @@ than have symlink configurations; it must not feed those names into Stow.
 
 ## Tests
 
+Installer/profile integration regressions run with the pinned Bats suite:
+
+```sh
+sh scripts/test-installer.sh
+```
+
+This includes selection, invalid profiles, custom XDG handling, and safe unlink
+behavior with dangling links and symlinked HOME paths. No Python is needed for
+these tests. The separate resolver contract tests below remain Python-based.
+
 ```sh
 python3 -m unittest discover -s test -p test_profiles.py
 ```
