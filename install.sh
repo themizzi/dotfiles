@@ -3,9 +3,10 @@ set -eu
 
 usage() {
     cat <<'EOF'
-Usage: install.sh [--dry-run] [--unlink] [--help]
+Usage: install.sh [--profile minimal|dev|desktop|personal] [--dry-run] [--unlink] [--help]
 
-Link gh gh-copilot nano nvim starship vim zsh into HOME using GNU Stow.
+Link the selected profile into HOME using GNU Stow (default: dev).
+  --profile  Select minimal, dev, desktop, or personal configuration.
   --dry-run  Check prerequisites and simulate without changing files.
   --unlink   Remove only links owned by these packages (no submodule setup needed).
   --help     Show this help.
@@ -21,13 +22,20 @@ fail() {
 
 dry_run=false
 action=--stow
-for argument do
-    case "$argument" in
+profile=dev
+while [ "$#" -gt 0 ]; do
+    case "$1" in
         --help|-h) usage; exit 0 ;;
         --dry-run) dry_run=true ;;
         --unlink) action=--delete ;;
-        *) fail "Unknown argument: $argument (see --help)" ;;
+        --profile)
+            [ "$#" -ge 2 ] || fail '--profile requires a name (see --help).'
+            profile=$2
+            shift
+            ;;
+        *) fail "Unknown argument: $1 (see --help)" ;;
     esac
+    shift
 done
 
 REPO_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
@@ -48,11 +56,24 @@ for config in "$HOME/.stowrc" "$REPO_ROOT/.stowrc"; do
     fi
 done
 
-# Keep package selection in one place so future profiles can reuse the same
-# validation, preflight and execution path.
-set -- gh gh-copilot nano nvim starship vim zsh
+# The resolver emits only allowlisted package names, never shell fragments.
+packages=$(sh "$REPO_ROOT/scripts/profile-packages.sh" --profile "$profile") ||
+    fail 'Cannot resolve profile; no changes were made.'
+set --
+while IFS= read -r package; do
+    [ -n "$package" ] || continue
+    set -- "$@" "$package"
+done <<EOF_PACKAGES
+$packages
+EOF_PACKAGES
+[ "$#" -gt 0 ] || fail 'The selected profile has no packages.'
 for package do
     [ -d "$REPO_ROOT/$package" ] || fail "Missing package directory: $package"
+    if [ "$action" = --stow ] && [ -d "$REPO_ROOT/$package/.config" ] &&
+        [ "${XDG_CONFIG_HOME:-$HOME/.config}" != "$HOME/.config" ] &&
+        [ "${XDG_CONFIG_HOME:-$HOME/.config}" != "$HOME/.config/" ]; then
+        fail 'This Stow layout installs config under HOME/.config, but XDG_CONFIG_HOME selects another location. No changes were made; see docs/profiles.md.'
+    fi
 done
 
 if [ "$action" = --stow ]; then
@@ -71,6 +92,28 @@ fi
 
 # Simulate the entire selection before making any changes, not one package at
 # a time. --stow is idempotent and avoids restow's unnecessary unlink phase.
+if [ "$action" = --delete ]; then
+    # Stow may sweep dangling links owned by other packages in directories it
+    # visits. Refuse this ambiguous case before Stow can schedule any removals.
+    for package do
+        directories=$(find "$REPO_ROOT/$package" -type d -print) ||
+            fail "Cannot inspect package directories: $package"
+        while IFS= read -r source_dir; do
+            target_dir="$HOME${source_dir#"$REPO_ROOT/$package"}"
+            [ -d "$target_dir" ] || continue
+            if [ -L "$target_dir" ] && [ "$target_dir" != "$HOME" ]; then
+                continue
+            fi
+            for node in "$target_dir"/.[!.]* "$target_dir"/..?* "$target_dir"/*; do
+                if [ -L "$node" ] && [ ! -e "$node" ]; then
+                    fail "Unlink refused: dangling link in a target directory: $node. Inspect and repair or explicitly move this link first; Stow may otherwise sweep unselected links. No changes were made."
+                fi
+            done
+        done <<EOF_DIRECTORIES
+$directories
+EOF_DIRECTORIES
+    done
+fi
 if ! stow --dir="$REPO_ROOT" --target="$HOME" --no-folding --simulate "$action" "$@"; then
     fail 'Stow preflight failed; no changes were made. Back up and move only the reported conflicting paths, then retry (see docs/installer.md).'
 fi

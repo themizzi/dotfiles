@@ -23,6 +23,11 @@ Use `just install --dry-run` to preview changes or `just install --unlink` to
 remove managed links. Existing configuration is never adopted or overwritten.
 See [installer safety](docs/installer.md) and [Just tasks](docs/just.md).
 
+The default `dev` profile selects general development configuration. Choose
+`just install --profile minimal` for Vim/Zsh, or `--profile personal` to include
+optional Copilot preferences. See [profile selection](docs/profiles.md) for exact
+package lists and safe switching/unlinking.
+
 Install the Just command runner with `brew install just` on macOS or
 `sudo apt-get install just` on Debian releases that package it. Direct
 `sh install.sh` remains supported without Just. See [Just tasks](docs/just.md)

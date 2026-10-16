@@ -170,7 +170,7 @@ setup() { installer_fixture; }
 }
 
 @test "test wrapper diagnoses missing vendor without fetching anything" {
-    mkdir "$REPO/scripts"
+    mkdir -p "$REPO/scripts"
     cp "$SOURCE_ROOT/scripts/test-installer.sh" "$REPO/scripts/"
     run /bin/sh "$REPO/scripts/test-installer.sh"
     assert_failure
@@ -185,4 +185,63 @@ setup() { installer_fixture; }
     assert_success
     assert_output --regexp '^[0-9]+$'
     [ ! -e "$FIXTURE/host-startup-ran" ]
+}
+
+@test "profiles select only the requested packages" {
+    run_installer --profile minimal --dry-run
+    assert_success
+    assert_call_arg 1 vim
+    assert_call_arg 1 zsh
+    run grep -F -x gh "$CALLS/stow-1"
+    assert_failure 1
+    run grep -F -x gh-copilot "$CALLS/stow-1"
+    assert_failure 1
+    run grep -F -x nano "$CALLS/git"
+    assert_failure 1
+    run_installer --profile personal --dry-run
+    assert_success
+    for package in "${ALL_PACKAGES[@]}"; do assert_call_arg 2 "$package"; done
+}
+
+@test "invalid profiles fail before Stow" {
+    run_installer --profile
+    assert_failure
+    run_installer --profile ../dev
+    assert_failure
+    run_installer --profile unknown
+    assert_failure
+    assert_no_stow
+}
+
+@test "custom XDG config is rejected rather than silently ignored" {
+    XDG_ROOT="$FIXTURE/custom config"
+    run_installer --dry-run
+    assert_failure
+    assert_output --partial XDG_CONFIG_HOME
+    assert_no_stow
+    run_installer --profile minimal --dry-run
+    assert_success
+}
+
+@test "real Stow unlink preserves unselected dangling links without partial changes" {
+    use_real_stow
+    run_installer --profile minimal
+    assert_success
+    ln -s "$REPO/gh-copilot/missing" "$TARGET_HOME/.unselected-dangling"
+    run_installer --profile minimal --unlink
+    assert_failure
+    assert_output --partial 'dangling link'
+    [ -L "$TARGET_HOME/.unselected-dangling" ]
+    [ -L "$TARGET_HOME/.vimrc" ]
+}
+
+@test "dangling link protection also applies to a symlinked HOME" {
+    use_real_stow
+    ln -s "$TARGET_HOME" "$FIXTURE/home alias"
+    ln -s "$REPO/gh-copilot/missing" "$TARGET_HOME/.unselected-dangling"
+    TARGET_HOME="$FIXTURE/home alias"
+    run_installer --profile minimal --unlink
+    assert_failure
+    assert_output --partial 'dangling link'
+    [ -L "$TARGET_HOME/.unselected-dangling" ]
 }
