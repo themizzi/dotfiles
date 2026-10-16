@@ -5,9 +5,11 @@ load '../vendor/bats-assert/load'
 setup() {
     SOURCE_ROOT=$(CDPATH='' cd -- "$BATS_TEST_DIRNAME/.." && pwd -P)
     FIXTURE="$BATS_TEST_TMPDIR/profile resolver"
-    mkdir -p "$FIXTURE/profiles" "$FIXTURE/scripts"
+    mkdir -p "$FIXTURE/profiles" "$FIXTURE/scripts" "$FIXTURE/packages"
     cp -R "$SOURCE_ROOT/profiles/." "$FIXTURE/profiles/"
     cp "$SOURCE_ROOT/scripts/profile-packages.sh" "$FIXTURE/scripts/"
+    cp "$SOURCE_ROOT/packages/cli.tsv" "$FIXTURE/packages/"
+    cp "$SOURCE_ROOT"/packages/Brewfile.* "$FIXTURE/packages/"
 }
 
 resolve_profile() {
@@ -41,6 +43,18 @@ assert_invalid_profile() {
     assert_output $'gh\ngh-copilot\nnano\nnvim\nstarship\nvim\nzsh'
 }
 
+@test "profiles declare independent CLI groups and application bundles" {
+    resolve_profile --profile minimal --kind cli-group
+    assert_success
+    assert_output 'base'
+    resolve_profile --profile desktop --kind macos-bundle
+    assert_success
+    assert_output 'desktop'
+    resolve_profile --profile personal --kind macos-bundle
+    assert_success
+    assert_output $'desktop\npersonal'
+}
+
 @test "default profile is dev" {
     resolve_profile
     assert_success
@@ -48,6 +62,22 @@ assert_invalid_profile() {
     resolve_profile --profile dev
     assert_success
     [ "$output" = "$default" ]
+}
+
+@test "default follows profiles/default and new profile files are discovered" {
+    printf 'personal\n' > "$FIXTURE/profiles/default"
+    resolve_profile
+    assert_success
+    assert_output $'gh\ngh-copilot\nnano\nnvim\nstarship\nvim\nzsh'
+
+    cat > "$FIXTURE/profiles/workstation.profile" <<'EOF'
+extends minimal
+package nvim
+cli-group development
+EOF
+    resolve_profile --profile workstation
+    assert_success
+    assert_output $'nvim\nvim\nzsh'
 }
 
 @test "multiple inheritance deduplicates packages deterministically" {

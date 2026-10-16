@@ -1,34 +1,34 @@
 # Profiles
 
-Profiles select existing Stow packages explicitly. The resolver is independent
-of the installer and does not install software or change any files:
+Profiles are declarative selections resolved by `scripts/profile-packages.sh`.
+The resolver is independent of the installer and does not install software or
+change files:
 
 ```sh
 sh scripts/profile-packages.sh --profile dev
+sh scripts/profile-packages.sh --profile desktop --kind macos-bundle
 ```
 
-Omitting `--profile` selects `dev`. Success prints one package per line to
-stdout, in the stable order below, without duplicates. Errors print to stderr,
-produce no package list, and return a nonzero status. Run it from any directory;
-definitions are located relative to the script, not the current directory.
+Omitting `--profile` uses the single value in `profiles/default`. Profile names
+are discovered from `profiles/*.profile`; adding or removing a profile does not
+require editing resolver or installer code. Output is sorted, stable, and
+deduplicated. Errors print to stderr and return a nonzero status.
 
-| Profile | Inherits | Exact Stow package list (output order) |
-| --- | --- | --- |
-| `minimal` | — | `vim`, `zsh` |
-| `dev` (default) | `minimal` | `gh`, `nano`, `nvim`, `starship`, `vim`, `zsh` |
-| `desktop` | `dev` | `gh`, `nano`, `nvim`, `starship`, `vim`, `zsh` |
-| `personal` | `dev` | `gh`, `gh-copilot`, `nano`, `nvim`, `starship`, `vim`, `zsh` |
+| Profile | Inherits | Stow packages | CLI groups | macOS bundles |
+| --- | --- | --- | --- | --- |
+| `minimal` | — | `vim`, `zsh` | `base` | — |
+| `dev` (default) | `minimal` | `gh`, `nano`, `nvim`, `starship`, `vim`, `zsh` | `base`, `development` | — |
+| `desktop` | `dev` | `gh`, `nano`, `nvim`, `starship`, `vim`, `zsh` | `base`, `development` | `desktop` |
+| `personal` | `dev` | `gh`, `gh-copilot`, `nano`, `nvim`, `starship`, `vim`, `zsh` | `base`, `development` | `desktop`, `personal` |
 
-`minimal` keeps the existing minimal Vim configuration and avoids requiring
-Starship. `dev` retains the general development configurations, including nano.
-`personal` explicitly opts in to the existing Copilot configuration; it does not
-authenticate GitHub or enable a subscription. No existing configurations are
-removed. The old installer selected seven packages including `gh-copilot`;
-`dev` intentionally selects six because Copilot is now opt-in. `personal`
-reproduces that former seven-package selection.
+`minimal` keeps the minimal Vim/Zsh setup and CLI baseline. `dev` adds general
+development tools. `desktop` and `personal` add their declared macOS application
+bundles; Linux reports those bundles as macOS-only. `personal` opts in to
+existing Copilot configuration and applications; it does not authenticate GitHub
+or enable a subscription.
 
-The existing Stow tree installs application configuration under `~/.config`.
-For profiles containing such packages, linking refuses a non-default
+The existing Stow tree installs application configuration under `~/.config`. For
+profiles containing such packages, linking refuses a non-default
 `XDG_CONFIG_HOME` instead of silently installing files the applications will not
 read. Relocating the Stow config tree is not implemented here. The shell itself
 preserves custom XDG values, and `minimal` can be used with those values because
@@ -38,18 +38,22 @@ standard paths where the installer previously created links.
 ## Definitions and safety
 
 `profiles/NAME.profile` is data, never executable shell. Blank lines and
-whole-line `#` comments are allowed. Each other line must contain exactly
-`extends NAME` or `package PACKAGE`. Multiple inheritance is supported;
-inherited and repeated packages appear only once. Cycles in the selected
-inheritance graph fail before any list is printed. Unknown profiles, parents,
-directives, and packages are errors. The resolver validates syntax and names in
-all four files, including profiles not selected.
+whole-line `#` comments are allowed. Each other line contains exactly two
+fields, one of:
 
-Names are limited to `minimal`, `dev`, `desktop`, and `personal`; package names
-are limited to `gh`, `gh-copilot`, `nano`, `nvim`, `starship`, `vim`, and `zsh`.
-Neither paths nor shell fragments can be supplied as a profile. Adding a real
-Stow package requires deliberately updating the resolver allowlist as well as
-the definitions. Output order is the allowlist order, not inheritance order.
+```text
+extends PROFILE
+package STOW_PACKAGE
+cli-group GROUP
+macos-bundle BUNDLE
+```
+
+Inheritance is deduplicated; cycles fail before output. All profile files are
+validated, including profiles not selected. Profile names come from filenames.
+Allowed Stow packages are listed in `profiles/packages`; CLI groups come from
+the first column of `packages/cli.tsv`; macOS bundle names come from matching
+`packages/Brewfile.NAME` files. These data sources keep profile selection out of
+shell `case` statements and avoid maintaining parallel allowlists in code.
 
 ## Installer and provisioning integration
 
@@ -59,45 +63,21 @@ Select the installer profile with:
 sh install.sh --profile NAME
 ```
 
-The installer checks only submodules belonging to selected packages. Omitting
-`--profile` selects `dev`; use `--profile personal` for the old seven-package
-selection. Unlinking also uses the selected profile and does not automatically
-remove links from previously installed profiles. To switch profiles, explicitly
-unlink the previous selection before linking the new one.
+The installer checks only submodules belonging to selected Stow packages.
+Omitting `--profile` uses `profiles/default`. Unlinking also uses the selected
+profile and does not automatically remove links from previously installed
+profiles. Explicitly unlink the previous selection before switching profiles.
 
-The resolver API for the installer is:
-
-```sh
-sh "$repository/scripts/profile-packages.sh" --profile "$profile"
-```
-
-Check its exit status before invoking Stow. Each output line is one validated
-Stow package argument; never `eval` the output. The default is `dev`.
-
-Preview system packages with `bash scripts/packages.sh --profile NAME --dry-run`.
-Provisioning accepts the same four profile names, but maintains its own
-external-package mapping: Stow directories are not system package names. For
-example, `minimal` can provision the shell/editor and Stow, `dev` development
-tools and language runtimes, and `desktop` additional platform-appropriate GUI
-applications. `personal` may add optional personal tools. `desktop` deliberately
-has no fictitious desktop Stow package. Provisioning may install more tools
-than have symlink configurations; it must not feed those names into Stow.
+For provisioning, `scripts/packages.sh` asks the same resolver for the selected
+profile's CLI groups and macOS bundles. The CLI manifest maps groups to native
+package names; Stow package names are never treated as system packages. Add a
+CLI dependency to a group in the manifest and select that group in a profile.
+Add a macOS bundle by providing its `Brewfile.NAME` and referencing `NAME` in a
+profile.
 
 ## Tests
 
-Installer/profile integration regressions run with the pinned Bats suite:
-
-```sh
-sh scripts/test-installer.sh
-```
-
-This includes selection, invalid profiles, custom XDG handling, and safe unlink
-behavior with dangling links and symlinked HOME paths. Resolver contract tests
-also use Bats and disposable profile definitions:
-
-```sh
-just test --filter 'inheritance'
-```
-
-The full `just test` suite runs all profile tests. They require a POSIX shell and
-awk, and never run Stow or modify the user home directory.
+Profile resolution and installer integration are covered by the pinned Bats
+suite. Resolver tests use disposable profile directories, including adding a
+profile file without changing resolver code. Run `just test --filter 'profile'`;
+the suite does not run Stow or modify the user home directory.

@@ -22,18 +22,19 @@ manager, adds repositories, or pipes a downloaded installer into a shell.
 ## Source of truth and profiles
 
 `packages/cli.tsv` is the canonical whitespace-delimited CLI mapping. Columns are
-profile, command, apt, pacman, brew; `-` means not provided by that manager.
-Minimal contains Git, Stow, Zsh, Vim and Python. Dev adds Neovim, fzf, fd, ripgrep,
-gh, nano, just, Python packaging support and download/archive tools. Starship is
-optional: installed from Arch/Homebrew packages where mapped, not from apt.
+group, command, apt, pacman, brew; `-` means not provided by that manager.
+The `base` group contains Git, Stow, Zsh, Vim and Python. `development` adds
+Neovim, fzf, fd, ripgrep, gh, nano, just, Python packaging support and
+download/archive tools. Profiles select these groups in `profiles/NAME.profile`.
+Starship is optional: installed from Arch/Homebrew packages where mapped, not from apt.
 On Debian/Ubuntu the fd executable is `fdfind`; the doctor accepts either name.
 
-`Brewfile` reads the CLI mapping directly (dev profile). `Aptfile` is a compatibility
-snapshot of the dev apt column, checked against the mapping by the test suite;
+`Brewfile` reads the CLI mapping directly. `Aptfile` is a compatibility snapshot
+of the default profile's apt selection, checked against the mapping by the test suite;
 update it when changing the mapping, or regenerate it with:
 
 ```sh
-bash scripts/packages.sh --profile dev --manager apt --list > Aptfile
+bash scripts/packages.sh --manager apt --list > Aptfile
 ```
 
 The manager override is for previews/listing only, still requires a supported host,
@@ -41,14 +42,15 @@ and is rejected with `--install`. The Dockerfile consumes the same mapping/scrip
 not a third package list. Its base is pinned to Debian 13 rather than moving
 `debian`; this is a release pin, **not** an immutable image digest.
 
-Desktop and personal both include CLI dev. On macOS, desktop adds the explicit
-`packages/Brewfile.desktop` application bundle. Personal applies desktop then
-`packages/Brewfile.personal` (preserving the original personal app collection,
-including App Store purchases, VPN, Dropbox and optional Copilot). All casks,
+Profiles declare macOS bundles by name. On macOS, desktop selects
+`packages/Brewfile.desktop`; personal selects both that and
+`packages/Brewfile.personal` (including App Store purchases, VPN, Dropbox and
+optional Copilot). All casks,
 VS Code extensions and `mas` are guarded for macOS; `mas` is not a Linux formula.
 App Store installs may require an interactive signed-in account and licenses.
-On Linux these profiles provision dev CLI only and say so; no GUI equivalence is
-claimed. To apply just one app bundle directly, use `brew bundle --file=...`.
+On Linux, selected profiles provision CLI groups only and report application
+bundles as macOS-only. To apply just one app bundle directly, use
+`brew bundle --file=...`.
 
 The stale `Brewfile.lock.json` has been deliberately retired. Homebrew Bundle
 records/resolves current package availability; it is not an immutable lock to

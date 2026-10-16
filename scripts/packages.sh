@@ -3,26 +3,31 @@
 # Bash 3.2 (macOS) treats empty arrays as unset under nounset.
 set -eo pipefail
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-profile=dev
+profile=
 mode=dry-run
 manager_override=
 die() { printf '%s\n' "$*" >&2; exit 1; }
 while (($#)); do
     case "$1" in
-        --profile) (($# >= 2)) || die 'Missing profile'; profile=$2; shift 2 ;;
+        --profile) (($# >= 2)) || die 'Missing profile'; [[ -n $2 ]] || die 'Empty profile'; profile=$2; shift 2 ;;
         --manager) (($# >= 2)) || die 'Missing manager'; manager_override=$2; shift 2 ;;
         --dry-run) mode=dry-run; shift ;;
         --install) mode=install; shift ;;
         --doctor) mode=doctor; shift ;;
         --list) mode=list; shift ;;
-        --help) printf '%s\n' 'Usage: packages.sh [--profile minimal|dev|desktop|personal] [--dry-run|--install|--doctor|--list] [--manager apt|pacman|brew (preview only)]'; exit 0 ;;
+        --help) printf '%s\n' 'Usage: packages.sh [--profile NAME] [--dry-run|--install|--doctor|--list] [--manager apt|pacman|brew (preview only)]'; exit 0 ;;
         *) die "Unknown argument: $1" ;;
     esac
 done
-case "$profile" in minimal|dev|desktop|personal) ;; *) die "Unknown profile: $profile" ;; esac
+if [[ -z $profile ]]; then profile=$(cat "$ROOT/profiles/default"); fi
 if [[ $mode == install && ( -n $manager_override || ${PACKAGES_TESTING:-0} == 1 ) ]]; then
     die 'Test fixtures and manager overrides cannot install packages'
 fi
+groups=$(sh "$ROOT/scripts/profile-packages.sh" --profile "$profile" --kind cli-group) ||
+    die "Cannot resolve CLI groups for profile: $profile"
+groups=${groups//$'\n'/ }
+bundles=$(sh "$ROOT/scripts/profile-packages.sh" --profile "$profile" --kind macos-bundle) ||
+    die "Cannot resolve application bundles for profile: $profile"
 os=$(uname -s)
 arch=$(uname -m)
 release=/etc/os-release
@@ -51,15 +56,19 @@ if [[ -n $manager_override ]]; then manager=$manager_override; fi
 case "$manager" in apt) column=3 ;; pacman) column=4 ;; brew) column=5 ;; *) die "Unknown manager: $manager" ;; esac
 packages=()
 commands=()
-while read -r tier command apt pacman brew; do
-    [[ -n $tier && $tier != \#* ]] || continue
-    [[ $profile != minimal || $tier == minimal ]] || continue
-    values=("$tier" "$command" "$apt" "$pacman" "$brew")
+has_nvim=false
+has_starship=false
+while read -r group command apt pacman brew; do
+    [[ -n $group && $group != \#* ]] || continue
+    [[ " $groups " == *" $group "* ]] || continue
+    values=("$group" "$command" "$apt" "$pacman" "$brew")
     package=${values[$((column - 1))]}
     if [[ $package != - ]]; then
         packages+=("$package")
     fi
     commands+=("$command")
+    [[ $command != nvim ]] || has_nvim=true
+    [[ $command != starship ]] || has_starship=true
 done < "$ROOT/packages/cli.tsv"
 if [[ $mode == list ]]; then printf '%s\n' "${packages[@]}"; exit 0; fi
 if [[ $mode == doctor ]]; then
@@ -72,7 +81,7 @@ if [[ $mode == doctor ]]; then
         esac
         if ! command -v "$command" >/dev/null 2>&1; then printf 'Missing: %s\n' "$command"; failed=1; fi
     done
-    if [[ $profile != minimal ]] && command -v nvim >/dev/null 2>&1; then
+    if [[ $has_nvim == true ]] && command -v nvim >/dev/null 2>&1; then
         version=$(nvim --version | sed -n '1s/^NVIM v\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p')
         if [[ ! $version =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]] || ! ((10#${BASH_REMATCH[1]} > 0 || 10#${BASH_REMATCH[2]} > 11 || (10#${BASH_REMATCH[2]} == 11 && 10#${BASH_REMATCH[3]} >= 3))); then
             printf '%s\n' 'Neovim >=0.11.3 required; install a verified user-level release (docs/dependencies.md), then re-run --doctor.'
@@ -98,14 +107,15 @@ if [[ $mode == install ]]; then
 fi
 if ((${#update[@]})); then run "${prefix[@]}" "${update[@]}"; fi
 run "${prefix[@]}" "${install[@]}" "${packages[@]}"
-if [[ $profile == desktop || $profile == personal ]]; then
+if [[ -n $bundles ]]; then
     if [[ $os == Darwin && $manager == brew ]]; then
-        run brew bundle --file="$ROOT/packages/Brewfile.desktop"
-        if [[ $profile == personal ]]; then run brew bundle --file="$ROOT/packages/Brewfile.personal"; fi
+        while IFS= read -r bundle; do
+            [[ -n $bundle ]] && run brew bundle --file="$ROOT/packages/Brewfile.$bundle"
+        done <<< "$bundles"
     else
-        printf '%s\n' 'Desktop/personal application bundles are macOS-only; CLI dev packages selected.'
+        printf '%s\n' 'Selected application bundles are macOS-only; CLI packages selected.'
     fi
 fi
-if [[ $profile != minimal ]]; then
+if [[ $has_starship == true ]]; then
     printf '%s\n' 'Starship is optional (not installed by apt); verify Neovim >=0.11.3 with --doctor. See docs/dependencies.md.'
 fi

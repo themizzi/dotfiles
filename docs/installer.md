@@ -12,8 +12,8 @@ sh /path/to/dotfiles/install.sh --unlink --dry-run
 sh /path/to/dotfiles/install.sh --unlink
 ```
 
-The default `dev` selection is `gh nano nvim starship vim zsh`; `personal` also
-includes `gh-copilot`. Select `--profile minimal|dev|desktop|personal`; see
+The default selection is configured in `profiles/default`. Profile names come
+from `profiles/NAME.profile`; see
 [profiles](profiles.md). Options may be combined in
 either order. Both linking and unlinking simulate the entire selection before
 applying it. Repeated runs are safe; linking uses `--stow`, not `--restow`.
