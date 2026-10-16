@@ -42,6 +42,15 @@ jobs:
           fi
       - name: Install checksum-verified Neovim and just
         run: python3 -B .github/workflows/install-tools.py
+      - name: Run pinned installer tests before creating a venv
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == macOS ]]; then
+            # Prefer system Bash 3.2 and BSD utilities, retaining Homebrew Stow.
+            PATH="/bin:/usr/bin:/usr/sbin:/sbin:$(brew --prefix)/bin" sh scripts/test-installer.sh
+          else
+            sh scripts/test-installer.sh
+          fi
       - name: Install locked Python dependencies
         run: |
           python3 -m venv .venv
@@ -94,6 +103,8 @@ jobs:
           submodules: recursive
       - name: Install checksum-verified Neovim and just
         run: python3 -B .github/workflows/install-tools.py
+      - name: Run pinned installer tests before creating a venv
+        run: sh scripts/test-installer.sh
       - name: Install locked Python dependencies
         run: |
           python3 -m venv .venv

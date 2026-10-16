@@ -18,6 +18,7 @@ test-installer *args:
 lint:
     @command -v shellcheck >/dev/null 2>&1 || { echo 'lint: ShellCheck is required; install the dev dependencies' >&2; exit 1; }
     shellcheck install.sh scripts/*.sh .devcontainer/scripts/*.sh
+    shellcheck --shell=bash test/helpers/*.bash
 
 # Verify Lua formatting without rewriting files (CI uses StyLua 2.6.0).
 fmt-check:

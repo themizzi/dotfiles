@@ -32,10 +32,10 @@ for name in sorted(set(result.stdout.split(b"\0")) - {b""}):
     if not path.is_file():
         continue
     try:
-        if path.suffix == ".sh":
+        if path.suffix in (".sh", ".bash"):
             with path.open(encoding="utf-8") as source:
                 first_line = source.readline()
-            shell = "bash" if "bash" in first_line else "sh"
+            shell = "bash" if "bash" in first_line or path.suffix == '.bash' else "sh"
             subprocess.run([shell, "-n", str(path)], check=True)
         elif path.suffix == ".zsh" or path.name in (".zshrc", ".zshenv", ".zprofile", ".zlogin", ".zlogout"):
             subprocess.run(["zsh", "-f", "-n", str(path)], check=True)

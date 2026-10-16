@@ -2,6 +2,22 @@
 
 ## Local, plugin-free validation
 
+Installer tests are an independent, Python-free suite:
+
+```sh
+git submodule update --init --recursive -- vendor # explicit setup; may use network
+sh scripts/test-installer.sh
+# Equivalent with Just: just test-installer
+```
+
+The authoritative runner is `vendor/bats-core` v1.14.0, with bats-support v0.3.0
+and bats-assert v2.2.4 pinned as Git submodules. Bash (including macOS system
+Bash 3.2), Git, GNU Stow, and standard Unix utilities are required. No system
+Bats/helper packages or Python are used. Missing vendors fail with setup
+instructions, never an automatic fetch. All fixtures and shell stubs live under
+Bats temporary directories; real-Stow tests do not modify the actual HOME.
+The duplicate installer Behave scenario has been consolidated into this suite.
+
 Requirements: Python 3.10+, Neovim **0.11.3+**, Git, GNU Stow, zsh, and
 [just](https://github.com/casey/just). Install ripgrep and fzf for realistic manual
 editor checks. CI pins Neovim 0.11.5 and just 1.43.1 and verifies their release
@@ -27,8 +43,9 @@ OS packages and the Arch rolling image are intentionally not frozen.
 
 `just check` and `just test` are the public validation entry points. Do not
 silence baseline failures with skips. The bounded runner `sh scripts/test.sh`
-checks versions and kills the suite process group on timeout (60 seconds for
-unit tests, 300 seconds for Behave). The Just recipe delegates to this runner.
+checks versions and runs Bats first (120-second suite deadline), then Python
+unit tests (60 seconds), then Behave (300 seconds). Each Bats case additionally
+has a default 30-second timeout. The Just recipe delegates to this runner.
 Both suite and plugin-smoke runners terminate/reap their process groups on
 timeouts, Ctrl+C, or SIGTERM, allowing temporary-home cleanup on cancellation.
 It accepts Behave arguments, for example:
@@ -69,7 +86,11 @@ your workstation, or use your real HOME for install tests.
 `.github/workflows/validation.yml` runs the complete check/test contract on
 Ubuntu and macOS, plus real Debian 13, Fedora 43, and Arch containers. Each
 container installs its own zsh, Stow, Git, Python, ripgrep, and fzf and executes
-the suite, rather than accepting a missing-tool skip. Third-party actions are
+the suite, rather than accepting a missing-tool skip. Recursive checkout includes
+all pinned `vendor/` submodules. The installer suite runs before creating a
+Python venv; macOS explicitly tests it using system Bash and BSD utilities.
+Only first-party scripts/helpers are checked; third-party submodule contents
+are not linted or reformatted. Third-party actions are
 pinned to verified commit SHAs. Release downloads use pinned versions and
 SHA-256 hashes recorded from GitHub's release-asset metadata. Failed checksum
 validation is fatal. Job deadlines provide an outer bound as well.
