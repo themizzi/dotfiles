@@ -17,6 +17,20 @@ sh install.sh
 
 The script is idempotent (`stow --restow`).
 
+The Linux packages also include Hyprland, Hyprshell, the Hypridle user unit,
+and the active Toshy config. On a Hyprland system, reload the user units after
+installing and enable Hypridle for the graphical session:
+
+```bash
+systemctl --user daemon-reload
+systemctl --user enable hypridle.service
+```
+
+`Pacmanfile` lists the Arch packages used by this setup. Toshy's installed
+application and runtime state are not managed here; only `toshy_config.py`
+and `KEYBOARD.md` are Stowed. Review the active Toshy config against Toshy's
+upstream defaults when upgrading Toshy.
+
 ## Devcontainer (Debian)
 
 Open this repository in a devcontainer with VS Code (`Dev Containers: Reopen in Container`).
