@@ -52,7 +52,8 @@ If an old `~/.zshrc.zwc` masks changes, remove that compiled file explicitly.
 Run isolated startup checks with:
 
 ```sh
-python3 -m unittest discover -s test -p 'test_zsh.py' -v
+just test --filter 'Zsh'
 ```
 
-Tests require zsh, but no Python dependencies or network.
+Tests require zsh and the explicitly initialized pinned Bats submodules, but no
+Python interpreter or network. They use disposable homes and stub network tools.
