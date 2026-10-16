@@ -24,8 +24,7 @@ Open this repository in a devcontainer with VS Code (`Dev Containers: Reopen in 
 On first create, `.devcontainer/scripts/post-create.sh` runs and:
 
 - initializes/updates git submodules
-- creates `.venv` if it does not already exist
-- installs `behave` and `pynvim` into `.venv`
+- initializes repository submodules without installing Python test dependencies
 
 Required Debian packages for Neovim + command palette workflow:
 
@@ -44,11 +43,7 @@ Required Debian packages for Neovim + command palette workflow:
 - `wget`
 - `zsh`
 
-`post-create.sh` installs Python test dependencies with:
-
-```bash
-.venv/bin/python -m pip install behave pynvim
-```
+No Python environment or third-party test packages are needed for installer tests.
 
 On macOS, ensure these Homebrew entries exist in `Brewfile`:
 
@@ -61,7 +56,7 @@ Verify inside the container:
 
 ```bash
 sh install.sh
-.venv/bin/behave
+sh scripts/test-installer.sh
 ```
 
 ## Usage
@@ -74,31 +69,14 @@ sh install.sh
 - `<leader>g` opens `fzf-lua` live grep when `rg` is available; otherwise falls back to a safe built-in search.
 - `<leader>h` opens `fzf-lua` help tags picker.
 
-## Tests (BDD / Neovim UI protocol)
+## Tests
 
-Tests use Behave + `pynvim` with Neovim `--embed`, `nvim_ui_attach`, and redraw/grid events.
+Installer safety and real-Stow tests use the pinned Bats runner and helpers:
 
-Install test dependencies in a local venv:
-
-```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install behave pynvim
+```sh
+git submodule update --init --recursive -- vendor
+sh scripts/test-installer.sh
 ```
 
-Stage-gated Neovim-only test commands:
-
-```bash
-nvim --headless +qall
-.venv/bin/behave features/01_boot_and_shared_config.feature
-.venv/bin/behave features/02_netrw_toggle.feature
-.venv/bin/behave features/03_netrw_open_file.feature
-.venv/bin/behave features/04_dotfiles_install_symlinks.feature
-.venv/bin/behave features/05_fzf_lua_command_palette.feature
-.venv/bin/behave features/06_fzf_lua_grep_workflow.feature
-```
-
-Run the full suite:
-
-```bash
-.venv/bin/behave
-```
+This suite needs Bash, Git, and Stow, but no Python or system Bats installation.
+See [installer tests](docs/installer.md).

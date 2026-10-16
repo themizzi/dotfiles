@@ -23,8 +23,7 @@
         "redhat.vscode-yaml",
         "streetsidesoftware.code-spell-checker",
         "editorconfig.editorconfig",
-        "github.vscode-github-actions",
-        "YouneselBarnoussi.vscode-behave-test-adapter"
+        "github.vscode-github-actions"
       ]
     }
   }
