@@ -80,14 +80,13 @@ EOF
 
 @test "invalid names and command-line forms fail closed" {
     local name
-    for name in '' unknown ../dev DEV '$(touch forbidden)' 'dev
-personal'; do
+    for name in '' unknown ../invalid PROFILE '$(touch forbidden)' 'invalid
+profile'; do
         assert_invalid_profile --profile "$name"
     done
-    assert_invalid_profile dev
     assert_invalid_profile --profile
-    assert_invalid_profile --other dev
-    assert_invalid_profile --profile dev extra
+    assert_invalid_profile --other
+    assert_invalid_profile --profile personal extra
 }
 
 @test "cycles, unknown parents, and unsupported packages fail" {
