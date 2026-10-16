@@ -52,7 +52,7 @@ If an old `~/.zshrc.zwc` masks changes, remove that compiled file explicitly.
 Run isolated startup checks with:
 
 ```sh
-just test --filter 'Zsh'
+just test
 ```
 
 Tests require zsh and the explicitly initialized pinned Bats submodules, but no
