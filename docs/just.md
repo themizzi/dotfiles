@@ -47,19 +47,16 @@ Set up dependencies explicitly before testing:
 
 ```sh
 python3 -m venv .venv
-.venv/bin/python -m pip install behave pynvim
 just test
 ```
 
-`just test` uses `.venv/bin/python` for stdlib unittest discovery
-in `test/` (when present), runs the pinned Bats installer suite, then `python -m behave`. Missing venv, Python packages,
-or required runtime tools (`nvim`, `stow`, `zsh`) produce explicit diagnostics;
-nothing is installed automatically. Behave uses the repository's existing
-fixtures and temporary homes, with plugin bootstrap disabled by those fixtures.
-The recipe itself performs no network/bootstrap step. Other tools or plugin
-availability may still be required by individual scenarios.
+`just test` runs the pinned Bats installer suite, then `.venv/bin/python` for
+standard-library unittest discovery in `test/`. Missing venv or required runtime
+tools (`nvim`, `stow`, `zsh`) produce explicit diagnostics. No third-party Python
+packages are required, and nothing is installed automatically. Editor tests use
+isolated headless processes with plugin bootstrap disabled.
 
-Run an individual feature directly with `.venv/bin/python -m behave features/NAME.feature`.
+Run an individual Python test module using unittest discovery's `-p` option.
 Run only task-contract unit tests without third-party dependencies using:
 
 ```sh

@@ -22,7 +22,6 @@ class TaskContracts(unittest.TestCase):
         self.assertIn('sh install.sh "$@"', text)
         self.assertIn('sh scripts/test-installer.sh "$@"', text)
         self.assertIn(".venv/bin/python", text)
-        self.assertIn('"$python" -B -m behave', text)
         self.assertIn("-m unittest discover", text)
         self.assertNotIn("pip install", text)
         self.assertFalse((ROOT / "Makefile").exists())
@@ -94,20 +93,30 @@ class SandboxedTasks(unittest.TestCase):
         result = self.run_just("test")
         self.assertEqual(result.returncode, 0, result.stderr)
         calls = (self.root / "calls").read_text().splitlines()
-        self.assertIn("-m unittest discover", calls[0])
-        self.assertIn("behave", calls[1])
-        self.assertEqual(calls[-2:], ['Bats', '-B -m behave'])
+        self.assertEqual(calls[0], 'Bats')
+        self.assertIn('-B -m unittest discover', calls[1])
+        self.assertEqual(len(calls), 2)
 
-    def test_missing_python_packages_diagnostic(self):
+    def test_standard_library_tests_need_no_site_packages(self):
         python = self.root / ".venv/bin/python"
         python.parent.mkdir(parents=True)
         # -S excludes installed third-party packages, without needing a venv.
         python.write_text('#!/bin/sh\nexec "$TEST_PYTHON" -S "$@"\n')
         python.chmod(0o755)
         self.env["TEST_PYTHON"] = sys.executable
+        (self.root / 'scripts/test-installer.sh').write_text('exit 0\n')
+        (self.root / 'test').mkdir()
+        (self.root / 'test/test_example.py').write_text('import unittest\nclass Example(unittest.TestCase):\n    def test_ok(self): self.assertTrue(True)\n')
+        tools = self.root / 'tools'
+        tools.mkdir()
+        for name in ('nvim', 'stow', 'zsh'):
+            tool = tools / name
+            tool.write_text('#!/bin/sh\nexit 0\n')
+            tool.chmod(0o755)
+        self.env['PATH'] = str(tools) + os.pathsep + self.env['PATH']
         result = self.run_just("test")
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("missing .venv dependencies: behave, pynvim", result.stderr)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('Ran 1 test', result.stderr)
 
     def test_check_syntax_only_and_invalid_inputs(self):
         for executable in ("git", "sh", "zsh", "python3"):
