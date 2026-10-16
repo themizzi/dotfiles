@@ -12,7 +12,9 @@ sh scripts/test-installer.sh
 
 The authoritative runner is `vendor/bats-core` v1.14.0, with bats-support v0.3.0
 and bats-assert v2.2.4 pinned as Git submodules. Bash (including macOS system
-Bash 3.2), Git, GNU Stow, and standard Unix utilities are required. No system
+Bash 3.2), Git, GNU Stow, and standard Unix utilities are required.
+Bats timeouts additionally require `ps` or `pkill` (`procps` on Debian/Ubuntu,
+`procps-ng` on Fedora/Arch, included with macOS). No system
 Bats/helper packages or Python are used. Missing vendors fail with setup
 instructions, never an automatic fetch. All fixtures and shell stubs live under
 Bats temporary directories; real-Stow tests do not modify the actual HOME.
