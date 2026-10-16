@@ -102,6 +102,7 @@ $HOME/config custom/nano/nanorc"
 }
 
 @test "PATH is unique and includes existing optional directories" {
+    fake_brew
     mkdir -p "$HOME/.local/bin" "$HOME/.cargo/bin" "$HOME/go/bin"
     run_zsh -ic 'source ~/.zshrc; print -rl -- $path' PATH="$BIN:/usr/bin:/bin:/usr/bin"
     assert_success
@@ -158,10 +159,11 @@ $HOME/config custom/nano/nanorc"
     mkdir -p "$BREW_PREFIX/opt/nvm" "$HOME/custom nvm"
     printf 'export NVM_SELECTED=brew\n' > "$BREW_PREFIX/opt/nvm/nvm.sh"
     printf 'export NVM_SELECTED=custom\n' > "$HOME/custom nvm/nvm.sh"
-    run_zsh -ic 'print -r -- "$NVM_SELECTED"' NVM_DIR="$HOME/custom nvm"
+    run_zsh -ic 'print -r -- "$NVM_SELECTED"' \
+        HOMEBREW_PREFIX="$BREW_PREFIX" NVM_DIR="$HOME/custom nvm"
     assert_success
     assert_output custom
-    run_zsh -ic 'print -r -- "$NVM_SELECTED"'
+    run_zsh -ic 'print -r -- "$NVM_SELECTED"' HOMEBREW_PREFIX="$BREW_PREFIX"
     assert_success
     assert_output brew
 }
