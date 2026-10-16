@@ -136,26 +136,6 @@ setup() { installer_fixture; }
     done
 }
 
-@test "malformed development venv is preserved before setup" {
-    mkdir -p "$REPO/.devcontainer/scripts"
-    cp "$SOURCE_ROOT/.devcontainer/scripts/post-create.sh" "$REPO/.devcontainer/scripts/"
-    for kind in directory file symlink; do
-        case "$kind" in
-            directory) mkdir "$REPO/.venv"; printf keep > "$REPO/.venv/valuable" ;;
-            file) printf keep > "$REPO/.venv" ;;
-            symlink) ln -s "$REPO/missing" "$REPO/.venv" ;;
-        esac
-        run env HOME="$TARGET_HOME" PATH="$TOOLS" /bin/sh "$REPO/.devcontainer/scripts/post-create.sh"
-        assert_failure
-        assert_output --partial 'has not been deleted'
-        case "$kind" in
-            directory) [ "$(cat "$REPO/.venv/valuable")" = keep ]; rm "$REPO/.venv/valuable"; rmdir "$REPO/.venv" ;;
-            file) [ "$(cat "$REPO/.venv")" = keep ]; rm "$REPO/.venv" ;;
-            symlink) [ -L "$REPO/.venv" ]; rm "$REPO/.venv" ;;
-        esac
-    done
-}
-
 @test "real Stow links Vim and Neovim idempotently and safely unlinks" {
     use_real_stow
     run_installer --dry-run

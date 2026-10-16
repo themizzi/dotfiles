@@ -24,8 +24,7 @@ Open this repository in a devcontainer with VS Code (`Dev Containers: Reopen in 
 On first create, `.devcontainer/scripts/post-create.sh` runs and:
 
 - initializes/updates git submodules
-- creates `.venv` if it does not already exist
-- prepares a standard-library Python test environment without downloading packages
+- initializes repository submodules without installing Python test dependencies
 
 Required Debian packages for Neovim + command palette workflow:
 
@@ -44,7 +43,7 @@ Required Debian packages for Neovim + command palette workflow:
 - `wget`
 - `zsh`
 
-No third-party Python test packages are needed.
+No Python environment or third-party test packages are needed for installer tests.
 
 On macOS, ensure these Homebrew entries exist in `Brewfile`:
 
@@ -80,15 +79,4 @@ sh scripts/test-installer.sh
 ```
 
 This suite needs Bash, Git, and Stow, but no Python or system Bats installation.
-See [installer tests](docs/installer.md). Other suites remain Python-based.
-
-Run any additional standalone Python tests using the standard library:
-
-```bash
-python3 -m venv .venv
-.venv/bin/python -B -m unittest discover -s test -p 'test_*.py'
-```
-
-No feature files, step definitions, embedded RPC client, or third-party Python
-test framework are required. Installer checks use Bats; shell/editor checks use
-standalone tests with isolated temporary environments.
+See [installer tests](docs/installer.md).
