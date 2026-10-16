@@ -13,9 +13,11 @@ installer_fixture() {
     cp "$SOURCE_ROOT/install.sh" "$REPO/install.sh"
     ALL_PACKAGES=(gh gh-copilot nano nvim starship vim zsh)
     PACKAGES=(gh nano nvim starship vim zsh)
-    mkdir -p "$REPO/scripts"
+    mkdir -p "$REPO/scripts" "$REPO/packages"
     cp -R "$SOURCE_ROOT/profiles" "$REPO/profiles"
     cp "$SOURCE_ROOT/scripts/profile-packages.sh" "$REPO/scripts/"
+    cp "$SOURCE_ROOT/packages/cli.tsv" "$REPO/packages/"
+    cp "$SOURCE_ROOT"/packages/Brewfile.* "$REPO/packages/"
     for package in "${ALL_PACKAGES[@]}"; do
         mkdir -p "$REPO/$package"
         printf '%s\n' "$package" > "$REPO/$package/.$package"
@@ -24,7 +26,7 @@ installer_fixture() {
     cp "$SOURCE_ROOT/vim/.vimrc" "$REPO/vim/.vimrc"
     mkdir -p "$REPO/nvim/.config/nvim"
     cp "$SOURCE_ROOT/nvim/.config/nvim/init.vim" "$REPO/nvim/.config/nvim/init.vim"
-    for tool in dirname cat grep find awk sh; do
+    for tool in dirname cat grep find awk sh tr sort; do
         ln -s "$(command -v "$tool")" "$TOOLS/$tool"
     done
     cat > "$TOOLS/git" <<'SH'

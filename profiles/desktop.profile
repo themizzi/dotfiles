@@ -1,2 +1,3 @@
-# Desktop-specific differences belong to package provisioning, not Stow.
+# Desktop applications are an explicit macOS-only provisioning selection.
 extends dev
+macos-bundle desktop

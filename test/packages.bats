@@ -66,12 +66,13 @@ reset_release() { printf 'ID=%s\nVERSION_ID="%s"\n' "$1" "$2" > "$RELEASE"; }
 }
 
 @test "canonical manifest schema and Homebrew policy are valid" {
-    while read -r tier command apt pacman brew; do
-        [[ -n "$tier" && "$tier" != \#* ]] || continue
-        [[ "$tier" == minimal || "$tier" == dev ]]
+    while read -r group command apt pacman brew; do
+        [[ -n "$group" && "$group" != \#* ]] || continue
+        [[ "$group" == base || "$group" == development ]]
         [[ "$command" =~ ^[a-z0-9-]+$ && "$apt" =~ ^[A-Za-z0-9-]+$ && "$pacman" =~ ^[A-Za-z0-9-]+$ && "$brew" =~ ^[A-Za-z0-9-]+$ ]]
     done < "$ROOT/packages/cli.tsv"
     grep -F 'packages/cli.tsv' "$ROOT/Brewfile"
+    grep -F 'line.split[4]' "$ROOT/Brewfile"
     ! grep -F 'brew "antidote"' "$ROOT/Brewfile"
     grep -F 'brew "mas"' "$ROOT/packages/Brewfile.personal"
     [ ! -e "$ROOT/Brewfile.lock.json" ]
@@ -165,6 +166,8 @@ SH
 
 @test "container consumes the shared manifest and avoids bootstrap downloads" {
     grep -F 'COPY packages/' "$ROOT/.devcontainer/Dockerfile"
+    grep -F 'COPY profiles/' "$ROOT/.devcontainer/Dockerfile"
+    grep -F 'scripts/profile-packages.sh' "$ROOT/.devcontainer/Dockerfile"
     grep -F 'packages.sh --install --profile dev' "$ROOT/.devcontainer/Dockerfile"
     ! grep -E 'curl -fsSL|git clone' "$ROOT/.devcontainer/Dockerfile"
 }

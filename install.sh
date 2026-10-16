@@ -3,10 +3,10 @@ set -eu
 
 usage() {
     cat <<'EOF'
-Usage: install.sh [--profile minimal|dev|desktop|personal] [--dry-run] [--unlink] [--help]
+Usage: install.sh [--profile NAME] [--dry-run] [--unlink] [--help]
 
-Link the selected profile into HOME using GNU Stow (default: dev).
-  --profile  Select minimal, dev, desktop, or personal configuration.
+Link the selected profile into HOME using GNU Stow (default from profiles/default).
+  --profile  Select a profile defined in profiles/NAME.profile.
   --dry-run  Check prerequisites and simulate without changing files.
   --unlink   Remove only links owned by these packages (no submodule setup needed).
   --help     Show this help.
@@ -22,7 +22,7 @@ fail() {
 
 dry_run=false
 action=--stow
-profile=dev
+profile=
 while [ "$#" -gt 0 ]; do
     case "$1" in
         --help|-h) usage; exit 0 ;;
@@ -30,6 +30,7 @@ while [ "$#" -gt 0 ]; do
         --unlink) action=--delete ;;
         --profile)
             [ "$#" -ge 2 ] || fail '--profile requires a name (see --help).'
+            [ -n "$2" ] || fail '--profile requires a non-empty name.'
             profile=$2
             shift
             ;;
@@ -57,8 +58,13 @@ for config in "$HOME/.stowrc" "$REPO_ROOT/.stowrc"; do
 done
 
 # The resolver emits only allowlisted package names, never shell fragments.
-packages=$(sh "$REPO_ROOT/scripts/profile-packages.sh" --profile "$profile") ||
-    fail 'Cannot resolve profile; no changes were made.'
+if [ -n "$profile" ]; then
+    packages=$(sh "$REPO_ROOT/scripts/profile-packages.sh" --profile "$profile") ||
+        fail 'Cannot resolve profile; no changes were made.'
+else
+    packages=$(sh "$REPO_ROOT/scripts/profile-packages.sh") ||
+        fail 'Cannot resolve profile; no changes were made.'
+fi
 set --
 while IFS= read -r package; do
     [ -n "$package" ] || continue

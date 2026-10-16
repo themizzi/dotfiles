@@ -44,7 +44,7 @@ the recipe never installs or fetches dependencies. It forwards Bats options,
 for example `just test-installer --filter 'real Stow'`. Bash, Git, and Stow are
 required; system Bats and helper packages are not used.
 `just lint` runs ShellCheck against executable shell scripts. It requires
-ShellCheck from the development package profile and never executes those scripts.
+ShellCheck from the `development` CLI group and never executes those scripts.
 `just fmt-check` checks Neovim Lua formatting with StyLua 2.6.0 without
 rewriting files. See [testing tools](testing.md) for the pinned CI tool policy.
 
