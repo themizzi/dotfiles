@@ -14,5 +14,16 @@ test-installer *args:
     sh scripts/test-installer.sh "$@"
 
 # Run all pinned Bats suites without Python or fetching dependencies.
+# Lint executable shell scripts and shared test helpers without running them.
+lint:
+    @command -v shellcheck >/dev/null 2>&1 || { echo 'lint: ShellCheck is required; install the dev dependencies' >&2; exit 1; }
+    shellcheck install.sh scripts/*.sh .devcontainer/scripts/*.sh .github/workflows/*.sh
+    shellcheck --shell=bash test/helpers/*.bash
+
+# Verify Lua formatting without rewriting files (CI uses StyLua 2.6.0).
+fmt-check:
+    @command -v stylua >/dev/null 2>&1 || { echo 'fmt-check: StyLua 2.6.0 is required; see docs/testing.md' >&2; exit 1; }
+    stylua --check nvim/.config/nvim test/neovim
+
 test *args:
     sh scripts/test.sh "$@"

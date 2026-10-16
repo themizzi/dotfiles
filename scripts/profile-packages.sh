@@ -30,7 +30,7 @@ case $profile in
     *) printf 'Unknown profile: %s\n' "$profile" >&2; exit 2 ;;
 esac
 
-root=$(CDPATH= cd -P "$(dirname "$0")/.." && pwd)
+root=$(CDPATH='' cd -P "$(dirname "$0")/.." && pwd)
 for name in minimal dev desktop personal; do
     if [ ! -r "$root/profiles/$name.profile" ]; then
         printf 'Missing profile definition: %s\n' "$name" >&2

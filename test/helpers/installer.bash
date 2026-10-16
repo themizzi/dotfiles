@@ -1,4 +1,6 @@
 # First-party fixture helpers. All installer writes stay in BATS_TEST_TMPDIR.
+# Bats tests consume the fixture variables declared here.
+# shellcheck disable=SC2034
 installer_fixture() {
     SOURCE_ROOT=$(CDPATH='' cd -- "$BATS_TEST_DIRNAME/.." && pwd -P)
     REAL_STOW=$(command -v stow)

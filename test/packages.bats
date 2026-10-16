@@ -137,7 +137,7 @@ reset_release() { printf 'ID=%s\nVERSION_ID="%s"\n' "$1" "$2" > "$RELEASE"; }
 }
 
 @test "doctor rejects Neovim older than minimum and accepts current versions" {
-    for tool in git stow zsh vim python3 fzf fdfind rg gh nano just pip3 unzip gcc htop http git-lfs ps; do
+    for tool in git stow zsh vim python3 fzf fdfind rg gh nano just pip3 unzip gcc htop http git-lfs ps shellcheck; do
         printf '#!/bin/sh\nexit 0\n' > "$BIN/$tool"
         chmod +x "$BIN/$tool"
     done

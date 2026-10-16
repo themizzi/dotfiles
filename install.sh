@@ -38,7 +38,7 @@ while [ "$#" -gt 0 ]; do
     shift
 done
 
-REPO_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+REPO_ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)
 cd "$REPO_ROOT"
 [ -n "${HOME:-}" ] || fail 'HOME must be set to an existing absolute directory.'
 case "$HOME" in

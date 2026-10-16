@@ -17,7 +17,7 @@ editor_fixture() {
 local ok, err = xpcall(function() dofile(vim.env.DOTFILES_LUA_TEST) end, debug.traceback)
 if not ok then io.stderr:write(err); vim.cmd('cquit 1') else vim.cmd('qa!') end
 LUA
-    cd "$EDITOR_HOME/workspace"
+    cd "$EDITOR_HOME/workspace" || return 1
 }
 
 run_editor_lua() {
@@ -34,6 +34,8 @@ run_editor_lua() {
         DOTFILES_NVIM_AI_API_KEY= DOTFILES_NVIM_MCP=0 GIT_CONFIG_GLOBAL="$EDITOR_HOME/gitconfig" \
         GIT_CONFIG_NOSYSTEM=1 DOTFILES_LUA_TEST="$EDITOR_ROOT/test/neovim/$test_file" \
         "$NVIM_BIN" --headless -c "lua dofile('$EDITOR_HOME/test-wrapper.lua')"
+    # Bats `run` assigns status dynamically.
+    # shellcheck disable=SC2154
     if [ "$status" -eq 0 ]; then
         [ -d "$EDITOR_HOME/config/nvim" ] && [ ! -L "$EDITOR_HOME/config/nvim" ]
         [ ! -e "$EDITOR_HOME/data/nvim/lazy" ]
