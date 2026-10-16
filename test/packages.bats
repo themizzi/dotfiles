@@ -30,7 +30,7 @@ run_packages() {
 
 reset_release() { printf 'ID=%s\nVERSION_ID="%s"\n' "$1" "$2" > "$RELEASE"; }
 
-@test "default dev provisioning is a dry run and never installs optional apps" {
+@test "default personal provisioning is a dry run and never installs optional apps" {
     run_packages
     assert_success
     assert_output --partial 'Would run:'
@@ -39,7 +39,7 @@ reset_release() { printf 'ID=%s\nVERSION_ID="%s"\n' "$1" "$2" > "$RELEASE"; }
     refute_output --partial 'antidote'
 }
 
-@test "minimal package selection is exact and excludes dev applications" {
+@test "minimal package selection is exact and excludes personal applications" {
     run_packages --profile minimal --list
     assert_success
     assert_output $'git\nstow\nzsh\nvim\npython3'
@@ -115,20 +115,16 @@ reset_release() { printf 'ID=%s\nVERSION_ID="%s"\n' "$1" "$2" > "$RELEASE"; }
     [ ! -e "$MARKER" ]
 }
 
-@test "macOS desktop and personal bundles are separate explicit previews" {
+@test "macOS personal bundles are an explicit preview" {
     TEST_OS=Darwin TEST_ARCH=arm64 run_packages
     assert_success
     assert_output --partial 'brew install'
-    refute_output --partial 'brew bundle'
-    refute_output --partial sudo
-    TEST_OS=Darwin TEST_ARCH=arm64 run_packages --profile desktop
-    assert_success
-    assert_output --partial 'Brewfile.desktop'
-    refute_output --partial 'Brewfile.personal'
-    TEST_OS=Darwin TEST_ARCH=arm64 run_packages --profile personal
-    assert_success
     assert_output --partial 'Brewfile.desktop'
     assert_output --partial 'Brewfile.personal'
+    refute_output --partial sudo
+    TEST_OS=Darwin TEST_ARCH=arm64 run_packages --profile minimal
+    assert_success
+    refute_output --partial 'brew bundle'
 }
 
 @test "Linux personal profile reports its macOS-only application limitation" {
@@ -168,6 +164,6 @@ SH
     grep -F 'COPY packages/' "$ROOT/.devcontainer/Dockerfile"
     grep -F 'COPY profiles/' "$ROOT/.devcontainer/Dockerfile"
     grep -F 'scripts/profile-packages.sh' "$ROOT/.devcontainer/Dockerfile"
-    grep -F 'packages.sh --install --profile dev' "$ROOT/.devcontainer/Dockerfile"
+    grep -F 'packages.sh --install --profile personal' "$ROOT/.devcontainer/Dockerfile"
     ! grep -E 'curl -fsSL|git clone' "$ROOT/.devcontainer/Dockerfile"
 }

@@ -2,14 +2,14 @@
 
 Configuration installation and dependency provisioning are separate. Nothing here
 changes `install.sh` or config profile selection; see [profiles](profiles.md).
-Provisioning `personal` is optional; Copilot apps/extensions are never part of dev.
+The `personal` profile includes the full CLI toolset and personal applications.
 
 ```sh
-bash scripts/packages.sh                         # dev, preview only
+bash scripts/packages.sh                         # personal, preview only
 bash scripts/packages.sh --profile minimal       # preview shell/git/editor baseline
-bash scripts/packages.sh --profile dev --install # explicit system changes/network
+bash scripts/packages.sh --profile personal --install # explicit system changes/network
 bash scripts/packages.sh --doctor                # check commands and Neovim version
-bash scripts/packages.sh --profile dev --list    # native package names, one per line
+bash scripts/packages.sh --profile personal --list # native package names, one per line
 ```
 
 Only `--install` runs package managers, network operations, or sudo. Preview is
@@ -42,14 +42,14 @@ and is rejected with `--install`. The Dockerfile consumes the same mapping/scrip
 not a third package list. Its base is pinned to Debian 13 rather than moving
 `debian`; this is a release pin, **not** an immutable image digest.
 
-Profiles declare macOS bundles by name. On macOS, desktop selects
-`packages/Brewfile.desktop`; personal selects both that and
+Profiles declare macOS bundles by name. On macOS, personal selects both
+`packages/Brewfile.desktop` and
 `packages/Brewfile.personal` (including App Store purchases, VPN, Dropbox and
 optional Copilot). All casks,
 VS Code extensions and `mas` are guarded for macOS; `mas` is not a Linux formula.
 App Store installs may require an interactive signed-in account and licenses.
-On Linux, selected profiles provision CLI groups only and report application
-bundles as macOS-only. To apply just one app bundle directly, use
+On Linux, personal provisions CLI groups only and reports application bundles as
+macOS-only. To apply just one app bundle directly, use
 `brew bundle --file=...`.
 
 The stale `Brewfile.lock.json` has been deliberately retired. Homebrew Bundle

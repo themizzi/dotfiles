@@ -32,12 +32,6 @@ assert_invalid_profile() {
     resolve_profile --profile minimal
     assert_success
     assert_output $'vim\nzsh'
-    resolve_profile --profile dev
-    assert_success
-    assert_output $'gh\nnano\nnvim\nstarship\nvim\nzsh'
-    resolve_profile --profile desktop
-    assert_success
-    assert_output $'gh\nnano\nnvim\nstarship\nvim\nzsh'
     resolve_profile --profile personal
     assert_success
     assert_output $'gh\ngh-copilot\nnano\nnvim\nstarship\nvim\nzsh'
@@ -47,19 +41,16 @@ assert_invalid_profile() {
     resolve_profile --profile minimal --kind cli-group
     assert_success
     assert_output 'base'
-    resolve_profile --profile desktop --kind macos-bundle
-    assert_success
-    assert_output 'desktop'
     resolve_profile --profile personal --kind macos-bundle
     assert_success
     assert_output $'desktop\npersonal'
 }
 
-@test "default profile is dev" {
+@test "default profile is personal" {
     resolve_profile
     assert_success
     local default=$output
-    resolve_profile --profile dev
+    resolve_profile --profile personal
     assert_success
     [ "$output" = "$default" ]
 }
@@ -81,8 +72,7 @@ EOF
 }
 
 @test "multiple inheritance deduplicates packages deterministically" {
-    append_profile dev 'extends minimal\npackage vim\npackage gh'
-    append_profile personal 'extends minimal\nextends desktop\npackage gh-copilot'
+    append_profile personal 'extends minimal\npackage vim\npackage gh-copilot'
     resolve_profile --profile personal
     assert_success
     assert_output $'gh\ngh-copilot\nnano\nnvim\nstarship\nvim\nzsh'
@@ -104,24 +94,24 @@ personal'; do
     append_profile minimal 'extends personal'
     assert_invalid_profile --profile personal
     reset_profiles
-    append_profile dev 'extends missing'
-    assert_invalid_profile
+    append_profile personal 'extends missing'
+    assert_invalid_profile --profile personal
     reset_profiles
-    append_profile desktop 'package desktop'
-    assert_invalid_profile --profile desktop
+    append_profile personal 'package unsupported-package'
+    assert_invalid_profile --profile personal
 }
 
 @test "profile metadata is parsed as data and malformed definitions are rejected" {
     local marker="$FIXTURE/executed"
-    append_profile dev "touch $marker"
-    assert_invalid_profile
+    append_profile personal "touch $marker"
+    assert_invalid_profile --profile personal
     [ ! -e "$marker" ]
     rm -rf "$FIXTURE/profiles"
     mkdir "$FIXTURE/profiles"
     cp -R "$SOURCE_ROOT/profiles/." "$FIXTURE/profiles/"
     append_profile minimal 'package vim extra'
     assert_invalid_profile --profile minimal
-    rm "$FIXTURE/profiles/dev.profile"
+    rm "$FIXTURE/profiles/personal.profile"
     assert_invalid_profile
 }
 

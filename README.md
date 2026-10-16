@@ -25,10 +25,10 @@ Use `just install --dry-run` to preview changes or `just install --unlink` to
 remove managed links. Existing configuration is never adopted or overwritten.
 See [installer safety](docs/installer.md) and [Just tasks](docs/just.md).
 
-The default `dev` profile selects general development configuration. Choose
-`just install --profile minimal` for Vim/Zsh, or `--profile personal` to include
-optional Copilot preferences. See [profile selection](docs/profiles.md) for exact
-package lists and safe switching/unlinking.
+The default `personal` profile selects the full configuration, including optional
+Copilot preferences. Choose `just install --profile minimal` for Vim/Zsh. See
+[profile selection](docs/profiles.md) for exact package lists and safe
+switching/unlinking.
 
 Install the Just command runner with `brew install just` on macOS or
 `sudo apt-get install just` on Debian releases that package it. Direct
@@ -52,9 +52,9 @@ as the native provisioning adapters; there is no separate container package list
 System provisioning is separate from linking configuration:
 
 ```bash
-bash scripts/packages.sh --profile dev --dry-run
-bash scripts/packages.sh --profile dev --install # explicit system changes
-bash scripts/packages.sh --profile dev --doctor
+bash scripts/packages.sh --profile personal --dry-run
+bash scripts/packages.sh --profile personal --install # explicit system changes
+bash scripts/packages.sh --profile personal --doctor
 ```
 
 Supported adapters cover Debian/Ubuntu, Arch, and macOS Homebrew.
@@ -65,10 +65,9 @@ still be older than the full configuration requires.
 This also applies to the devcontainer: install a verified supported Neovim
 release before running editor tests if its distro version is too old.
 
-The default `dev` profile excludes personal Copilot preferences. Use
-`just install --profile minimal` for Vim/Zsh or `--profile personal` to opt in
-to the former complete selection. See [configuration profiles](docs/profiles.md).
-Desktop and personal macOS applications are separate, explicit Homebrew bundles.
+Only `minimal` and `personal` profiles are supported. `personal` includes the
+full development configuration and, on macOS, both desktop and personal
+Homebrew application bundles. See [configuration profiles](docs/profiles.md).
 
 Verify inside the container:
 
