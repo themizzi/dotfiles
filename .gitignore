@@ -3,3 +3,4 @@ __pycache__/
 .venv/
 .DS_Store
 zsh/.zshrc.local
+Brewfile.lock.json

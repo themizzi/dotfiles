@@ -74,7 +74,7 @@ sh "$repository/scripts/profile-packages.sh" --profile "$profile"
 Check its exit status before invoking Stow. Each output line is one validated
 Stow package argument; never `eval` the output. The default is `dev`.
 
-The dependency-management PR adds `sh scripts/packages.sh --profile NAME --dry-run`.
+Preview system packages with `bash scripts/packages.sh --profile NAME --dry-run`.
 Provisioning accepts the same four profile names, but maintains its own
 external-package mapping: Stow directories are not system package names. For
 example, `minimal` can provision the shell/editor and Stow, `dev` development

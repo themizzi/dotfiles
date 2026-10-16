@@ -42,33 +42,28 @@ On first create, `.devcontainer/scripts/post-create.sh` runs and:
 - initializes/updates git submodules
 - initializes repository submodules without installing Python test dependencies
 
-Required Debian packages for Neovim + command palette workflow:
+No third-party Python test packages are needed.
 
-- `neovim`
-- `fzf`
-- `fd-find`
-- `ripgrep`
-- `python3`
-- `python3-pip`
-- `python3-venv`
-- `curl`
-- `ca-certificates`
-- `git`
-- `just`
-- `stow`
-- `unzip`
-- `wget`
-- `zsh`
+The Debian 13 image consumes the same [CLI package mapping](packages/cli.tsv)
+as the native provisioning adapters; there is no separate container package list.
+System provisioning is separate from linking configuration:
 
-No Python environment or third-party test packages are needed for installer tests.
+```bash
+bash scripts/packages.sh --profile dev --dry-run
+bash scripts/packages.sh --profile dev --install # explicit system changes
+bash scripts/packages.sh --profile dev --doctor
+```
 
-On macOS, ensure these Homebrew entries exist in `Brewfile`:
+Supported adapters cover Debian/Ubuntu, Arch, and macOS Homebrew.
+WSL uses its Linux distribution's adapter. See [dependency policy](docs/dependencies.md)
+for supported releases, optional Starship, and verified user-level tool installation.
+Check Neovim's version explicitly: a successfully installed distro package may
+still be older than the full configuration requires.
 
-- `brew "neovim"`
-- `brew "fzf"`
-- `brew "fd"`
-- `brew "ripgrep"`
-- `brew "just"`
+The default `dev` profile excludes personal Copilot preferences. Use
+`just install --profile minimal` for Vim/Zsh or `--profile personal` to opt in
+to the former complete selection. See [configuration profiles](docs/profiles.md).
+Desktop and personal macOS applications are separate, explicit Homebrew bundles.
 
 Verify inside the container:
 
