@@ -55,8 +55,8 @@ StyLua are standalone quality tools, not test dependencies.
 
 ## CI coverage
 
-The workflow runs the complete Bats suite on Ubuntu and macOS, plus Debian 13,
-Fedora 43, and Arch containers. macOS explicitly runs the installer suite with
+The workflow runs the complete Bats suite on Ubuntu and macOS, plus Debian 13
+and Arch containers. Fedora is not a supported provisioning target. macOS runs the installer suite with
 system Bash 3.2 and BSD utilities. Pinned vendor submodules are checked out
 recursively. No Python packages or Python venv are installed. CI still installs
 Python itself for the repository's checksum-verifying tool installer and syntax
