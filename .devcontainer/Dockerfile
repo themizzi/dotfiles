@@ -7,6 +7,7 @@ RUN apt-get update \
         fd-find \
         fzf \
         git \
+        just \
         neovim \
         python3 \
         python3-pip \
