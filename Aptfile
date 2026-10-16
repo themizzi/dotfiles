@@ -20,3 +20,4 @@ gcc
 htop
 httpie
 git-lfs
+procps

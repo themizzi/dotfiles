@@ -140,7 +140,7 @@ class PackagesTest(unittest.TestCase):
     def test_doctor_checks_neovim_version(self):
         # All dev commands resolve to stubs, including fd's Debian executable alias.
         for name in ("git", "stow", "zsh", "vim", "python3", "fzf", "fdfind",
-                     "rg", "gh", "nano", "just", "pip3", "unzip", "gcc", "htop", "http", "git-lfs"):
+                     "rg", "gh", "nano", "just", "pip3", "unzip", "gcc", "htop", "http", "git-lfs", "ps"):
             self.stub(name, "exit 0")
         for version in ("0.9.5", "0.10.4", "0.11.0", "0.11.2", "garbage"):
             self.stub("nvim", f"echo 'NVIM v{version}'")

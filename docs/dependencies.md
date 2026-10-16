@@ -80,7 +80,10 @@ not installed or assumed; no Windows package manager is invoked.
 
 Installer testing uses pinned Git submodules under `vendor/`: Bats v1.14.0,
 bats-support v0.3.0, and bats-assert v2.2.4. It requires Bash (including macOS's
-system Bash 3.2), Git, GNU Stow, and standard Unix tools. Native Bats/helper
+system Bash 3.2), Git, GNU Stow, and standard Unix tools. Bats per-test
+timeouts need `ps` or `pkill`: dev provisioning includes `procps` on Debian/Ubuntu
+and `procps-ng` on Fedora/Arch; macOS supplies these tools with the system.
+Native Bats/helper
 packages are deliberately not provisioned or used. Prepare the test submodules
 explicitly with `git submodule update --init --recursive -- vendor`; executing
 tests never downloads dependencies. These are not application-install prerequisites.
