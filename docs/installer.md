@@ -62,10 +62,6 @@ packages or repair foreign links automatically.
 Preflight is not a filesystem lock: avoid concurrent installers or edits to the
 target while applying changes. A runtime failure is not a transactional rollback.
 
-Devcontainer setup likewise preserves HOME configs. An existing malformed
-`.venv` causes an explicit error rather than automatic deletion; inspect and
-move it aside yourself before recreating it.
-
 ## Tests
 
 ```sh

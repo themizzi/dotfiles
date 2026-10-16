@@ -116,7 +116,7 @@ The script neither replaces system binaries nor claims distro Neovim is new enou
 ## Offline tests
 
 ```sh
-python3 -m unittest discover -s test -p 'test_packages.py'
+just test --filter 'manager mappings'
 ```
 
 Tests use temporary os-release fixtures, executable stubs and the preview-only
