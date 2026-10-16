@@ -43,24 +43,13 @@ the recipe never installs or fetches dependencies. It forwards Bats options,
 for example `just test-installer --filter 'real Stow'`. Bash, Git, and Stow are
 required; system Bats and helper packages are not used.
 
-Set up dependencies explicitly before testing:
+Run all Bats suites with:
 
 ```sh
-python3 -m venv .venv
 just test
 ```
 
-`just test` runs the pinned Bats installer suite, then `.venv/bin/python` for
-standard-library unittest discovery in `test/`. Missing venv or required runtime
-tools (`nvim`, `stow`, `zsh`) produce explicit diagnostics. No third-party Python
-packages are required, and nothing is installed automatically. Editor tests use
-isolated headless processes with plugin bootstrap disabled.
-
-Run an individual Python test module using unittest discovery's `-p` option.
-Run only task-contract unit tests without third-party dependencies using:
-
-```sh
-python3 -B -m unittest discover -s test -p 'test_just.py'
-```
-
-Execution contract tests skip when Just is unavailable. No Makefile is needed.
+The runner uses the pinned Bats submodules and never downloads dependencies.
+Arguments are forwarded to Bats, for example `just test --filter 'just task'`.
+Test fixtures use disposable directories and do not modify the host configuration.
+No Python test interpreter is needed. No Makefile is needed.
