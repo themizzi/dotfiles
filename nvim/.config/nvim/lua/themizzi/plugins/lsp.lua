@@ -1,120 +1,61 @@
 return {
 	{
 		"saghen/blink.cmp",
-		version = "1.*",
 		dependencies = { "rafamadriz/friendly-snippets" },
 		opts = {
 			keymap = { preset = "default" },
-			appearance = {
-				nerd_font_variant = "mono",
-			},
-			completion = {
-				documentation = { auto_show = false },
-			},
-			sources = {
-				default = { "lsp", "path", "snippets", "buffer", "codecompanion" },
-			},
-			fuzzy = {
-				implementation = "prefer_rust_with_warning",
-			},
+			appearance = { nerd_font_variant = "mono" },
+			completion = { documentation = { auto_show = false } },
+			sources = { default = { "lsp", "path", "snippets", "buffer" } },
+			-- Never download a Rust binary from normal startup.
+			fuzzy = { implementation = "lua" },
 		},
-		opts_extend = { "sources.default" },
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
-		event = { "BufReadPost", "BufNewFile" },
+		branch = "master", -- Frozen legacy configs API, also pinned in lazy-lock.json.
+		lazy = false,
 		config = function()
-			local ok, treesitter = pcall(require, "nvim-treesitter.configs")
-			if not ok then
-				return
-			end
-
-			treesitter.setup({
-				ensure_installed = {
-					"bash",
-					"css",
-					"go",
-					"html",
-					"javascript",
-					"json",
-					"lua",
-					"python",
-					"regex",
-					"rust",
-					"toml",
-					"tsx",
-					"typescript",
-					"vim",
-					"yaml",
-				},
-				highlight = { enable = true },
-				indent = { enable = true },
-			})
+			require("nvim-treesitter.configs").setup(require("themizzi.treesitter").opts)
 		end,
 	},
 	{
-		"williamboman/mason.nvim",
-		cmd = "Mason",
-		config = function()
-			require("mason").setup({
-				ui = {
-					border = "rounded",
-				},
-			})
-		end,
-	},
-	{
-		"williamboman/mason-lspconfig.nvim",
-		config = function()
-			require("mason-lspconfig").setup({
-				automatic_installation = true,
-			})
-		end,
+		"mason-org/mason-lspconfig.nvim",
+		cmd = { "LspInstall", "LspUninstall" },
+		dependencies = { { "mason-org/mason.nvim", opts = { ui = { border = "rounded" } } }, "neovim/nvim-lspconfig" },
+		opts = { ensure_installed = {}, automatic_enable = false },
 	},
 	{
 		"neovim/nvim-lspconfig",
-		dependencies = { "saghen/blink.cmp" },
+		dependencies = {
+			{ "mason-org/mason.nvim", opts = { ui = { border = "rounded" } } },
+			"saghen/blink.cmp",
+		},
 		config = function()
+			-- Mason must add its bin directory before checking executables.
+			assert(require("mason").has_setup, "Mason must initialize before LSP executable detection")
+			local servers = require("themizzi.servers")
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
-			local servers = {
-				"ts_ls",
-				"tailwindcss",
-				"lua_ls",
-				"rust_analyzer",
-				"pyright",
-				"gopls",
-				"yamlls",
-				"jsonls",
-				"html",
-				"cssls",
-				"astro",
-				"emmet_ls",
-				"graphql",
-				"bashls",
-				"dockerls",
-				"clangd",
-			}
-
-			for _, server in ipairs(servers) do
-				vim.lsp.config(server, {
-					capabilities = capabilities,
-				})
-				vim.lsp.enable(server)
+			local missing = {}
+			for server, executable in pairs(servers) do
+				if vim.fn.executable(executable) == 1 then
+					vim.lsp.config(server, { capabilities = capabilities })
+					vim.lsp.enable(server)
+				else
+					table.insert(missing, executable)
+				end
 			end
-
-			vim.api.nvim_create_autocmd("LspAttach", {
-				callback = function(args)
-					local client = vim.lsp.get_client_by_id(args.data.client_id)
-					if not client or client.name ~= "pyright" then
-						return
-					end
-
-					if client.supports_method("textDocument/semanticTokens/full") then
-						pcall(vim.lsp.semantic_tokens.enable, args.buf, client.id)
-					end
-				end,
-			})
+			if #missing > 0 then
+				table.sort(missing)
+				vim.schedule(function()
+					vim.notify(
+						"Optional LSP executables missing: "
+							.. table.concat(missing, ", ")
+							.. ". See docs/neovim.md or :Mason",
+						vim.log.levels.WARN
+					)
+				end)
+			end
 		end,
 	},
 }
