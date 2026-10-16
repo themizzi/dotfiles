@@ -42,9 +42,10 @@ Open this repository in a devcontainer with VS Code (`Dev Containers: Reopen in 
 On first create, `.devcontainer/scripts/post-create.sh` runs and:
 
 - initializes/updates git submodules
-- initializes repository submodules without installing Python test dependencies
+- installs no test framework or Python packages
 
-No third-party Python test packages are needed.
+The Bats-only test suite uses pinned repository submodules; Python remains only
+for non-test tooling such as syntax checking and checksum-verified CI downloads.
 
 The Debian 13 image consumes the same [CLI package mapping](packages/cli.tsv)
 as the native provisioning adapters; there is no separate container package list.
@@ -111,8 +112,8 @@ sh scripts/test-installer.sh
 
 This suite needs Bash, Git, and Stow, but no Python or system Bats installation.
 See [installer tests](docs/installer.md).
-See [testing and CI](docs/testing.md) for isolation, pinned tools, cancellation
-handling, opt-in plugin smoke tests, and the real-WSL manual checklist.
+See [testing and CI](docs/testing.md) for isolated Bats fixtures, pinned tools,
+the opt-in plugin smoke, and the real-WSL manual checklist.
 
 Run the full suite:
 

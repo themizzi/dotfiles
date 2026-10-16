@@ -42,7 +42,7 @@ jobs:
           fi
       - name: Install checksum-verified Neovim and just
         run: python3 -B .github/workflows/install-tools.py
-      - name: Run pinned installer tests before creating a venv
+      - name: Run pinned installer tests before complete Bats suite
         shell: bash
         run: |
           if [[ "$RUNNER_OS" == macOS ]]; then
@@ -51,11 +51,6 @@ jobs:
           else
             sh scripts/test-installer.sh
           fi
-      - name: Install locked Python dependencies
-        run: |
-          python3 -m venv .venv
-          .venv/bin/python -m pip install --requirement requirements-test.txt
-          .venv/bin/python -m pip check
       # PR7 is stacked after PR2: these recipes are the public validation contract.
       - name: Check and run complete offline suite
         run: |
@@ -91,11 +86,11 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             apt-get update
-            apt-get install -y ca-certificates git python3 python3-venv stow zsh ripgrep fzf shellcheck procps
+            apt-get install -y ca-certificates git python3 stow zsh ripgrep fzf shellcheck procps
           elif command -v dnf >/dev/null; then
-            dnf install -y ca-certificates git python3 python3-pip stow zsh ripgrep fzf tar gzip ShellCheck procps-ng
+            dnf install -y ca-certificates git python3 stow zsh ripgrep fzf tar gzip ShellCheck procps-ng
           else
-            pacman -Syu --noconfirm --needed ca-certificates git python python-pip stow zsh ripgrep fzf tar gzip shellcheck procps-ng
+            pacman -Syu --noconfirm --needed ca-certificates git python stow zsh ripgrep fzf tar gzip shellcheck procps-ng
           fi
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -103,13 +98,8 @@ jobs:
           submodules: recursive
       - name: Install checksum-verified Neovim and just
         run: python3 -B .github/workflows/install-tools.py
-      - name: Run pinned installer tests before creating a venv
+      - name: Run pinned installer tests before complete Bats suite
         run: sh scripts/test-installer.sh
-      - name: Install locked Python dependencies
-        run: |
-          python3 -m venv .venv
-          .venv/bin/python -m pip install --requirement requirements-test.txt
-          .venv/bin/python -m pip check
       - name: Check and run complete offline suite (no distribution skips)
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -136,4 +126,4 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y ripgrep fzf
       - run: python3 -B .github/workflows/install-tools.py
       - name: Bootstrap real plugins and verify second startup
-        run: python3 -B .github/workflows/plugin-smoke.py
+        run: sh .github/workflows/plugin-smoke.sh
