@@ -163,7 +163,8 @@ $HOME/config custom/nano/nanorc"
         HOMEBREW_PREFIX="$BREW_PREFIX" NVM_DIR="$HOME/custom nvm"
     assert_success
     assert_output custom
-    run_zsh -ic 'print -r -- "$NVM_SELECTED"' HOMEBREW_PREFIX="$BREW_PREFIX"
+    run_zsh -ic 'print -r -- "$NVM_SELECTED"' \
+        HOMEBREW_PREFIX="$BREW_PREFIX" NVM_DIR="$HOME/missing nvm"
     assert_success
     assert_output brew
 }
