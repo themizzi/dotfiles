@@ -78,6 +78,13 @@ not installed or assumed; no Windows package manager is invoked.
 
 ## System versus user tools
 
+Installer testing uses pinned Git submodules under `vendor/`: Bats v1.14.0,
+bats-support v0.3.0, and bats-assert v2.2.4. It requires Bash (including macOS's
+system Bash 3.2), Git, GNU Stow, and standard Unix tools. Native Bats/helper
+packages are deliberately not provisioned or used. Prepare the test submodules
+explicitly with `git submodule update --init --recursive -- vendor`; executing
+tests never downloads dependencies. These are not application-install prerequisites.
+
 Native managers own shared CLI dependencies. Antidote has exactly one source:
 the pinned `zsh/.antidote` Git submodule, initialized by the existing submodule
 workflow (`git submodule update --init --recursive` when explicitly requested).
