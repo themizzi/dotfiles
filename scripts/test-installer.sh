@@ -1,6 +1,8 @@
 #!/bin/sh
 # Offline, Python-free entry point using the reviewed Bats submodules.
 set -eu
+# Prevent host startup files or library overrides from replacing the pinned code.
+unset BASH_ENV ENV BATS_ROOT BATS_LIBDIR BATS_BASE_LIBDIR BATS_LIB_PATH
 ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd -P)
 for file in vendor/bats-core/bin/bats vendor/bats-support/load.bash vendor/bats-assert/load.bash; do
     if [ ! -r "$ROOT/$file" ]; then

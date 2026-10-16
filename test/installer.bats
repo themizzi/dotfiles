@@ -53,7 +53,8 @@ setup() { installer_fixture; }
     run_installer --dry-run
     assert_success
     grep -F -x -- '--' "$CALLS/git"
-    ! grep -F 'vendor' "$CALLS/git"
+    run grep -F 'vendor' "$CALLS/git"
+    assert_failure 1
 }
 
 @test "paths with spaces preflight the complete selection before apply" {
@@ -65,7 +66,8 @@ setup() { installer_fixture; }
     assert_call_arg 2 "--target=$TARGET_HOME"
     assert_call_arg 2 --stow
     for package in "${PACKAGES[@]}"; do assert_call_arg 2 "$package"; done
-    ! grep -E -- '--restow|--adopt' "$CALLS/stow-2"
+    run grep -E -- '--restow|--adopt' "$CALLS/stow-2"
+    assert_failure 1
 }
 
 @test "dry run preserves existing files and does not apply" {
@@ -194,4 +196,13 @@ setup() { installer_fixture; }
     assert_failure
     assert_output --partial 'submodule update --init --recursive -- vendor'
     [ ! -e "$REPO/vendor" ]
+}
+
+@test "test wrapper ignores host Bash startup and library overrides" {
+    printf 'touch "%s"\n' "$FIXTURE/host-startup-ran" > "$FIXTURE/poison.bash"
+    run env BASH_ENV="$FIXTURE/poison.bash" BATS_BASE_LIBDIR=nonexistent \
+        /bin/sh "$SOURCE_ROOT/scripts/test-installer.sh" --count
+    assert_success
+    assert_output --regexp '^[0-9]+$'
+    [ ! -e "$FIXTURE/host-startup-ran" ]
 }
