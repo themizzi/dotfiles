@@ -76,6 +76,16 @@ sh install.sh
 
 ## Tests (BDD / Neovim UI protocol)
 
+Installer safety and real-Stow tests use the pinned Bats runner and helpers:
+
+```sh
+git submodule update --init --recursive -- vendor
+sh scripts/test-installer.sh
+```
+
+This suite needs Bash, Git, and Stow, but no Python or system Bats installation.
+See [installer tests](docs/installer.md). Other suites remain Python-based.
+
 Tests use Behave + `pynvim` with Neovim `--embed`, `nvim_ui_attach`, and redraw/grid events.
 
 Install test dependencies in a local venv:
@@ -92,7 +102,6 @@ nvim --headless +qall
 .venv/bin/behave features/01_boot_and_shared_config.feature
 .venv/bin/behave features/02_netrw_toggle.feature
 .venv/bin/behave features/03_netrw_open_file.feature
-.venv/bin/behave features/04_dotfiles_install_symlinks.feature
 .venv/bin/behave features/05_fzf_lua_command_palette.feature
 .venv/bin/behave features/06_fzf_lua_grep_workflow.feature
 ```

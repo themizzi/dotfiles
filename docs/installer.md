@@ -64,8 +64,15 @@ move it aside yourself before recreating it.
 ## Tests
 
 ```sh
-python3 -m unittest discover -s test -p 'test_installer.py' -v
+git submodule update --init --recursive -- vendor # explicit setup, may use network
+sh scripts/test-installer.sh
 ```
 
-Tests use isolated temporary homes and stubbed prerequisite checks. When GNU
-Stow is installed, additional integration tests exercise real link operations.
+Tests use isolated temporary homes, shell stubs, and real GNU Stow. Bash, Git,
+Stow, and standard Unix utilities are required; Python and a venv are not.
+The wrapper always uses pinned Bats v1.14.0, bats-support v0.3.0, and bats-assert
+v2.2.4 under `vendor/`, ignoring any system Bats installation. Submodules record
+immutable release commits. Missing helpers fail clearly; tests never fetch them.
+The installer checks only application submodules, so missing test dependencies
+cannot block linking or unlinking dotfiles. Pass Bats options through the wrapper,
+for example `sh scripts/test-installer.sh --filter 'real Stow'`.

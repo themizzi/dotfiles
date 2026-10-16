@@ -26,7 +26,6 @@ def before_all(context):
 def before_scenario(context, scenario):
     context.nvim = None
     context.nvim_home_tmp = None
-    context.install_home_tmp = None
     context.zsh_home_tmp = None
     context.ui_state = None
 
@@ -37,10 +36,6 @@ def after_scenario(context, scenario):
     if context.nvim_home_tmp is not None:
         context.nvim_home_tmp.cleanup()
         context.nvim_home_tmp = None
-
-    if context.install_home_tmp is not None:
-        context.install_home_tmp.cleanup()
-        context.install_home_tmp = None
 
     if context.zsh_home_tmp is not None:
         context.zsh_home_tmp.cleanup()
@@ -62,15 +57,6 @@ def make_nvim_env(context) -> dict[str, str]:
     env["XDG_CONFIG_HOME"] = str(context.repo_root / "nvim" / ".config")
     env["DOTFILES_SKIP_PLUGIN_BOOTSTRAP"] = "1"
     return env
-
-
-def make_install_env(context) -> tuple[dict[str, str], Path]:
-    install_tmp = tempfile.TemporaryDirectory(prefix="dotfiles-install-home-")
-    context.install_home_tmp = install_tmp
-    home_dir = Path(install_tmp.name)
-    env = os.environ.copy()
-    env["HOME"] = str(home_dir)
-    return env, home_dir
 
 
 def require_executable(name: str) -> str:

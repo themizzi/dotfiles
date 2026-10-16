@@ -57,7 +57,7 @@ done
 
 if [ "$action" = --stow ]; then
     command -v git >/dev/null 2>&1 || fail 'Git is required to check submodules. Install git using your system package manager.'
-    submodule_status=$(git -C "$REPO_ROOT" submodule status --recursive) ||
+    submodule_status=$(git -C "$REPO_ROOT" submodule status --recursive -- "$@") ||
         fail 'Cannot inspect submodules. Use a Git checkout of this repository.'
     case "$submodule_status" in
         '') fail 'No submodules found. Use a complete Git checkout of this repository.' ;;
