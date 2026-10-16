@@ -37,6 +37,12 @@ syntax check, not a semantic/configuration validator. JSON must be strict JSON.
 
 ## Test
 
+`just test-installer` runs pinned Bats installer tests without Python or a venv.
+Initialize `vendor/` explicitly with `git submodule update --init --recursive -- vendor`;
+the recipe never installs or fetches dependencies. It forwards Bats options,
+for example `just test-installer --filter 'real Stow'`. Bash, Git, and Stow are
+required; system Bats and helper packages are not used.
+
 Set up dependencies explicitly before testing:
 
 ```sh
@@ -45,8 +51,8 @@ python3 -m venv .venv
 just test
 ```
 
-`just test` uses only `.venv/bin/python`, first running stdlib unittest discovery
-in `test/` (when present), then `python -m behave`. Missing venv, Python packages,
+`just test` uses `.venv/bin/python` for stdlib unittest discovery
+in `test/` (when present), runs the pinned Bats installer suite, then `python -m behave`. Missing venv, Python packages,
 or required runtime tools (`nvim`, `stow`, `zsh`) produce explicit diagnostics;
 nothing is installed automatically. Behave uses the repository's existing
 fixtures and temporary homes, with plugin bootstrap disabled by those fixtures.

@@ -9,7 +9,11 @@ install *args:
 check:
     sh scripts/check.sh
 
-# Run local stdlib tests (when present), then the Behave suite.
+# Run the pinned installer suite without Python or a venv.
+test-installer *args:
+    sh scripts/test-installer.sh "$@"
+
+# Run Bats, local stdlib tests, and Behave without fetching dependencies.
 test:
     #!/bin/sh
     set -eu
@@ -29,4 +33,5 @@ test:
             exit 1
         fi
     done
+    sh scripts/test-installer.sh
     "$python" -B -m behave

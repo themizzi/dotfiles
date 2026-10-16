@@ -17,9 +17,10 @@ JUST = shutil.which("just")
 class TaskContracts(unittest.TestCase):
     def test_public_recipes(self):
         text = (ROOT / "justfile").read_text()
-        for recipe in ("install *args:", "check:", "test:"):
+        for recipe in ("install *args:", "check:", "test-installer *args:", "test:"):
             self.assertIn(recipe, text)
         self.assertIn('sh install.sh "$@"', text)
+        self.assertIn('sh scripts/test-installer.sh "$@"', text)
         self.assertIn(".venv/bin/python", text)
         self.assertIn('"$python" -B -m behave', text)
         self.assertIn("-m unittest discover", text)
@@ -40,6 +41,7 @@ class SandboxedTasks(unittest.TestCase):
         shutil.copy(ROOT / "justfile", self.root)
         (self.root / "scripts").mkdir()
         shutil.copy(ROOT / "scripts/check.sh", self.root / "scripts")
+        shutil.copy(ROOT / "scripts/test-installer.sh", self.root / "scripts")
         self.env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
 
     def run_just(self, *args):
@@ -66,6 +68,14 @@ class SandboxedTasks(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("missing .venv/bin/python", result.stderr)
 
+    def test_installer_recipe_forwards_arguments_without_python(self):
+        (self.root / 'scripts/test-installer.sh').write_text('printf "%s\\n" "$#" "$@"\n')
+        args = ['--filter', 'paths with spaces', '$(touch BAD)']
+        result = self.run_just('test-installer', *args)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.splitlines(), [str(len(args)), *args])
+        self.assertFalse((self.root / 'BAD').exists())
+
     def test_test_recipe_uses_local_python_and_orders_suites(self):
         # A fake interpreter records invocation without importing dependencies.
         python = self.root / ".venv/bin/python"
@@ -73,6 +83,7 @@ class SandboxedTasks(unittest.TestCase):
         python.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> calls\n')
         python.chmod(0o755)
         (self.root / "test").mkdir()
+        (self.root / 'scripts/test-installer.sh').write_text('printf "Bats\\n" >> calls\n')
         tools = self.root / "tools"
         tools.mkdir()
         for name in ("nvim", "stow", "zsh"):
@@ -85,7 +96,7 @@ class SandboxedTasks(unittest.TestCase):
         calls = (self.root / "calls").read_text().splitlines()
         self.assertIn("-m unittest discover", calls[0])
         self.assertIn("behave", calls[1])
-        self.assertEqual(calls[-1], "-B -m behave")
+        self.assertEqual(calls[-2:], ['Bats', '-B -m behave'])
 
     def test_missing_python_packages_diagnostic(self):
         python = self.root / ".venv/bin/python"
