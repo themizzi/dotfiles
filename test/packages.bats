@@ -10,7 +10,7 @@ setup() {
     MARKER="$FIXTURE/manager-was-invoked"
     mkdir -p "$BIN"
     printf 'ID=debian\nVERSION_ID="13"\n' > "$RELEASE"
-    for tool in apt-get dnf pacman brew sudo curl wget; do
+    for tool in apt-get pacman brew sudo curl wget; do
         cat > "$BIN/$tool" <<SH
 #!/bin/sh
 printf '%s\\n' '$tool' >> '$MARKER'
@@ -57,9 +57,6 @@ reset_release() { printf 'ID=%s\nVERSION_ID="%s"\n' "$1" "$2" > "$RELEASE"; }
     run_packages --manager apt --list
     assert_success
     [[ "$output" == *fd-find* && "$output" != *starship* ]]
-    run_packages --manager dnf --list
-    assert_success
-    [[ "$output" == *vim-enhanced* && "$output" != *python3-venv* ]]
     run_packages --manager pacman --list
     assert_success
     [[ "$output" == *github-cli* && "$output" != *$'\ngh\n'* ]]
@@ -69,10 +66,10 @@ reset_release() { printf 'ID=%s\nVERSION_ID="%s"\n' "$1" "$2" > "$RELEASE"; }
 }
 
 @test "canonical manifest schema and Homebrew policy are valid" {
-    while read -r tier command apt dnf pacman brew; do
+    while read -r tier command apt pacman brew; do
         [[ -n "$tier" && "$tier" != \#* ]] || continue
         [[ "$tier" == minimal || "$tier" == dev ]]
-        [[ "$command" =~ ^[a-z0-9-]+$ && "$apt" =~ ^[a-z0-9-]+$ && "$dnf" =~ ^[a-z0-9-]+$ && "$pacman" =~ ^[a-z0-9-]+$ && "$brew" =~ ^[a-z0-9-]+$ ]]
+        [[ "$command" =~ ^[a-z0-9-]+$ && "$apt" =~ ^[A-Za-z0-9-]+$ && "$pacman" =~ ^[A-Za-z0-9-]+$ && "$brew" =~ ^[A-Za-z0-9-]+$ ]]
     done < "$ROOT/packages/cli.tsv"
     grep -F 'packages/cli.tsv' "$ROOT/Brewfile"
     ! grep -F 'brew "antidote"' "$ROOT/Brewfile"
@@ -84,8 +81,6 @@ reset_release() { printf 'ID=%s\nVERSION_ID="%s"\n' "$1" "$2" > "$RELEASE"; }
     reset_release debian 13; run_packages; assert_success; assert_output --partial apt-get
     reset_release ubuntu 24.04; run_packages; assert_success; assert_output --partial apt-get
     reset_release ubuntu 26.04; run_packages; assert_success; assert_output --partial apt-get
-    reset_release fedora 43; run_packages; assert_success; assert_output --partial dnf
-    reset_release fedora 44; run_packages; assert_success; assert_output --partial dnf
     reset_release arch ''; run_packages; assert_success; assert_output --partial pacman
     TEST_ARCH=aarch64 run_packages; assert_success; assert_output --partial pacman
 }
@@ -93,7 +88,7 @@ reset_release() { printf 'ID=%s\nVERSION_ID="%s"\n' "$1" "$2" > "$RELEASE"; }
 @test "unsupported operating systems, releases, and architectures fail closed" {
     reset_release debian 12; run_packages; assert_failure; assert_output --partial 'Supported Debian'
     reset_release ubuntu 22.04; run_packages; assert_failure; assert_output --partial 'Ubuntu 24.04+'
-    reset_release fedora 42; run_packages; assert_failure; assert_output --partial 'Supported Fedora'
+    reset_release fedora 43; run_packages; assert_failure; assert_output --partial 'Unsupported distro'
     reset_release unknown 99; run_packages; assert_failure; assert_output --partial 'Unsupported distro'
     TEST_OS=Darwin TEST_ARCH=mips run_packages; assert_failure; assert_output --partial 'architecture'
 }
@@ -166,15 +161,6 @@ SH
         assert_success
         refute_output --partial 'Neovim >=0.11.3 required'
     done
-}
-
-@test "Fedora keeps curl when an existing compatible provider is present" {
-    run_packages --manager dnf --list
-    assert_success
-    [[ "$output" == *curl* ]]
-    run_packages --manager dnf --dry-run
-    assert_success
-    ! grep -E 'dnf install.*(^| )curl( |$)' <<< "$output"
 }
 
 @test "container consumes the shared manifest and avoids bootstrap downloads" {

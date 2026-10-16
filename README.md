@@ -54,7 +54,7 @@ bash scripts/packages.sh --profile dev --install # explicit system changes
 bash scripts/packages.sh --profile dev --doctor
 ```
 
-Supported adapters cover Debian/Ubuntu, Fedora, Arch, and macOS Homebrew.
+Supported adapters cover Debian/Ubuntu, Arch, and macOS Homebrew.
 WSL uses its Linux distribution's adapter. See [dependency policy](docs/dependencies.md)
 for supported releases, optional Starship, and verified user-level tool installation.
 Check Neovim's version explicitly: a successfully installed distro package may

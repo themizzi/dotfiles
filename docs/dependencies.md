@@ -22,13 +22,10 @@ manager, adds repositories, or pipes a downloaded installer into a shell.
 ## Source of truth and profiles
 
 `packages/cli.tsv` is the canonical whitespace-delimited CLI mapping. Columns are
-profile, command, apt, dnf, pacman, brew; `-` means not provided by that manager.
+profile, command, apt, pacman, brew; `-` means not provided by that manager.
 Minimal contains Git, Stow, Zsh, Vim and Python. Dev adds Neovim, fzf, fd, ripgrep,
 gh, nano, just, Python packaging support and download/archive tools. Starship is
-optional: installed from Arch/Homebrew packages where mapped, not from apt or dnf.
-Fedora's third-party COPR repository is not enabled automatically.
-DNF provisioning keeps an existing `curl` executable/provider (including
-`curl-minimal`) rather than forcing a conflicting replacement package.
+optional: installed from Arch/Homebrew packages where mapped, not from apt.
 On Debian/Ubuntu the fd executable is `fdfind`; the doctor accepts either name.
 
 `Brewfile` reads the CLI mapping directly (dev profile). `Aptfile` is a compatibility
@@ -63,7 +60,6 @@ digests, which are outside this provisioning workflow.
 ## Platforms and capabilities
 
 * Debian 13: apt; Ubuntu 24.04 and newer: apt.
-* Fedora 43/44: dnf (explicit supported-release allowlist; update as releases age).
 * Arch Linux: pacman rolling, full `-Syu` upgrade to avoid partial upgrades.
 * macOS: preinstalled Homebrew, Intel or Apple Silicon; Homebrew's own supported
   OS/bottle requirements still apply.
@@ -82,7 +78,7 @@ Installer testing uses pinned Git submodules under `vendor/`: Bats v1.14.0,
 bats-support v0.3.0, and bats-assert v2.2.4. It requires Bash (including macOS's
 system Bash 3.2), Git, GNU Stow, and standard Unix tools. Bats per-test
 timeouts need `ps` or `pkill`: dev provisioning includes `procps` on Debian/Ubuntu
-and `procps-ng` on Fedora/Arch; macOS supplies these tools with the system.
+and `procps-ng` on Arch; macOS supplies these tools with the system.
 Native Bats/helper
 packages are deliberately not provisioned or used. Prepare the test submodules
 explicitly with `git submodule update --init --recursive -- vendor`; executing

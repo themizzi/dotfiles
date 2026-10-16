@@ -15,7 +15,7 @@ while (($#)); do
         --install) mode=install; shift ;;
         --doctor) mode=doctor; shift ;;
         --list) mode=list; shift ;;
-        --help) printf '%s\n' 'Usage: packages.sh [--profile minimal|dev|desktop|personal] [--dry-run|--install|--doctor|--list] [--manager apt|dnf|pacman|brew (preview only)]'; exit 0 ;;
+        --help) printf '%s\n' 'Usage: packages.sh [--profile minimal|dev|desktop|personal] [--dry-run|--install|--doctor|--list] [--manager apt|pacman|brew (preview only)]'; exit 0 ;;
         *) die "Unknown argument: $1" ;;
     esac
 done
@@ -42,27 +42,22 @@ case "$os" in
             debian) [[ $version == 13 ]] || die 'Supported Debian release: 13'; manager=apt ;;
             ubuntu) [[ $version =~ ^([0-9]+)\.([0-9]+)$ ]] || die 'Invalid Ubuntu version'
                 ((10#${BASH_REMATCH[1]} > 24 || (10#${BASH_REMATCH[1]} == 24 && 10#${BASH_REMATCH[2]} >= 4))) || die 'Ubuntu 24.04+ required'; manager=apt ;;
-            fedora) case "$version" in 43|44) ;; *) die 'Supported Fedora releases: 43, 44' ;; esac; manager=dnf ;;
             arch) manager=pacman ;;
             *) die "Unsupported distro: $id (no ID_LIKE fallback)" ;;
         esac ;;
     *) die "Unsupported OS: $os" ;;
 esac
 if [[ -n $manager_override ]]; then manager=$manager_override; fi
-case "$manager" in apt) column=3 ;; dnf) column=4 ;; pacman) column=5 ;; brew) column=6 ;; *) die "Unknown manager: $manager" ;; esac
+case "$manager" in apt) column=3 ;; pacman) column=4 ;; brew) column=5 ;; *) die "Unknown manager: $manager" ;; esac
 packages=()
 commands=()
-while read -r tier command apt dnf pacman brew; do
+while read -r tier command apt pacman brew; do
     [[ -n $tier && $tier != \#* ]] || continue
     [[ $profile != minimal || $tier == minimal ]] || continue
-    values=("$tier" "$command" "$apt" "$dnf" "$pacman" "$brew")
+    values=("$tier" "$command" "$apt" "$pacman" "$brew")
     package=${values[$((column - 1))]}
-    # Fedora images often provide curl-minimal, which conflicts with curl.
-    # Keep an already available provider instead of removing/replacing it.
     if [[ $package != - ]]; then
-        if [[ $manager != dnf || $command != curl || $mode == list ]] || ! command -v curl >/dev/null 2>&1; then
-            packages+=("$package")
-        fi
+        packages+=("$package")
     fi
     commands+=("$command")
 done < "$ROOT/packages/cli.tsv"
@@ -88,7 +83,6 @@ if [[ $mode == doctor ]]; then
 fi
 case "$manager" in
     apt) update=(apt-get update); install=(apt-get install -y --no-install-recommends) ;;
-    dnf) update=(); install=(dnf install -y) ;;
     pacman) update=(); install=(pacman -Syu --needed --noconfirm) ;;
     brew) update=(); install=(brew install) ;;
 esac
@@ -113,5 +107,5 @@ if [[ $profile == desktop || $profile == personal ]]; then
     fi
 fi
 if [[ $profile != minimal ]]; then
-    printf '%s\n' 'Starship is optional (not installed by apt/dnf); verify Neovim >=0.11.3 with --doctor. See docs/dependencies.md.'
+    printf '%s\n' 'Starship is optional (not installed by apt); verify Neovim >=0.11.3 with --doctor. See docs/dependencies.md.'
 fi
