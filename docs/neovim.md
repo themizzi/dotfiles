@@ -207,16 +207,14 @@ configuration first. There is no npm build/download hook.
 ## Tests
 
 ```sh
-python3 -m unittest discover -s test -p test_neovim.py -v
-python3 -m unittest discover -s test -p test_support.py -v
+just test
 ```
 
-The isolated headless tests use fresh HOME/XDG directories and never download
-anything. They check both offline behavior and the complete pinned full-mode
-specs, original server set, native completion fallback, and default-disabled AI.
-They skip without Neovim >= 0.11.3. Tests launch real bounded headless processes
-directly, with no embedded RPC client or external Python test packages. Fuzzy
-picker tests capture dispatch, not a real interactive fzf terminal session.
+The Bats suite launches real headless Neovim in private HOME/XDG directories and
+never downloads plugins or parsers. It checks offline defaults, locked plugin
+specs, the server set, TODO mappings, and default-disabled AI. Fuzzy picker tests
+capture dispatch, not a real interactive fzf terminal session. Lua assertions
+run directly inside Neovim; no embedded client or Python test framework is used.
 
 Validation for the restored configuration: 11 headless tests and full plugin smoke
 on 0.11.3/0.11.6 with AI disabled/enabled;
