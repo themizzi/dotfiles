@@ -206,7 +206,7 @@ setup() { installer_fixture; }
 @test "invalid profiles fail before Stow" {
     run_installer --profile
     assert_failure
-    run_installer --profile ../dev
+    run_installer --profile ../invalid
     assert_failure
     run_installer --profile unknown
     assert_failure
