@@ -26,7 +26,7 @@ write_file() {
 run_zsh() {
     local flags=$1 command=$2
     shift 2
-    run env -u XDG_CONFIG_HOME -u XDG_CACHE_HOME -u XDG_DATA_HOME -u XDG_STATE_HOME -u NANORC \
+    run env -i \
         HOME="$HOME" ZDOTDIR="$HOME" PATH="$PATH" TERM=dumb LC_ALL=C \
         DOTFILES_ANTIDOTE_HOMEBREW_PATH="${DOTFILES_ANTIDOTE_HOMEBREW_PATH-}" "$@" \
         zsh -d "$flags" "$command"
