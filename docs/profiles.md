@@ -92,12 +92,12 @@ sh scripts/test-installer.sh
 ```
 
 This includes selection, invalid profiles, custom XDG handling, and safe unlink
-behavior with dangling links and symlinked HOME paths. No Python is needed for
-these tests. The separate resolver contract tests below remain Python-based.
+behavior with dangling links and symlinked HOME paths. Resolver contract tests
+also use Bats and disposable profile definitions:
 
 ```sh
-python3 -m unittest discover -s test -p test_profiles.py
+just test --filter 'inheritance'
 ```
 
-Tests require only Python 3, a POSIX shell, and awk, and never run Stow or modify
-the user home directory.
+The full `just test` suite runs all profile tests. They require a POSIX shell and
+awk, and never run Stow or modify the user home directory.
