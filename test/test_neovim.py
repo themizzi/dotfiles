@@ -6,6 +6,8 @@ import subprocess
 import tempfile
 import unittest
 
+from scripts.test_support import prepare_nvim_home
+
 
 ROOT = Path(__file__).resolve().parents[1]
 NVIM = shutil.which("nvim")
@@ -26,10 +28,7 @@ class NeovimTests(unittest.TestCase):
     def run_lua(self, source, *, skip=True, ai=False):
         with tempfile.TemporaryDirectory(prefix="dotfiles-neovim-") as directory:
             home = Path(directory)
-            config = home / "config" / "nvim"
-            config.parent.mkdir()
-            config.symlink_to(ROOT / "nvim" / ".config" / "nvim", target_is_directory=True)
-            (home / ".vimrc").symlink_to(ROOT / "vim" / ".vimrc")
+            env = prepare_nvim_home(ROOT, home)
             workspace = home / "workspace"
             workspace.mkdir()
             (workspace / "alpha.txt").write_text("alpha fixture line\nsecond needle\n")
@@ -40,17 +39,12 @@ class NeovimTests(unittest.TestCase):
                 + "\nend, debug.traceback)\n"
                 + "if not ok then io.stderr:write(err); vim.cmd('cquit 1') end\nvim.cmd('qa!')\n"
             )
-            env = {key: value for key, value in os.environ.items()
-                   if not key.startswith(("XDG_", "DOTFILES_NVIM_", "NVIM"))}
-            env.update(HOME=str(home), XDG_CONFIG_HOME=str(home / "config"),
-                       XDG_DATA_HOME=str(home / "data"), XDG_STATE_HOME=str(home / "state"),
-                       XDG_CACHE_HOME=str(home / "cache"),
-                       DOTFILES_SKIP_PLUGIN_BOOTSTRAP="1" if skip else "0",
+            env.update(DOTFILES_SKIP_PLUGIN_BOOTSTRAP="1" if skip else "0",
                        DOTFILES_NVIM_AI="1" if ai else "0")
             result = subprocess.run([NVIM, "--headless", "-c", f"lua dofile({str(script)!r})"],
                                     cwd=workspace, env=env, capture_output=True, text=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertFalse((home / "data" / "nvim" / "lazy").exists(), "Startup bootstrapped plugins")
+            self.assertFalse((Path(env['XDG_DATA_HOME']) / "nvim/lazy").exists(), "Startup bootstrapped plugins")
             self.assertNotIn("Error detected", result.stderr)
 
     def test_offline_startup_without_skip_never_bootstraps(self):

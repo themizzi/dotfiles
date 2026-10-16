@@ -208,19 +208,18 @@ configuration first. There is no npm build/download hook.
 
 ```sh
 python3 -m unittest discover -s test -p test_neovim.py -v
-behave features/01_boot_and_shared_config.feature features/02_netrw_toggle.feature \
-  features/03_netrw_open_file.feature features/05_fzf_lua_command_palette.feature \
-  features/06_fzf_lua_grep_workflow.feature
+python3 -m unittest discover -s test -p test_support.py -v
 ```
 
 The isolated headless tests use fresh HOME/XDG directories and never download
 anything. They check both offline behavior and the complete pinned full-mode
 specs, original server set, native completion fallback, and default-disabled AI.
-They skip without Neovim >= 0.11.3. Behave needs `behave`/`pynvim`; its fzf
-scenarios capture dispatch, not a real interactive fzf terminal.
+They skip without Neovim >= 0.11.3. Tests launch real bounded headless processes
+directly, with no embedded RPC client or external Python test packages. Fuzzy
+picker tests capture dispatch, not a real interactive fzf terminal session.
 
 Validation for the restored configuration: 11 headless tests and full plugin smoke
-on 0.11.3/0.11.6 with AI disabled/enabled; nine Behave scenarios (44 steps);
+on 0.11.3/0.11.6 with AI disabled/enabled;
 explicit installation of all 27 locked
 repositories and all 18 locked parser grammars; real CodeCompanion chat creation
 with the HTTP functions blocked to catch accidental model discovery. The real
