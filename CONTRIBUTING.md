@@ -31,8 +31,11 @@ Tests run against disposable HOME/XDG directories and never modify your host
 configuration or download dependencies. If `vendor/` submodules are missing,
 setup fails with an explicit instruction; tests never fetch them.
 
-Optionally install [prek](https://prek.j178.dev/installation/) and run
-`prek install` once to run `just dev check` before each commit.
+Install [prek](https://prek.j178.dev/installation/) and run
+`prek -c .pre-commit-config.yaml install` once per clone to run `just dev test`
+before each push. The hook requires the test prerequisites and initialized Bats
+submodules described above; a failing test prevents the push. Run `just dev check`
+separately for lint and formatting.
 
 ## Data files
 
