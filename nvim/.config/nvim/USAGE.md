@@ -31,14 +31,17 @@ to refresh its project context.
 | Keys | Action |
 | --- | --- |
 | Space ff / fg | Find files / search project text (requires `rg`) |
-| Space fp / fs | Switch project / find current-file symbols (requires LSP) |
+| Space fp / fs | Switch project / find current-file symbols with Aerial and Snacks |
 | Space fb / fc | Find buffers / commands |
 | Space fh / fk | Find help / keymaps |
 | Space e / fe | Open explorer / reveal current file |
+| Space uo | Toggle the Aerial symbol outline |
 | Space uz / um | Toggle Zen / toggle rendering in this Markdown buffer |
 | Ctrl-h/j/k/l | Move between windows |
 
 In a picker type to filter, use arrows or Ctrl-j/Ctrl-k, and press Enter. Ctrl-c cancels; Alt-h toggles hidden files. Tab selects items; Alt-o sends them to OpenCode. In the explorer Enter opens, h closes a directory, a creates, r renames, d deletes, c copies, m moves, and H toggles hidden files (dotfiles are shown by default). Press ? for action help. Review file-operation prompts carefully.
+
+The Aerial outline uses Treesitter or an available language server to find symbols. In the outline, Enter jumps to a symbol, h/l collapse or expand a branch, and q closes it; press ? for help.
 
 The project picker lists the current directory, Git roots from recent files, and repositories directly under `~/GitHub`. Selecting a project changes the current tab's working directory and opens its dashboard; it does not close unsaved buffers. Non-Git projects appear when current, but are not otherwise tracked in history.
 

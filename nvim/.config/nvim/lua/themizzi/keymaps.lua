@@ -126,25 +126,6 @@ function M.setup()
 		end
 	end, "Project dashboard")
 	map("<leader>fp", M.project_picker, "Switch project")
-	map("<leader>fs", function()
-		local supported = false
-		for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
-			if client:supports_method("textDocument/documentSymbol", 0) then
-				supported = true
-				break
-			end
-		end
-		if not supported then
-			vim.notify("No attached language server provides document symbols", vim.log.levels.WARN)
-			return
-		end
-		local ok, snacks = pcall(require, "snacks")
-		if ok then
-			snacks.picker.lsp_symbols()
-		else
-			vim.notify("Symbol picker requires Snacks", vim.log.levels.WARN)
-		end
-	end, "Current file symbols")
 	map("<leader>uz", function()
 		local ok, snacks = pcall(require, "snacks")
 		if ok then

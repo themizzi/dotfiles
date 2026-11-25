@@ -1,4 +1,8 @@
 {
+  "aerial.nvim": {
+    "branch": "master",
+    "commit": "28fe6e822ae344544c379d60fcb13c9519a1f08a"
+  },
   "blink.cmp": {
     "branch": "main",
     "commit": "4b18c32adef2898f95cdef6192cbd5796c1a332d"

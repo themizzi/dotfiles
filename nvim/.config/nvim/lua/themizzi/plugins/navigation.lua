@@ -47,6 +47,20 @@ return {
 		},
 	},
 	{
+		"stevearc/aerial.nvim",
+		opts = { show_guides = true },
+		keys = {
+			{ "<leader>uo", "<cmd>AerialToggle!<cr>", desc = "Toggle symbol outline" },
+			{
+				"<leader>fs",
+				function()
+					require("aerial").snacks_picker()
+				end,
+				desc = "Current file symbols",
+			},
+		},
+	},
+	{
 		"folke/flash.nvim",
 		opts = {},
 		keys = {
