@@ -1,7 +1,7 @@
 # dotfiles
 
-Portable Zsh, Vim, and Neovim configuration with explicit, offline-safe startup.
-The full Neovim layer requires version 0.11.3 or newer; plugin-free startup
+Portable Zsh, Vim, and Neovim configuration with automatic Zsh plugin setup.
+The full Neovim layer requires version 0.12.0 or newer; plugin-free startup
 retains useful built-in navigation and search. See [Neovim setup](docs/neovim.md)
 for the reviewed plugin versions and supported Treesitter runtime.
 
@@ -81,7 +81,7 @@ just test
 ## Usage
 
 - `<leader>` is space.
-- `<leader>e` toggles nvim-tree, or netrw without plugins; `<leader>fe` reveals the current file.
+- `<leader>e` opens Snacks explorer, or netrw without plugins; `<leader>fe` reveals the current file.
 - `<leader>ff`, `fb`, `fc`, `fg`, `fh`: files, buffers, commands, workspace search, and help.
 - `<leader>tn`, `tp`, `tl`, `tq`, `tf`, `ts`: TODO navigation, lists, and search.
 - `s` / `S`: Flash navigation with plugins; coverage and Diffview commands remain available.
@@ -95,10 +95,10 @@ env -u DOTFILES_SKIP_PLUGIN_BOOTSTRAP nvim --headless -l "$HOME/.config/nvim/set
 ```
 
 Without plugins, file/search/explorer mappings use built-in fallbacks.
-CodeCompanion is opt-in through `DOTFILES_NVIM_AI=1`, with a configurable endpoint
-and model. Parser installation, language servers, formatters, image tools, and MCP
-services are explicit choices. See [Neovim documentation](docs/neovim.md) and
-[portable shell setup](docs/zsh.md) for setup commands and prerequisites.
+OpenCode.nvim integrates the OpenCode terminal and editor context. Parser
+installation, language servers, and formatters are explicit choices. See the
+[Neovim usage guide](nvim/.config/nvim/USAGE.md), [Neovim documentation](docs/neovim.md),
+and [portable shell setup](docs/zsh.md) for details.
 
 ## Tests
 

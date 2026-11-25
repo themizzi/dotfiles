@@ -1,6 +1,6 @@
 -- Explicit setup only: nvim --headless -l ~/.config/nvim/setup.lua
-if vim.fn.has("nvim-0.11.3") == 0 then
-	error("Neovim >= 0.11.3 is required")
+if vim.fn.has("nvim-0.12") == 0 then
+	error("Neovim >= 0.12 is required")
 end
 if vim.env.DOTFILES_SKIP_PLUGIN_BOOTSTRAP == "1" then
 	error("Unset DOTFILES_SKIP_PLUGIN_BOOTSTRAP for explicit plugin setup")
@@ -32,9 +32,9 @@ for _, plugin in pairs(require("lazy.core.config").plugins) do
 	end
 end
 if vim.env.DOTFILES_NVIM_INSTALL_PARSERS == "1" then
-	-- TSInstallSync uses this plugin revision's own parser lock, not moving HEADs.
+	-- Install the pinned plugin's parsers and queries using its synchronous task API.
 	require("lazy").load({ plugins = { "nvim-treesitter" } })
-	vim.cmd("TSInstallSync " .. table.concat(require("themizzi.treesitter").parsers, " "))
+	require("nvim-treesitter").install(require("themizzi.treesitter").parsers):wait(300000)
 	for _, parser in ipairs(require("themizzi.treesitter").parsers) do
 		assert(pcall(vim.treesitter.language.add, parser), "Parser installation failed: " .. parser)
 	end

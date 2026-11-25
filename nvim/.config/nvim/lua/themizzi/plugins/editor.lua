@@ -5,7 +5,7 @@ return {
 	{
 		"folke/todo-comments.nvim",
 		event = { "BufReadPre", "BufNewFile" },
-		cmd = { "TodoLocList", "TodoQuickFix", "TodoFzfLua" },
+		cmd = { "TodoLocList", "TodoQuickFix" },
 		dependencies = { "nvim-lua/plenary.nvim" },
 		opts = {},
 	},

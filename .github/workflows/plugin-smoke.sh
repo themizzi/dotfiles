@@ -16,7 +16,6 @@ cp "$ROOT/vim/.vimrc" "$TEMP/.vimrc"
 export HOME="$TEMP" XDG_CONFIG_HOME="$TEMP/config" XDG_DATA_HOME="$TEMP/data"
 export XDG_STATE_HOME="$TEMP/state" XDG_CACHE_HOME="$TEMP/cache" XDG_RUNTIME_DIR="$TEMP/runtime"
 export TMPDIR="$TEMP/tmp" TMP="$TEMP/tmp" GIT_CONFIG_GLOBAL="$TEMP/.gitconfig" GIT_CONFIG_NOSYSTEM=1
-export DOTFILES_NVIM_AI=0
 config="$XDG_CONFIG_HOME/nvim"
 printf '%s\n' 'Installing the reviewed plugin lock (network access required)...'
 nvim --headless -l "$config/setup.lua"
@@ -24,7 +23,9 @@ cat > "$TEMP/probe.lua" <<'LUA'
 local ok, err = pcall(function()
   assert(vim.v.errmsg == '', vim.v.errmsg)
   assert(require('lazy'), 'lazy.nvim failed to load')
-  assert(require('fzf-lua'), 'fzf-lua failed to load')
+  assert(require('snacks'), 'snacks.nvim failed to load')
+  assert(vim.g.colors_name == 'catppuccin-mocha', 'Catppuccin Mocha failed to load')
+  assert(vim.fn.maparg(' fp', 'n') ~= '', 'project picker mapping missing')
   local lock = vim.json.decode(table.concat(vim.fn.readfile(vim.fn.stdpath('config') .. '/lazy-lock.json'), '\n'))
   for _, plugin in pairs(require('lazy.core.config').plugins) do
     assert(vim.fn.isdirectory(plugin.dir) == 1, 'missing plugin: ' .. plugin.name)

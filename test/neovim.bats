@@ -25,23 +25,33 @@ setup() { editor_fixture; }
     assert_success "$output"
 }
 
-@test "fzf mappings dispatch to the expected picker functions" {
-    run_editor_lua fzf-dispatch.lua
+@test "Snacks mappings dispatch to expected picker functions" {
+    run_editor_lua telescope-dispatch.lua
     assert_success "$output"
 }
 
-@test "all plugin capabilities are locked and AI is disabled by default" {
+@test "all plugin capabilities are locked and replaced plugins are absent" {
     run_editor_lua plugins.lua
     assert_success "$output"
 }
 
-@test "AI opt-in declares locked providers but remains offline without plugins" {
-    run_editor_lua ai.lua
+@test "project dashboard scopes actions and handles non-Git projects" {
+    run_editor_lua dashboard.lua
+    assert_success "$output"
+}
+
+@test "project, UI, Git and OpenCode features dispatch safely" {
+    run_editor_lua features.lua
     assert_success "$output"
 }
 
 @test "TODO mappings preserve plugin dispatch and search fallback" {
     run_editor_lua todos.lua
+    assert_success "$output"
+}
+
+@test "Treesitter preserves indentation without a supported query" {
+    run_editor_lua treesitter.lua
     assert_success "$output"
 }
 

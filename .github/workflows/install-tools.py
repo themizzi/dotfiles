@@ -9,18 +9,18 @@ import urllib.request
 import zipfile
 
 
-# neovim/neovim v0.11.5 and casey/just 1.43.1, not moving stable/latest URLs.
+# neovim/neovim v0.12.3 and casey/just 1.43.1, not moving stable/latest URLs.
 RELEASES = {
     ("Linux", "x86_64"): (
-        "linux-x86_64", "b2f91117be5b5ea39edd7297156dc2a4a8df4add6c95a90809a8df19e7ab6f52",
+        "linux-x86_64", "c441b547142860bf01bcce39e36cbed185c41112813e15443b16e5237750724d",
         "x86_64-unknown-linux-musl", "6a3003f68fa4d86ada8afe33830a88ffdb6c2fcaff4e5a840b1cb90eaf6f46fc",
     ),
     ("Darwin", "arm64"): (
-        "macos-arm64", "79143d3b408f7034f90b7cf59af2276de09ef8a4c2f1a28e4c99581b249d3107",
+        "macos-arm64", "532da1d00e465a660fa01c3d4991333d09c52107dce7df937368545daca0a14e",
         "aarch64-apple-darwin", "96f4338e06966443b60666620ab3da0c2c6105ca1302275839c0f57fcbfa99d6",
     ),
     ("Darwin", "x86_64"): (
-        "macos-x86_64", "6612760a7037ca2518e456908baf5e43101fa79819d18979fc4d4e8441d9dfa5",
+        "macos-x86_64", "4b40e318eb7073321fa5fc06d7f60c3c0de1d7ea50ffbaa8b04286f5484d294f",
         "x86_64-apple-darwin", "e41d03872e28636b9c4461229e4e83771d7b4a0ef2bb6596dfc1e5e393c7ebe0",
     ),
 }
@@ -46,7 +46,7 @@ def main():
     nvim, nvim_hash, just, just_hash = RELEASES[(platform.system(), platform.machine())]
     destination = Path(os.environ["RUNNER_TEMP"]) / "dotfiles-tools"
     destination.mkdir(parents=True, exist_ok=True)
-    extract(f"https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-{nvim}.tar.gz",
+    extract(f"https://github.com/neovim/neovim/releases/download/v0.12.3/nvim-{nvim}.tar.gz",
             nvim_hash, destination)
     extract(f"https://github.com/casey/just/releases/download/1.43.1/just-1.43.1-{just}.tar.gz",
              just_hash, destination)

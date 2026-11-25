@@ -1,17 +1,50 @@
 return {
 	{
-		"nvim-tree/nvim-tree.lua",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
+		"folke/snacks.nvim",
+		priority = 1000,
+		lazy = false,
 		opts = {
-			disable_netrw = false,
-			hijack_netrw = false,
-			git = { enable = true },
-			filters = { git_ignored = false },
-			update_focused_file = { enable = true, update_root = { enable = false } },
-			renderer = { highlight_git = "all", icons = { show = { git = true } } },
+			dashboard = require("themizzi.dashboard").config(),
+			input = { enabled = true },
+			explorer = { enabled = true, replace_netrw = false },
+			zen = { enabled = true, win = { width = 100 }, toggles = { dim = false } },
+			picker = {
+				enabled = true,
+				sources = {
+					explorer = {
+						win = {
+							list = {
+								keys = {
+									["a"] = { "explorer_add", desc = "Create file or directory" },
+									["r"] = { "explorer_rename", desc = "Rename" },
+									["d"] = { "explorer_del", desc = "Delete" },
+									["c"] = { "explorer_copy", desc = "Copy" },
+									["m"] = { "explorer_move", desc = "Move" },
+									["H"] = { "toggle_hidden", desc = "Toggle hidden files" },
+								},
+							},
+						},
+					},
+				},
+				win = { input = { keys = { ["<a-o>"] = { "opencode_send", mode = { "n", "i" } } } } },
+				actions = {
+					opencode_send = function(picker)
+						local items = vim.tbl_map(function(item)
+							return item.file
+									and require("opencode").format({
+										path = item.file,
+										from = item.pos,
+										to = item.end_pos,
+									})
+								or item.text
+						end, picker:selected({ fallback = true }))
+						picker:close()
+						require("opencode").prompt(table.concat(items, ", ") .. " ")
+					end,
+				},
+			},
 		},
 	},
-	{ "ibhagwan/fzf-lua", opts = {}, dependencies = { "nvim-tree/nvim-web-devicons" } },
 	{
 		"folke/flash.nvim",
 		opts = {},

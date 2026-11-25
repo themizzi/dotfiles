@@ -22,11 +22,25 @@ M.parsers = {
 	"vimdoc",
 }
 
-M.opts = {
-	ensure_installed = {},
-	auto_install = false,
-	highlight = { enable = true },
-	indent = { enable = true },
-}
+function M.setup()
+	require("nvim-treesitter").setup({})
+	vim.api.nvim_create_autocmd("FileType", {
+		group = vim.api.nvim_create_augroup("DotfilesTreesitter", { clear = true }),
+		callback = function(event)
+			local lang = vim.treesitter.language.get_lang(vim.bo[event.buf].filetype)
+			if not lang then
+				return
+			end
+			local ok, available = pcall(vim.treesitter.language.add, lang)
+			if ok and available then
+				vim.treesitter.start(event.buf, lang)
+				local has_query, query = pcall(vim.treesitter.query.get, lang, "indents")
+				if has_query and query then
+					vim.bo[event.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+				end
+			end
+		end,
+	})
+end
 
 return M

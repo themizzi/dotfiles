@@ -12,3 +12,11 @@ vim.ui.input = function(_, callback)
 end
 vim.fn.maparg(" fg", "n", false, true).callback()
 assert(#vim.fn.getqflist() == 1)
+vim.fn.mkdir("different project", "p")
+vim.fn.writefile({ "project only needle" }, "different project/only.txt")
+vim.ui.input = function(_, callback)
+	callback("needle")
+end
+require("themizzi.keymaps").grep_fallback(nil, vim.fn.getcwd() .. "/different project")
+entries = vim.fn.getqflist()
+assert(#entries == 1 and entries[1].text == "project only needle")

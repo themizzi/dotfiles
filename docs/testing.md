@@ -15,7 +15,7 @@ suite is also available as `just test-installer`. Both commands work without
 Python or a virtual environment, never fetch dependencies, and forward Bats
 options such as `just test --filter 'package mappings'`. Bash (including macOS
 system Bash 3.2), Git, GNU Stow, `ps`/`pkill` for Bats timeouts, Zsh, Neovim
-0.11.3+, and Just are required for the complete suite. Missing pinned submodules
+0.12.0+, and Just are required for the complete suite. Missing pinned submodules
 produce an explicit initialization instruction.
 
 Bats provides a 30-second per-test timeout by default. CI job timeouts bound the

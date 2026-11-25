@@ -16,8 +16,8 @@ for executable in bash nvim stow zsh git just; do
     fi
 done
 version=$(nvim --version | sed -n '1s/^NVIM v\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p')
-if [ -z "$version" ] || ! printf '%s\n' "$version" | awk -F. '{ exit !($1 > 0 || $2 > 11 || ($2 == 11 && $3 >= 3)) }'; then
-    printf '%s\n' 'test: Neovim 0.11.3+ is required' >&2
+if [ -z "$version" ] || ! printf '%s\n' "$version" | awk -F. '{ exit !($1 > 0 || $2 >= 12) }'; then
+    printf '%s\n' 'test: Neovim 0.12.0+ is required' >&2
     exit 1
 fi
 BATS_TEST_TIMEOUT=${BATS_TEST_TIMEOUT:-30}

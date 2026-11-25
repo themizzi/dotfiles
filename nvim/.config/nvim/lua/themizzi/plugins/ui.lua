@@ -1,11 +1,43 @@
 return {
 	{ "folke/which-key.nvim", opts = {} },
 	{
-		"folke/tokyonight.nvim",
+		"catppuccin/nvim",
+		name = "catppuccin",
 		priority = 1000,
 		config = function()
-			vim.cmd.colorscheme("tokyonight")
+			require("catppuccin").setup({ flavour = "mocha" })
+			vim.cmd.colorscheme("catppuccin")
 		end,
+	},
+	{
+		"nvim-lualine/lualine.nvim",
+		opts = {
+			options = { theme = "catppuccin-mocha" },
+			sections = {
+				lualine_x = {
+					function()
+						local status = package.loaded["opencode.events.status"]
+						return status and status.statusline() or ""
+					end,
+					"encoding",
+					"fileformat",
+					"filetype",
+				},
+			},
+		},
+	},
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		ft = { "markdown" },
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+		opts = {
+			heading = { width = "block", left_pad = 1, right_pad = 1 },
+			code = { width = "full", left_pad = 1, language = true },
+			checkbox = {
+				unchecked = { icon = "󰄱 " },
+				checked = { icon = "󰱒 " },
+			},
+		},
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",

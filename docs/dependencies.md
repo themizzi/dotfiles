@@ -100,10 +100,10 @@ the archive, then install the binary under `~/.local/bin`. Alternatively use a
 user-level version manager with a pinned version and verified artifacts. No
 unverified `curl | sh` fallback is run automatically.
 
-**Neovim must be >=0.11.3 for the configured plugin workflow.** Successfully
+**Neovim must be >=0.12.0 for the configured plugin workflow.** Successfully
 installing a distro package does not prove that requirement: Debian 13 and
 Ubuntu 24.04 may supply older versions. `--doctor` exits nonzero for old/unknown
-versions or missing required commands. Install an explicit official Neovim >=0.11.3
+versions or missing required commands. Install an explicit official Neovim >=0.12.0
 release matching your architecture into a versioned directory under `~/.local/opt`,
 verify its published SHA256 before extracting, and link its `bin/nvim` into
 `~/.local/bin` (already on the Zsh PATH). Alternatively use an explicitly configured

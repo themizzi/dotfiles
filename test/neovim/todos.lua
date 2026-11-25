@@ -5,13 +5,13 @@ local function record(name)
 	end
 end
 package.loaded["todo-comments"] = { jump_next = record("next"), jump_prev = record("prev") }
-for _, name in ipairs({ "TodoLocList", "TodoQuickFix", "TodoFzfLua" }) do
+for _, name in ipairs({ "TodoLocList", "TodoQuickFix" }) do
 	vim.api.nvim_create_user_command(name, record(name), {})
 end
-for _, key in ipairs({ "tn", "tp", "tl", "tq", "tf" }) do
+for _, key in ipairs({ "tn", "tp", "tl", "tq" }) do
 	vim.fn.maparg(" " .. key, "n", false, true).callback()
 end
-assert(table.concat(calls, ",") == "next,prev,TodoLocList,TodoQuickFix,TodoFzfLua")
+assert(table.concat(calls, ",") == "next,prev,TodoLocList,TodoQuickFix")
 vim.ui.input = function(opts, callback)
 	assert(opts.default == [[\vTODO|FIXME|HACK|NOTE]])
 	callback(nil)

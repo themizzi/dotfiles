@@ -138,7 +138,7 @@ reset_release() { printf 'ID=%s\nVERSION_ID="%s"\n' "$1" "$2" > "$RELEASE"; }
         printf '#!/bin/sh\nexit 0\n' > "$BIN/$tool"
         chmod +x "$BIN/$tool"
     done
-    for version in 0.9.5 0.10.4 0.11.0 0.11.2 garbage; do
+    for version in 0.9.5 0.10.4 0.11.0 0.11.2 0.11.3 0.11.6 garbage; do
         cat > "$BIN/nvim" <<SH
 #!/bin/sh
 echo 'NVIM v$version'
@@ -146,9 +146,9 @@ SH
         chmod +x "$BIN/nvim"
         run_packages --doctor
         assert_failure
-        assert_output --partial 'Neovim >=0.11.3 required'
+        assert_output --partial 'Neovim >=0.12.0 required'
     done
-    for version in 0.11.3 0.11.6 0.12.0-dev 1.0.0; do
+    for version in 0.12.0-dev 0.12.0 0.12.3 1.0.0; do
         cat > "$BIN/nvim" <<SH
 #!/bin/sh
 echo 'NVIM v$version'
@@ -156,7 +156,7 @@ SH
         chmod +x "$BIN/nvim"
         run_packages --doctor
         assert_success
-        refute_output --partial 'Neovim >=0.11.3 required'
+        refute_output --partial 'Neovim >=0.12.0 required'
     done
 }
 

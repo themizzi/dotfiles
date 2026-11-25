@@ -83,8 +83,8 @@ if [[ $mode == doctor ]]; then
     done
     if [[ $has_nvim == true ]] && command -v nvim >/dev/null 2>&1; then
         version=$(nvim --version | sed -n '1s/^NVIM v\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p')
-        if [[ ! $version =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]] || ! ((10#${BASH_REMATCH[1]} > 0 || 10#${BASH_REMATCH[2]} > 11 || (10#${BASH_REMATCH[2]} == 11 && 10#${BASH_REMATCH[3]} >= 3))); then
-            printf '%s\n' 'Neovim >=0.11.3 required; install a verified user-level release (docs/dependencies.md), then re-run --doctor.'
+        if [[ ! $version =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]] || ! ((10#${BASH_REMATCH[1]} > 0 || 10#${BASH_REMATCH[2]} >= 12)); then
+            printf '%s\n' 'Neovim >=0.12.0 required; install a verified user-level release (docs/dependencies.md), then re-run --doctor.'
             failed=1
         fi
     fi
@@ -117,5 +117,5 @@ if [[ -n $bundles ]]; then
     fi
 fi
 if [[ $has_starship == true ]]; then
-    printf '%s\n' 'Starship is optional (not installed by apt); verify Neovim >=0.11.3 with --doctor. See docs/dependencies.md.'
+    printf '%s\n' 'Starship is optional (not installed by apt); verify Neovim >=0.12.0 with --doctor. See docs/dependencies.md.'
 fi
