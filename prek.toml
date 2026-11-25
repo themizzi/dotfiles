@@ -3,8 +3,8 @@ repo = "local"
 
 [[repos.hooks]]
 id = "just-check"
-name = "just check"
-entry = "just check"
+name = "just dev check"
+entry = "just dev check"
 language = "system"
 pass_filenames = false
 always_run = true

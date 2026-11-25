@@ -38,7 +38,7 @@ to refresh its project context.
 | Space uz / um | Toggle Zen / toggle rendering in this Markdown buffer |
 | Ctrl-h/j/k/l | Move between windows |
 
-In a picker type to filter, use arrows or Ctrl-j/Ctrl-k, and press Enter. Ctrl-c cancels; Alt-h toggles hidden files. Tab selects items; Alt-o sends them to OpenCode. In the explorer Enter opens, h closes a directory, a creates, r renames, d deletes, c copies, m moves, and H toggles hidden files. Press ? for action help. Review file-operation prompts carefully.
+In a picker type to filter, use arrows or Ctrl-j/Ctrl-k, and press Enter. Ctrl-c cancels; Alt-h toggles hidden files. Tab selects items; Alt-o sends them to OpenCode. In the explorer Enter opens, h closes a directory, a creates, r renames, d deletes, c copies, m moves, and H toggles hidden files (dotfiles are shown by default). Press ? for action help. Review file-operation prompts carefully.
 
 The project picker lists the current directory, Git roots from recent files, and repositories directly under `~/GitHub`. Selecting a project changes the current tab's working directory and opens its dashboard; it does not close unsaved buffers. Non-Git projects appear when current, but are not otherwise tracked in history.
 
@@ -82,4 +82,4 @@ Normal startup does not install plugins or parsers. After linking dotfiles on a 
 env -u DOTFILES_SKIP_PLUGIN_BOOTSTRAP nvim --headless -l "$HOME/.config/nvim/setup.lua"
 ```
 
-Requires Neovim 0.12+, Git, network access, and `rg` for live search. A Nerd Font is recommended for icons. Without plugins, the editor falls back to netrw and built-in selection/search; fallback search uses Vim regex and returns quickfix results (`:cnext`/`:cprev`). For parser installation, language-server and clipboard details, see `docs/neovim.md` in the dotfiles repository.
+Requires Neovim 0.12+, Git, network access, and `rg` for live search. A Nerd Font is recommended for icons. Without plugins, the editor falls back to netrw and built-in selection/search; fallback search uses Vim regex and returns quickfix results (`:cnext`/`:cprev`).

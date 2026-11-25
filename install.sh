@@ -78,7 +78,7 @@ for package do
     if [ "$action" = --stow ] && [ -d "$REPO_ROOT/$package/.config" ] &&
         [ "${XDG_CONFIG_HOME:-$HOME/.config}" != "$HOME/.config" ] &&
         [ "${XDG_CONFIG_HOME:-$HOME/.config}" != "$HOME/.config/" ]; then
-        fail 'This Stow layout installs config under HOME/.config, but XDG_CONFIG_HOME selects another location. No changes were made; see docs/profiles.md.'
+        fail 'This Stow layout installs config under HOME/.config, but XDG_CONFIG_HOME selects another location. No changes were made; see README.md.'
     fi
 done
 
@@ -121,7 +121,7 @@ EOF_DIRECTORIES
     done
 fi
 if ! stow --dir="$REPO_ROOT" --target="$HOME" --no-folding --simulate "$action" "$@"; then
-    fail 'Stow preflight failed; no changes were made. Back up and move only the reported conflicting paths, then retry (see docs/installer.md).'
+    fail 'Stow preflight failed; no changes were made. Back up and move only the reported conflicting paths, then retry (see README.md).'
 fi
 if [ "$dry_run" = true ]; then
     printf 'Dry run complete; no changes made.\n'

@@ -1,129 +1,63 @@
 # dotfiles
 
-Portable Zsh, Vim, and Neovim configuration with automatic Zsh plugin setup.
-The full Neovim layer requires version 0.12.0 or newer; plugin-free startup
-retains useful built-in navigation and search. See [Neovim setup](docs/neovim.md)
-for the reviewed plugin versions and supported Treesitter runtime.
+Portable Zsh, Vim, and Neovim configuration. The full Neovim setup requires
+Neovim >= 0.12; without plugins, built-in navigation and search fallbacks
+remain available.
 
 ## Install
 
-From repo root:
+Requires Git and GNU Stow. Install [Just](https://just.systems/) 1.31.0 or newer
+(`brew install just` on macOS) or use `sh install.sh` directly.
 
-```bash
-git submodule update --init --recursive # explicit dependency download
-just install --dry-run
+```sh
+git submodule update --init --recursive   # required once before linking
+just install --dry-run                    # preview
 just install
 ```
 
-`install.sh` uses GNU Stow with `--target="$HOME"` and creates symlinks such as:
+The installer links the selected profile into `$HOME` with Stow. It never
+adopts or overwrites existing files; on a conflict, move only the reported
+paths and retry. `just install --profile NAME` selects a profile.
+`just install --unlink` removes only managed links; unlink the old profile
+before switching to another.
 
-- `~/.vimrc` -> `vim/.vimrc`
-- `~/.config/nvim/init.vim` -> `nvim/.config/nvim/init.vim`
+Available profiles: `minimal` (vim, zsh) and `personal` (default: gh,
+gh-copilot, nano, nvim, starship, vim, zsh).
 
-The script is idempotent and preflights the entire selection before linking.
-Use `just install --dry-run` to preview changes or `just install --unlink` to
-remove managed links. Existing configuration is never adopted or overwritten.
-See [installer safety](docs/installer.md) and [Just tasks](docs/just.md).
+## Install CLI dependencies
 
-The default `personal` profile selects the full configuration, including optional
-Copilot preferences. Choose `just install --profile minimal` for Vim/Zsh. See
-[profile selection](docs/profiles.md) for exact package lists and safe
-switching/unlinking.
-
-Install the Just command runner with `brew install just` on macOS or
-`sudo apt-get install just` on Debian releases that package it. Direct
-`sh install.sh` remains supported without Just. See [Just tasks](docs/just.md)
-for argument forwarding, prerequisites, and offline checks.
-
-## Devcontainer (Debian)
-
-Open this repository in a devcontainer with VS Code (`Dev Containers: Reopen in Container`).
-
-On first create, `.devcontainer/scripts/post-create.sh` runs and:
-
-- initializes/updates git submodules
-- installs no test framework or Python packages
-
-The Bats-only test suite uses pinned repository submodules; Python remains only
-for non-test tooling such as syntax checking and checksum-verified CI downloads.
-
-The Debian 13 image consumes the same [CLI package mapping](packages/cli.tsv)
-as the native provisioning adapters; there is no separate container package list.
-System provisioning is separate from linking configuration:
-
-```bash
-bash scripts/packages.sh --profile personal --dry-run
-bash scripts/packages.sh --profile personal --install # explicit system changes
-bash scripts/packages.sh --profile personal --doctor
+```sh
+bash scripts/packages.sh                        # preview the default profile
+bash scripts/packages.sh --profile minimal      # preview a profile
+bash scripts/packages.sh --install              # install (needs network/sudo)
+bash scripts/packages.sh --doctor               # check required commands
+bash scripts/packages.sh --list                 # print package names
 ```
 
-Supported adapters cover Debian/Ubuntu, Arch, and macOS Homebrew.
-WSL uses its Linux distribution's adapter. See [dependency policy](docs/dependencies.md)
-for supported releases, optional Starship, and verified user-level tool installation.
-Check Neovim's version explicitly: a successfully installed distro package may
-still be older than the full configuration requires.
-This also applies to the devcontainer: install a verified supported Neovim
-release before running editor tests if its distro version is too old.
+Supported: Debian 13, Ubuntu 24.04+, Arch (x86_64/arm64), and macOS with
+preinstalled Homebrew. The `personal` profile also installs the macOS
+application bundles from `packages/Brewfile.*`. The script never bootstraps a
+package manager. If your distro Neovim is older than 0.12, install an
+official release under `~/.local/opt` and link `bin/nvim` into
+`~/.local/bin`, then re-run `--doctor`.
 
-Only `minimal` and `personal` profiles are supported. `personal` includes the
-full development configuration and, on macOS, both desktop and personal
-Homebrew application bundles. See [configuration profiles](docs/profiles.md).
+## Neovim
 
-Verify inside the container:
-
-```bash
-just install
-just check
-just test
-```
-
-## Usage
-
-- `<leader>` is space.
-- `<leader>e` opens Snacks explorer, or netrw without plugins; `<leader>fe` reveals the current file.
-- `<leader>ff`, `fb`, `fc`, `fg`, `fh`: files, buffers, commands, workspace search, and help.
-- `<leader>tn`, `tp`, `tl`, `tq`, `tf`, `ts`: TODO navigation, lists, and search.
-- `s` / `S`: Flash navigation with plugins; coverage and Diffview commands remain available.
-- Native clipboard detection works without overriding system providers.
-
-Normal startup never installs plugins. Enable the reviewed plugin layer explicitly
-after linking configuration:
+Normal startup never downloads plugins. To install the reviewed plugin set
+after linking (needs Neovim >= 0.12, Git, and network):
 
 ```sh
 env -u DOTFILES_SKIP_PLUGIN_BOOTSTRAP nvim --headless -l "$HOME/.config/nvim/setup.lua"
 ```
 
-Without plugins, file/search/explorer mappings use built-in fallbacks.
-OpenCode.nvim integrates the OpenCode terminal and editor context. Parser
-installation, language servers, and formatters are explicit choices. See the
-[Neovim usage guide](nvim/.config/nvim/USAGE.md), [Neovim documentation](docs/neovim.md),
-and [portable shell setup](docs/zsh.md) for details.
+Language servers and formatters are never installed automatically; use
+`:Mason` or your package manager, then restart Neovim. Use `"+y` / `"+p` for
+the system clipboard. See [nvim/.config/nvim/USAGE.md](nvim/.config/nvim/USAGE.md)
+for all mappings.
 
-## Tests
+## Zsh
 
-Installer safety and real-Stow tests use the pinned Bats runner and helpers:
-
-```sh
-git submodule update --init --recursive -- vendor
-sh scripts/test-installer.sh
-```
-
-This suite needs Bash, Git, and Stow, but no Python or system Bats installation.
-See [installer tests](docs/installer.md).
-See [testing and CI](docs/testing.md) for isolated Bats fixtures, pinned tools,
-the opt-in plugin smoke, and the real-WSL manual checklist.
-
-Run the full suite:
-
-```bash
-just test
-```
-
-Run syntax checks without installing dependencies or executing configuration:
-
-```bash
-just check
-```
-
-This runs syntax, shell lint, and Lua formatting checks without modifying files.
-See [Just tasks](docs/just.md) for prerequisites and optional prek setup.
+Plugin bundles load automatically on first interactive start after
+initializing the submodule. Put private settings in `~/.zshrc.local`
+(mode 600, not committed). History and plugin caches live under the XDG
+directories; history is stored in `$XDG_STATE_HOME/zsh/history`.

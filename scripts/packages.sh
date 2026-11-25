@@ -76,7 +76,7 @@ if [[ $mode == doctor ]]; then
     for command in "${commands[@]}"; do
         case "$command" in
             certificates|venv) continue ;;
-            starship) command -v starship >/dev/null 2>&1 || printf '%s\n' 'Optional: starship missing; see docs/dependencies.md'; continue ;;
+            starship) command -v starship >/dev/null 2>&1 || printf '%s\n' 'Optional: starship missing; see README.md'; continue ;;
             fd) command -v fdfind >/dev/null 2>&1 && continue ;;
         esac
         if ! command -v "$command" >/dev/null 2>&1; then printf 'Missing: %s\n' "$command"; failed=1; fi
@@ -84,7 +84,7 @@ if [[ $mode == doctor ]]; then
     if [[ $has_nvim == true ]] && command -v nvim >/dev/null 2>&1; then
         version=$(nvim --version | sed -n '1s/^NVIM v\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p')
         if [[ ! $version =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]] || ! ((10#${BASH_REMATCH[1]} > 0 || 10#${BASH_REMATCH[2]} >= 12)); then
-            printf '%s\n' 'Neovim >=0.12.0 required; install a verified user-level release (docs/dependencies.md), then re-run --doctor.'
+            printf '%s\n' 'Neovim >=0.12.0 required; install a verified user-level release (README.md), then re-run --doctor.'
             failed=1
         fi
     fi
@@ -102,7 +102,7 @@ prefix=()
 if [[ $manager != brew && $(id -u) != 0 ]]; then prefix=(sudo); fi
 if [[ $mode == install ]]; then
     binary=${install[0]}
-    command -v "$binary" >/dev/null 2>&1 || die "Install $binary first; see docs/dependencies.md"
+    command -v "$binary" >/dev/null 2>&1 || die "Install $binary first; see README.md"
     if ((${#prefix[@]})); then command -v sudo >/dev/null 2>&1 || die 'Run as root or install sudo'; fi
 fi
 if ((${#update[@]})); then run "${prefix[@]}" "${update[@]}"; fi
@@ -117,5 +117,5 @@ if [[ -n $bundles ]]; then
     fi
 fi
 if [[ $has_starship == true ]]; then
-    printf '%s\n' 'Starship is optional (not installed by apt); verify Neovim >=0.12.0 with --doctor. See docs/dependencies.md.'
+    printf '%s\n' 'Starship is optional (not installed by apt); verify Neovim >=0.12.0 with --doctor. See README.md.'
 fi

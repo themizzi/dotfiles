@@ -56,8 +56,8 @@ jobs:
         run: |
           nvim --version
           just --version
-          just check
-          just test
+          just dev check
+          just dev test
 
   distributions:
     name: Linux / ${{ matrix.name }}
@@ -100,8 +100,8 @@ jobs:
           python3 --version
           nvim --version
           just --version
-          just check
-          just test
+          just dev check
+          just dev test
 
   plugin-startup:
     name: Opt-in real plugin startup
