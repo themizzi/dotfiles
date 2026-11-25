@@ -23,14 +23,11 @@ setup() {
     assert_output --partial 'setup invoked'
 }
 
-@test "developer test tasks forward Bats options unchanged" {
+@test "developer test task forwards Bats options unchanged" {
     printf '%s\n' 'printf "<%s>\n" "$@"' > "$FIXTURE/scripts/test.sh"
-    printf '%s\n' 'printf "<%s>\n" "$@"' > "$FIXTURE/scripts/test-installer.sh"
-    run_just dev test --filter 'paths with spaces'
+    run_just dev test --filter 'paths with spaces' '$(touch BAD)'
     assert_success
     assert_output --partial '<paths with spaces>'
-    run_just dev test-installer --filter '$(touch BAD)'
-    assert_success
     assert_output --partial '<$(touch BAD)>'
     [ ! -e "$FIXTURE/BAD" ]
 }
@@ -47,16 +44,6 @@ run_just() { run just --justfile "$FIXTURE/justfile" --working-directory "$FIXTU
     [ ! -e "$FIXTURE/BAD" ]
 }
 
-@test "installer task forwards Bats options exactly" {
-    printf '%s\n' 'printf "<%s>\n" "$@"' > "$FIXTURE/scripts/test-installer.sh"
-    run_just dev test-installer --filter 'paths with spaces' '$(touch BAD)'
-    assert_success
-    assert_output --partial '<--filter>'
-    assert_output --partial '<paths with spaces>'
-    assert_output --partial '<$(touch BAD)>'
-    [ ! -e "$FIXTURE/BAD" ]
-}
-
 @test "full test task delegates Bats arguments unchanged" {
     printf '%s\n' 'printf "<%s>\n" "$@"' > "$FIXTURE/scripts/test.sh"
     run_just dev test --filter 'just contracts'
@@ -70,8 +57,6 @@ run_just() { run just --justfile "$FIXTURE/justfile" --working-directory "$FIXTU
     assert_success
     run grep -F 'sh scripts/test.sh "$@"' "$ROOT/dev.just"
     assert_success
-    run grep -F 'scripts/test-installer.sh "$@"' "$ROOT/dev.just"
-    assert_success
     run grep -E 'unittest|\.venv/bin/python|behave' "$ROOT/dev.just"
     assert_failure
 }
@@ -84,5 +69,6 @@ run_just() { run just --justfile "$FIXTURE/justfile" --working-directory "$FIXTU
     run_just --list dev
     assert_success
     assert_output --partial 'check '
-    assert_output --partial 'test-installer'
+    assert_output --partial 'test '
+    refute_output --partial 'test-installer'
 }

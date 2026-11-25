@@ -15,10 +15,6 @@ check:
     git ls-files -z --cached --others --exclude-standard -- '*.py' | xargs -0 -n 1 sh -c '[ "$#" -eq 0 ] || [ ! -f "$1" ] || exec python3 -B -c '"'"'import ast, sys, tokenize; f = tokenize.open(sys.argv[1]); ast.parse(f.read(), filename=sys.argv[1])'"'"' "$1"' sh
     stylua --check nvim/.config/nvim test/neovim
 
-# Run the pinned installer suite without Python or a venv.
-test-installer *args:
-    sh scripts/test-installer.sh "$@"
-
 # Run all pinned Bats suites without Python or fetching dependencies.
 test *args:
     sh scripts/test.sh "$@"

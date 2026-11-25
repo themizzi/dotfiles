@@ -25,7 +25,6 @@ StyLua, Neovim >= 0.12, and `ps`/`pkill`, then run
 just dev check                    # shell lint, zsh/python syntax, JSON, Lua format
 just dev test                     # all Bats suites
 just dev test --filter 'profile'  # forward any Bats option
-just dev test-installer           # installer suite only
 ```
 
 Tests run against disposable HOME/XDG directories and never modify your host
