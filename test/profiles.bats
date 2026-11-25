@@ -34,7 +34,7 @@ assert_invalid_profile() {
     assert_output $'vim\nzsh'
     resolve_profile --profile personal
     assert_success
-    assert_output $'gh\ngh-copilot\nnano\nnvim\nstarship\nvim\nzsh'
+    assert_output $'gh\ngh-copilot\nkitty\nnano\nnvim\nstarship\nvim\nzsh'
 }
 
 @test "profiles declare independent CLI groups and application bundles" {
@@ -59,7 +59,7 @@ assert_invalid_profile() {
     printf 'personal\n' > "$FIXTURE/profiles/default"
     resolve_profile
     assert_success
-    assert_output $'gh\ngh-copilot\nnano\nnvim\nstarship\nvim\nzsh'
+    assert_output $'gh\ngh-copilot\nkitty\nnano\nnvim\nstarship\nvim\nzsh'
 
     cat > "$FIXTURE/profiles/workstation.profile" <<'EOF'
 extends minimal
@@ -75,7 +75,7 @@ EOF
     append_profile personal 'extends minimal\npackage vim\npackage gh-copilot'
     resolve_profile --profile personal
     assert_success
-    assert_output $'gh\ngh-copilot\nnano\nnvim\nstarship\nvim\nzsh'
+    assert_output $'gh\ngh-copilot\nkitty\nnano\nnvim\nstarship\nvim\nzsh'
 }
 
 @test "invalid names and command-line forms fail closed" {

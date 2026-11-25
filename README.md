@@ -22,7 +22,7 @@ paths and retry. `just install --profile NAME` selects a profile.
 before switching to another.
 
 Available profiles: `minimal` (vim, zsh) and `personal` (default: gh,
-gh-copilot, nano, nvim, starship, vim, zsh).
+gh-copilot, kitty, nano, nvim, starship, vim, zsh).
 
 ## Install CLI dependencies
 
