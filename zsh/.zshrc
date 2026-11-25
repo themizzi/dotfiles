@@ -16,7 +16,7 @@ if [[ -n ${HOMEBREW_PREFIX:-} && -d "$HOMEBREW_PREFIX/share/zsh/site-functions" 
   fpath=("$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath)
 fi
 
-# The checked-out submodule is canonical. Never clone or fetch at startup.
+# The checked-out Antidote submodule is canonical.
 if [[ -r "$HOME/.antidote/antidote.zsh" ]]; then
   source "$HOME/.antidote/antidote.zsh"
 elif [[ -n ${DOTFILES_ANTIDOTE_HOMEBREW_PATH+x} ]]; then
@@ -25,7 +25,7 @@ elif [[ -n ${HOMEBREW_PREFIX:-} && -r "$HOMEBREW_PREFIX/opt/antidote/share/antid
   source "$HOMEBREW_PREFIX/opt/antidote/share/antidote/antidote.zsh"
 fi
 
-# Generate a bundle explicitly, then restart the shell to use it.
+# Generate a bundle atomically so failed downloads preserve the previous cache.
 dotfiles-plugins-update() {
   if (( ! $+functions[antidote] )); then
     print -u2 'Antidote is unavailable; initialize the zsh/.antidote submodule first.'
@@ -41,6 +41,12 @@ dotfiles-plugins-update() {
     return 1
   fi
 }
+
+# Bootstrap plugins on first use and refresh when the plugin list changes.
+if (( $+functions[antidote] )) && [[ -r "$HOME/.zsh_plugins.txt" ]] &&
+    [[ ! -r "$XDG_CACHE_HOME/zsh/plugins.zsh" || "$HOME/.zsh_plugins.txt" -nt "$XDG_CACHE_HOME/zsh/plugins.zsh" ]]; then
+  dotfiles-plugins-update || print -u2 'Plugin setup failed; retry with dotfiles-plugins-update.'
+fi
 
 # Plugins may register completions while also extending fpath. Queue those
 # registrations until compinit has seen every plugin's completion directory.

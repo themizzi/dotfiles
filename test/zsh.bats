@@ -122,18 +122,32 @@ $HOME/config custom/nano/nanorc"
     assert_output 'nvim|nvim'
 }
 
-@test "canonical Antidote wins and startup does not bundle" {
+@test "canonical Antidote bootstraps plugins once and loads them immediately" {
     fake_antidote "$HOME/.antidote/antidote.zsh" canonical
     fake_antidote "$HOME/compatibility/antidote.zsh" compatibility
-    run_zsh -ic 'print -r -- "$ANTIDOTE_SELECTED"' DOTFILES_ANTIDOTE_HOMEBREW_PATH="$HOME/compatibility/antidote.zsh"
+    run_zsh -ic 'print -r -- "$ANTIDOTE_SELECTED"; whence -w _zsh_highlight' DOTFILES_ANTIDOTE_HOMEBREW_PATH="$HOME/compatibility/antidote.zsh"
     assert_success
-    assert_output canonical
-    [ ! -e "$HOME/antidote-calls" ]
+    assert_output $'canonical\n_zsh_highlight: function'
+    run_zsh -ic 'whence -w _zsh_highlight'
+    assert_success
+    assert_output '_zsh_highlight: function'
+    [ "$(cat "$HOME/antidote-calls")" = bundle ]
+}
+
+@test "startup rebuilds the bundle after the plugin list changes" {
+    fake_antidote "$HOME/.antidote/antidote.zsh" canonical
+    mkdir -p "$HOME/.cache/zsh"
+    printf '# old bundle\n' > "$HOME/.cache/zsh/plugins.zsh"
+    touch -t 200001010000 "$HOME/.cache/zsh/plugins.zsh"
+    run_zsh -ic 'whence -w _zsh_highlight'
+    assert_success
+    assert_output '_zsh_highlight: function'
+    [ "$(cat "$HOME/antidote-calls")" = bundle ]
 }
 
 @test "explicit Antidote update creates an offline cache" {
     fake_antidote "$HOME/compatibility/antidote.zsh" compatibility
-    run_zsh -ic 'dotfiles-plugins-update' DOTFILES_ANTIDOTE_HOMEBREW_PATH="$HOME/compatibility/antidote.zsh"
+    run_zsh -ic ': > "$HOME/antidote-calls"; dotfiles-plugins-update' DOTFILES_ANTIDOTE_HOMEBREW_PATH="$HOME/compatibility/antidote.zsh"
     assert_success
     [ "$(cat "$HOME/antidote-calls")" = bundle ]
     rm "$HOME/compatibility/antidote.zsh"

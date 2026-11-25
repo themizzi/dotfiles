@@ -8,7 +8,7 @@ ARM macOS, Intel macOS, then Linux Homebrew are checked. Only one `shellenv`
 is evaluated per shell. No Apple-specific directories are added on Linux
 unless they actually exist or the selected Homebrew supplies them.
 
-## Plugins (explicit network access)
+## Plugins
 
 Initialize the canonical Antidote submodule from the repository:
 
@@ -16,13 +16,13 @@ Initialize the canonical Antidote submodule from the repository:
 git submodule update --init zsh/.antidote
 ```
 
-Then start interactive zsh and run `dotfiles-plugins-update`. This explicitly
-runs `antidote bundle` against `~/.zsh_plugins.txt` and may download plugins.
-Restart zsh to use the resulting `$XDG_CACHE_HOME/zsh/plugins.zsh`. Startup
-only sources that cache: it never runs `antidote load`, clones repositories,
-or automatically refreshes a stale bundle. Repeat the command after changing
-the plugin list; use Antidote's `update` command explicitly to update clones.
-Without a cache the shell works without plugins. The cached bundle prepares
+Interactive zsh automatically runs `antidote bundle` when the plugin cache is
+missing or `~/.zsh_plugins.txt` is newer, downloading missing plugins as needed.
+The resulting `$XDG_CACHE_HOME/zsh/plugins.zsh` is loaded in the same shell.
+Subsequent startups reuse the cache. Run `dotfiles-plugins-update` to rebuild
+it manually, then restart zsh; use Antidote's `update` command to update clones.
+If setup fails, the previous cache is preserved; without a cache the shell
+works without plugins. The cached bundle prepares
 plugin completion paths before the single guarded `compinit` invocation.
 Early plugin `compdef` calls are queued and replayed after initialization.
 
