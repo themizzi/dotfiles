@@ -6,6 +6,7 @@ return {
 		opts = {
 			dashboard = require("themizzi.dashboard").config(),
 			input = { enabled = true },
+			image = { enabled = true },
 			explorer = { enabled = true, replace_netrw = false },
 			zen = { enabled = true, win = { width = 100 }, toggles = { dim = false } },
 			picker = {
