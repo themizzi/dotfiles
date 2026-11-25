@@ -325,7 +325,17 @@ function M.setup()
 	map("<leader>cf", format_buffer, "Format buffer")
 	map("<leader>ca", vim.lsp.buf.code_action, "Code action")
 	map("<leader>cr", vim.lsp.buf.rename, "Rename symbol")
-	map("<leader>cd", vim.diagnostic.open_float, "Line diagnostics")
+	map("<leader>cd", function()
+		vim.diagnostic.open_float({ scope = "line" })
+	end, "Line diagnostics")
+	map("<leader>cD", function()
+		local ok, snacks = pcall(require, "snacks")
+		if ok then
+			snacks.picker.diagnostics_buffer()
+		else
+			vim.diagnostic.setloclist()
+		end
+	end, "File diagnostics")
 	vim.keymap.set("x", "<leader>/", "gc", { remap = true, desc = "Toggle comment" })
 	-- Native gcc is itself a mapping, so allow remapping for this alias.
 	vim.keymap.set("n", "<leader>/", "gcc", { remap = true, desc = "Toggle comment" })

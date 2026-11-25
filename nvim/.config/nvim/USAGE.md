@@ -30,7 +30,7 @@ to refresh its project context.
 
 | Keys | Action |
 | --- | --- |
-| Space ff / fg | Find files / search project text (requires `rg`) |
+| Space ff / fg | Find files (including hidden files) / search project text (requires `rg`) |
 | Space fp / fs | Switch project / find current-file symbols with Aerial and Snacks |
 | Space fb / fc | Find buffers / commands |
 | Space fh / fk | Find help / keymaps |
@@ -40,6 +40,8 @@ to refresh its project context.
 | Ctrl-h/j/k/l | Move between windows |
 
 In a picker type to filter, use arrows or Ctrl-j/Ctrl-k, and press Enter. Ctrl-c cancels; Alt-h toggles hidden files. Tab selects items; Alt-o sends them to OpenCode. In the explorer Enter opens, h closes a directory, a creates, r renames, d deletes, c copies, m moves, and H toggles hidden files (dotfiles are shown by default). Press ? for action help. Review file-operation prompts carefully.
+
+File search includes hidden files by default but still respects ignore rules such as `.gitignore`.
 
 The Aerial outline uses Treesitter or an available language server to find symbols. In the outline, Enter jumps to a symbol, h/l collapse or expand a branch, and q closes it; press ? for help.
 
@@ -57,11 +59,14 @@ The project picker lists the current directory, Git roots from recent files, and
 
 Start an OpenCode session with Space ot, then ask with Space oa. The plugin can discover a running compatible OpenCode service, or start one in a terminal. It targets the most recently updated session for Neovim's directory. Save changes first: OpenCode reads files from disk. Contexts include `@this`, `@buffer`, `@diagnostics`, and `@visible`. Requests may share context with the configured model; permission prompts require approval. Run `:checkhealth opencode` for diagnostics. Space oe/or/od send their preset prompts immediately; lualine displays connection and activity once OpenCode is loaded.
 
+Diagnostics appear inline on affected lines. Use ]d and [d to jump between them; Space cd shows the full message for the current line.
+
 ## Code and Git
 
 | Keys | Action |
 | --- | --- |
 | Space ca / cr / cd | Code actions / rename / line diagnostics |
+| Space cD | Search diagnostics in the current file |
 | Space cf or Space m | Format buffer |
 | K / grr / gri / grn | Hover / references / implementations / rename |
 | Space / | Toggle comments in normal or visual mode |

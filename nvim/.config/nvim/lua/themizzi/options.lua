@@ -11,6 +11,7 @@ function M.setup()
 	vim.opt.expandtab = true
 	vim.opt.ignorecase = true
 	vim.opt.smartcase = true
+	vim.diagnostic.config({ virtual_text = true })
 	vim.g.netrw_banner = 0
 	vim.g.netrw_liststyle = 3
 	-- Leave provider selection to Neovim: system tools first, then native OSC52
