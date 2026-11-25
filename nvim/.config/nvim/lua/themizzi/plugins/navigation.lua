@@ -12,6 +12,7 @@ return {
 				enabled = true,
 				sources = {
 					explorer = {
+						hidden = true,
 						win = {
 							list = {
 								keys = {
