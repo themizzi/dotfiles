@@ -24,17 +24,15 @@ Installation modifies home-directory symlinks; it is not a check.
 
 ```sh
 just check
-# Without Just:
-sh scripts/check.sh
 ```
 
-Requires `sh`, `bash`, `zsh`, `python3`, and `git` in `PATH`, with an explicit error if
-one is missing. Checks tracked and new unignored files using `sh -n`, `bash -n`
-(for Bash shebangs), `zsh -f -n`,
-JSON parsing, and Python AST parsing. It skips ignored files and submodule
-contents. It does not source shell configuration, import repository Python
-modules, compile bytecode, install dotfiles, or access the network. This is a
-syntax check, not a semantic/configuration validator. JSON must be strict JSON.
+Requires Git, Zsh, Python 3, jq, ShellCheck, and StyLua in `PATH`. It checks
+shell scripts with ShellCheck, Zsh syntax with `zsh -f -n`, strict JSON with jq,
+Python syntax with the standard library, and Lua formatting with StyLua. Git
+selects tracked and new unignored Zsh, JSON, and Python files without entering
+submodules. These checks do not execute configuration, write bytecode, rewrite
+files, install dotfiles, or access the network. See [testing tools](testing.md)
+for prerequisites and optional prek hook installation.
 
 ## Test
 
@@ -43,11 +41,6 @@ Initialize `vendor/` explicitly with `git submodule update --init --recursive --
 the recipe never installs or fetches dependencies. It forwards Bats options,
 for example `just test-installer --filter 'real Stow'`. Bash, Git, and Stow are
 required; system Bats and helper packages are not used.
-`just lint` runs ShellCheck against executable shell scripts. It requires
-ShellCheck from the `development` CLI group and never executes those scripts.
-`just fmt-check` checks Neovim Lua formatting with StyLua 2.6.0 without
-rewriting files. See [testing tools](testing.md) for the pinned CI tool policy.
-
 Run all Bats suites with:
 
 ```sh

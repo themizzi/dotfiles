@@ -43,15 +43,23 @@ checks. Isolation is not a security sandbox; run only trusted repository code.
 
 ```sh
 just check
-just lint
-just fmt-check
 ```
 
-`just check` parses shell, JSON, and Python tooling sources without executing
-configuration. Python is used by this syntax-check/tooling path and to install
-checksum-pinned CI tools; **there are no Python test modules, Python test
-frameworks, test requirements, or test virtual environment**. ShellCheck and
-StyLua are standalone quality tools, not test dependencies.
+`just check` runs ShellCheck, Zsh syntax checks, JSON validation with jq,
+Python syntax checks, and StyLua formatting checks. It requires Git, Zsh,
+Python 3, jq, ShellCheck, and StyLua (CI uses 2.6.0); install these separately
+using your platform's package manager or the documented CI tool installer. Git
+selects tracked and unignored files for Zsh, JSON, and Python checks; paths with
+spaces are supported. Checks do not execute configuration or rewrite files.
+
+Optionally install [prek](https://prek.j178.dev/installation/) and run `prek install`
+once to run `just check` automatically before commits. The local hook in
+`prek.toml` uses your installed tools and does not download tool environments.
+When invoked as a Git hook, prek temporarily hides unstaged changes to tracked
+files; `just check` then scans that snapshot and any unignored untracked files.
+Run `just check` directly without prek at any time.
+Python is also used to install checksum-pinned CI tools; there are no Python test
+frameworks, test requirements, or test virtual environment.
 
 ## CI coverage
 
@@ -82,8 +90,8 @@ mapping or external language tool.
 
 Use real WSL2, not a Linux container as a substitute. Record Windows/WSL and
 distro versions, architecture, terminal, and tool versions. Clone into the Linux
-filesystem (not `/mnt/c`), initialize vendor submodules, and run `just check`,
-`just lint`, `just fmt-check`, and `just test`. In a disposable user, install
+filesystem (not `/mnt/c`), initialize vendor submodules, and run `just check`
+and `just test`. In a disposable user, install
 twice and verify links, conflict protection, and unrelated files. Exercise
 interactive Zsh, Neovim explorer/search/pickers, and terminal clipboard behavior.
 Record optional plugin/network/service checks separately; these host-dependent

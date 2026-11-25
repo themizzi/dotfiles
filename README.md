@@ -74,7 +74,6 @@ Verify inside the container:
 ```bash
 just install
 just check
-just lint
 just test
 ```
 
@@ -126,5 +125,5 @@ Run syntax checks without installing dependencies or executing configuration:
 just check
 ```
 
-Additional non-mutating quality checks are `just lint` (ShellCheck) and
-`just fmt-check` (StyLua 2.6.0). See [Just tasks](docs/just.md) for prerequisites.
+This runs syntax, shell lint, and Lua formatting checks without modifying files.
+See [Just tasks](docs/just.md) for prerequisites and optional prek setup.

@@ -35,10 +35,10 @@ jobs:
         shell: bash
         run: |
           if [[ "$RUNNER_OS" == macOS ]]; then
-            brew install stow zsh ripgrep fzf shellcheck
+            brew install stow zsh ripgrep fzf shellcheck jq
           else
             sudo apt-get update
-            sudo apt-get install -y stow zsh ripgrep fzf shellcheck procps
+            sudo apt-get install -y stow zsh ripgrep fzf shellcheck jq procps
           fi
       - name: Install checksum-verified Neovim and just
         run: python3 -B .github/workflows/install-tools.py
@@ -57,8 +57,6 @@ jobs:
           nvim --version
           just --version
           just check
-          just lint
-          just fmt-check
           just test
 
   distributions:
@@ -84,9 +82,9 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             apt-get update
-            apt-get install -y ca-certificates git python3 stow zsh ripgrep fzf shellcheck procps
+            apt-get install -y ca-certificates git python3 stow zsh ripgrep fzf shellcheck jq procps
           else
-            pacman -Syu --noconfirm --needed ca-certificates git python stow zsh ripgrep fzf tar gzip shellcheck procps-ng
+            pacman -Syu --noconfirm --needed ca-certificates git python stow zsh ripgrep fzf tar gzip shellcheck jq procps-ng
           fi
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -103,8 +101,6 @@ jobs:
           nvim --version
           just --version
           just check
-          just lint
-          just fmt-check
           just test
 
   plugin-startup:
