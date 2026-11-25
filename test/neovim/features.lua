@@ -24,10 +24,22 @@ local md = byname["MeanderingProgrammer/render-markdown.nvim"].opts
 assert(md.heading.width == "block" and md.code.language and md.checkbox.checked.icon)
 
 local actions, opened, shown = {}, nil, false
-local picker = setmetatable({
-	lsp_symbols = function()
+local aerial = byname["stevearc/aerial.nvim"]
+local symbol_mapping
+for _, key in ipairs(aerial.keys) do
+	if key[1] == "<leader>fs" then
+		symbol_mapping = key[2]
+	end
+end
+assert(type(symbol_mapping) == "function")
+package.loaded["aerial"] = {
+	snacks_picker = function()
 		actions.symbols = true
 	end,
+}
+symbol_mapping()
+assert(actions.symbols)
+local picker = setmetatable({
 	git_status = function(opts)
 		actions.git_status = opts.cwd
 	end,
@@ -52,31 +64,14 @@ local km = require("themizzi.keymaps")
 km.setup()
 vim.fn.maparg(" uz", "n", false, true).callback()
 assert(actions.zen)
-local original_clients = vim.lsp.get_clients
 local original_notify = vim.notify
 local notice
 vim.notify = function(msg)
 	notice = msg
 end
-vim.lsp.get_clients = function()
-	return {}
-end
-vim.fn.maparg(" fs", "n", false, true).callback()
-assert(notice and notice:find("document symbols", 1, true))
-notice = nil
 vim.fn.maparg(" gg", "n", false, true).callback()
 assert(notice and notice:find("Git repository", 1, true))
 vim.notify = original_notify
-vim.lsp.get_clients = function()
-	return { {
-		supports_method = function(_, method)
-			return method == "textDocument/documentSymbol"
-		end,
-	} }
-end
-vim.fn.maparg(" fs", "n", false, true).callback()
-assert(actions.symbols)
-vim.lsp.get_clients = original_clients
 
 local base = vim.fn.getcwd()
 local repo = base .. "/repository with spaces"
